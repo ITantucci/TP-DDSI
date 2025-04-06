@@ -1,0 +1,163 @@
+@startuml Diagrama de clases v1
+
+
+FuentesDeDatos *-- Coleccion
+Hecho -- FuentesDeDatos
+Criterio *-- Coleccion
+Hecho --* Origen
+Contribuyente -- fuenteDinamica
+SolicitudEliminacion -- estadoSolicitud
+SolicitudEliminacion -- Contribuyente
+SolicitudEliminacion -- Hecho
+SolicitudEliminacion -- Administrador
+
+
+class Hecho {
+    +titulo: String
+    descripcion: String
+    categoria: String
+    latitud: float
+    longitud: float
+    fechaHecho: Date
+    fechaCarga: Date
+    origen: Origen
+    ' Se agrega autor para identificar al contribuyente que lo sube o quedar anonimo
+    Contribuyente: Contribuyente
+    +anonimo: Boolean
+    +eliminado: Boolean
+    metadata: list <String>
+    {method}esIgual(Hecho)
+    {method}Actualizar(Hecho)
+}
+
+enum Origen{
+    CargaManual
+    Dataset
+    Contribuyente
+}
+
+class SolicitudEliminacion{
+    hechoAEliminar: Hecho
+    Motivo: String
+    Estado: estadoSolicitud 
+    ' por defecto esta en estado pendiente
+}
+
+class Persona{
+}
+
+class Administrador extends Persona{
+    
+    {method}crearColeccion(titulo:String,descripcion:String)
+    {method}importarHechos(pathACSV:String)
+    {method}aceptarSolicitud(solicitudEliminacion)
+    {method}rechazarSolicitud(solicitudEliminacion)
+    {method}marcarEliminado(Hecho)
+    ' no elimina los hechos dentro de la coleccion eliminada
+    {method}eliminarColeccion(Coleccion)
+
+    ' para la proxima entrega
+    ' {method}etiquetar(Hecho)
+    ' {method}revisar(Hecho)
+}
+
+class Visualizador extends Persona{
+    {method}consultarColeccion(Coleccion)
+    {method}filtrar(Coleccion: coleccion,filtro: lista<Criterios>): list <Hecho>
+}
+
+class Contribuyente extends Visualizador{ 
+    ' cualquiera que aporte información
+    Nombre: String
+    Apellido: String
+    Edad: int
+    {method}solicitarEliminacion(Hecho)
+    {method}agregarHecho(Hecho,anonimidad) 
+    'se agrega la anonimidad al crear el hecho
+}
+
+interface Criterio{
+    
+    {method} cumple(Hecho)
+}
+
+class CriterioFecha implements Criterio
+{
+    fechaDesde:Date
+    fechaHasta:Date
+
+    {method}cumple(Hecho)
+}
+
+class CriterioTitulo implements Criterio
+{
+    titulo: String
+    
+    {method}cumple(Hecho)
+}
+
+class CriterioDescripcion implements Criterio
+{
+    Descripcion: String
+
+    {method}cumple(Hecho)
+}
+
+class CriterioCategoria implements Criterio
+{
+    Categoria: String
+
+    {method}cumple(Hecho)
+}
+
+class CriterioZona implements Criterio
+{
+    latitud: float
+    longitud: float
+
+    {method}cumple(Hecho)
+}
+
+class CriterioOrigen implements Criterio
+{
+    origen: Origen
+
+    {method}cumple(Hecho)
+}
+
+class Coleccion{
+    titulo: String
+    Descripcion: String
+    CriterioPertenencia: List<Criterio>
+    fuentesDeDatos: FuentesDeDatos
+    {method}agregarCriterioPertenencia(Criterio)
+    {method}eliminarCriterioPertenencia(Criterio)
+    {method}modificarCriterio(Criterio,nuevoCriterio)
+    {method}mostrarFiltrado(List<Criterio>)
+    {method}filtrarPorCriterios()
+}
+
+interface FuentesDeDatos{
+    Nombre : String
+    hechos: lista <Hecho>
+    {method} obtenerHechos()
+}
+class fuenteEstatica implements FuentesDeDatos{
+
+    {method} obtenerHechos()
+}
+class fuenteDinamica implements FuentesDeDatos{
+    Autores :lista<Contribuyente>
+    {method} obtenerHechos()
+}
+class fuenteProxy implements FuentesDeDatos{
+    {method} obtenerHechos()
+}
+
+enum estadoSolicitud{
+    PENDIENTE 
+    APROBADA
+    RECHAZADA
+}
+
+@enduml
