@@ -1,5 +1,19 @@
 @startuml Diagrama de clases v1
+/'
+-Fuente estatica deberia estar conectada con el administrador ya que este va a cargar los datasets y agregar un campo que sea a que fuente importa los hechos
+-Fuente proxy se vera luego ya que seguro implementa una api para conectarse con otras instancias 
+-Las fuentes no obtienen los hechos, a estas se los carga. Habria que brorrar el medoto obtenerHechos de la interfaz y de las clases que la implementan
+-Administrador fijarse bien la solicitud de eliminacion ya que esta actuaria sobre la fuente de datos y luego sobre los hechos ver como relacionarlo con cualquier fuente 
+-Visualizador solo ve colecciones 
+-Chequear bien los metodos que tienen las clases
+-Es necesario que administrador, visualizador y contribuyente hereden de persona?
+-Consultar si se pueden repetir hechos de otra fuente que no se auna carga por csv, por ejemplo si un contribuyente carga un hecho que ya existe en una fuente dinamica
+-Para que esta el metdo filtrar en viusualizador y despues en coleccion.
+- esta bien que el hecho tenga un contribuyente? en el caso de las cargas csv no tenemos ese dato ya que viene de una fuente estatica, lo necesitamos ahi?
+- La fuente dinamica necesita los contribuyentes? o como los podemos asociar, tambien ya los teniamos cargados en los hechos 
+-vamos a tener dos hechos? uno para multimedia y otro para solo texto? 
 
+'/
 
 FuentesDeDatos *-- Coleccion
 Hecho -- FuentesDeDatos
@@ -40,7 +54,7 @@ class SolicitudEliminacion{
     hechoAEliminar: Hecho
     Motivo: String
     Estado: estadoSolicitud 
-    ' por defecto esta en estado pendiente
+    'por defecto esta en estado pendiente
 }
 
 class Persona{
@@ -136,7 +150,7 @@ class Coleccion{
     {method}mostrarFiltrado(List<Criterio>)
     {method}filtrarPorCriterios()
 }
-
+    
 interface FuentesDeDatos{
     Nombre : String
     hechos: lista <Hecho>
@@ -149,15 +163,20 @@ class fuenteEstatica implements FuentesDeDatos{
 class fuenteDinamica implements FuentesDeDatos{
     Autores :lista<Contribuyente>
     {method} obtenerHechos()
+    ' solo deberia tener una lista de hechos, los hechos individuales los carga cada contribuyente
+
 }
+
 class fuenteProxy implements FuentesDeDatos{
     {method} obtenerHechos()
 }
+
 
 enum estadoSolicitud{
     PENDIENTE 
     APROBADA
     RECHAZADA
 }
+
 
 @enduml
