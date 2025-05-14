@@ -1,4 +1,4 @@
-@startuml Diagrama de clases v3
+@startuml Diagrama de clases v4
 
 skinparam linetype ortho
 
@@ -78,11 +78,6 @@ class Administrador{
     {method}etiquetarHecho(hecho:Hecho,metadata:String)
 }
 
-class Visualizador{
-    {method}consultarColeccion(Coleccion)
-    {method}filtrarColeccion(coleccion: Coleccion, criterios Lista<Criterios>)
-}
-
 class Contribuyente extends Visualizador{ 
     +nombre: String
     +apellido: String
@@ -137,7 +132,6 @@ class Coleccion{
     +fuenteDeDatos: FuenteDeDatos
     {method}agregarCriterioPertenencia(criterio:Criterio)
     {method}eliminarCriterioPertenencia(criterio:Criterio)
-    {method}filtrarPorCriterios(criterios:List<Criterio>)
 }
 
 note right of Coleccion
