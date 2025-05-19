@@ -12,8 +12,10 @@ SolicitudEliminacion <-- Administrador
 HechoFD -- FuenteDinamica
 HechoFE -- FuenteEstatica
 HechoFP -- FuenteProxy
-CSV -- FuenteEstatica
+cargarHechoCSV -- FuenteEstatica
 Usuario -- Rol
+Rol -- TipoUsuario
+
 Usuario --o SolicitudEliminacion
 SolicitudEliminacion -- DetectorDeSpam
 /'
@@ -27,6 +29,8 @@ Dependencia	..>	Una forma más débil de dependencia
 
 '/
 
+
+'-----------------Hechos----------------
 interface Hecho {
     +titulo: String
     +descripcion: String
@@ -39,15 +43,20 @@ interface Hecho {
     -eliminado: Boolean
     +multimedia : List<Multimedia>
     +metadata: List<String> 
-    {method} etiquetarse(metadata:String)
+    {method} añadirEtiqueta(metadata:String)
 }
+
+note top of Hecho
+se podria tener un booleano en hecho que nos diga si es un hcho perteneciente a una fuenteDinamica, si lo es se le carga el usuario que lo creo, si no lo es se muestra la fuenteDeDatos como autor, ya que poseemos el nombre en las fuentes. para evitar tener 3 tipos de hecho.
+end note
+
 class HechoFD implements Hecho{
     +autorFD: Usuario
     -anonimo: Boolean
 }
 
 class HechoFE implements Hecho{
-    +autorFE: StringUsuario
+    +autorFE: String
 }
 
 class HechoFP implements Hecho{
@@ -58,19 +67,7 @@ abstract Multimedia{
     +path: String
     +tamaño: Long
 }
-
-class CSV{
-    +path: String
-    +tamaño: Long
-}
-
-note right of CSV
-CSV extends de FuenteEstatica porque es una
-especialización de fuente de datos estática, que
-lee hechos desde un archivo CSV. Esto permite
-reutilizar comportamiento, mantener coherencia
-con el dominio, y usar polimorfismo. Estaría mal?
-end note
+'Realmente necesitamos comportamiento diferente, o solo con poner un enum en multimedia de tipo esta bien. solo necesitamos tener cargado el path. Como se muestra lo hace el front y los casos segun el enum, como lo haria el rol en usuario.
 
 class Audio extends Multimedia{
     
@@ -81,6 +78,62 @@ class Video extends Multimedia{
 class Foto extends Multimedia{
     
 }
+
+class cargarHechoCSV{
+    +path: String
+    +fuente: FuenteEstatica
+    {method} cargarHecho(path:String, fuente:FuenteEstatica) 'recorre el archivo CSV, crea los hechos y los añade en la fuente de datos estática, consultar si se hace generico para porder utiilizarlo en la fuente proxy tambien, es decir si la carga de la fuente proxy se hace mediante un csv pero desde una url(web) la funcionaliudad vendriua a ser la misma y se podria implementar un importadorHechos.
+
+}
+
+note right of cargarHechoCSV
+CSV extends de FuenteEstatica porque es una
+especialización de fuente de datos estática, que
+lee hechos desde un archivo CSV. Esto permite
+reutilizar comportamiento, mantener coherencia
+con el dominio, y usar polimorfismo. Estaría mal?
+end note
+
+
+'-----------------Fuentes de datos----------------
+
+interface FuenteDeDatos{
+    +nombre: String
+    +hechos: List<Hecho>
+    {method}agregarHecho()
+}
+
+class FuenteEstatica implements FuenteDeDatos{
+    {method}agregarHecho(titulo:String, descripcion:String, longitud:Float, latitud:Float, categoria: String, multimedia: Multimedia, fecha:Date)
+    {method}importarHechos(pathCSV:String, fuenteEstatica:FuenteEstatica)
+}
+
+class FuenteDinamica implements FuenteDeDatos{
+    {method}agregarHecho(titulo:String, descripcion:String, longitud:Float, latitud:Float, categoria: String, multimedia: Multimedia, fecha:Date, anonimidad:Boolean)
+}
+
+class FuenteProxy implements FuenteDeDatos{
+    {method}agregarHecho(titulo:String, descripcion:String, longitud:Float, latitud:Float, categoria: String, multimedia: Multimedia, fecha:Date)
+}
+
+'-----------------Colecciones----------------
+
+class Coleccion{
+    +titulo: String
+    +descripcion: String
+    +criterioPertenencia: List<Criterio>
+    +fuenteDeDatos: FuenteDeDatos
+    +handle: String
+    {method}agregarCriterioPertenencia(criterio:Criterio)
+    {method}eliminarCriterioPertenencia(criterio:Criterio)
+    {method}filtrarPorCriterios(criterios:List<Criterio>)
+}
+
+
+
+
+
+'-----------------Solicitud de eliminacion----------------
 
 class SolicitudEliminacion{
     +hechoAEliminar: Hecho
@@ -96,6 +149,23 @@ enum EstadoSolicitud{
     RECHAZADA
 }
 
+interface DetectorDeSpam{    
+    {method}esSpam(String texto)
+}
+
+
+' ----Usuario rol contribuyente ----
+note top of Usuario
+Vamos a tener usuarios y contribuyentes, un usuario tiene un mail, contraseña y rol.
+El contribuyente tiene nombre, apellido, edad, y un usuario.
+El usuario tiene un rol, y el rol tiene un tipo de usuario.
+El rol puede ser visualizador, contribuyente o administrador.
+El Rol va a tener una lista de permisos que todavia no esta definido. Aca se definen el alcance, las acciones y los objetos (esto sirve para validar a que url puede entrar con cada rol). Visualizador va a ser el que pueda acceder a todas las url que no requieran estar logueado (por ejemplo miimpactoambiental.com/mapa, o miimpactoambiental.com/colecciones).
+El TipoUsuario sirve para todas las entidades que accedan al sistema, por ejemplo si mas adelante se agrega que una FuenteEstatica agregue sus propios hechos en vez de un administrador esta seria un tipo de usuario que solo agregaria eso en  la fuete, dudo que pase eso pero es un ejemplo.
+
+no cambio usuario, espero a que estemos todos juntos
+end note
+
 
 class Usuario{
     +nombre: String
@@ -108,12 +178,18 @@ class Usuario{
 
 }
 
-enum Rol{
+class Rol{
+    -tipoUsuario: TipoUsuario
+    {method}validarPermisos()
+}
+
+enum TipoUsuario{
     VISUALIZADOR
     CONTRIBUYENTE
     ADMINISTRADOR 
 }
 
+' -----------Criterios-----------------
 interface Criterio{ 
     {method}cumple(Hecho)
 }
@@ -147,42 +223,6 @@ class CriterioMultimedia implements Criterio{
     +multimedia:Multimedia
     {method}cumple(Hecho)
 }
-
-class Coleccion{
-    +titulo: String
-    +descripcion: String
-    +criterioPertenencia: List<Criterio>
-    +fuenteDeDatos: FuenteDeDatos
-    +handle: String
-    {method}agregarCriterioPertenencia(criterio:Criterio)
-    {method}eliminarCriterioPertenencia(criterio:Criterio)
-    {method}filtrarPorCriterios(criterios:List<Criterio>)
-}
-
-    
-interface FuenteDeDatos{
-    +nombre: String
-    +hechos: List<Hecho>
-    {method}agregarHecho()
-}
-
-class FuenteEstatica implements FuenteDeDatos{
-    {method}agregarHecho(titulo:String, descripcion:String, longitud:Float, latitud:Float, categoria: String, multimedia: Multimedia, fecha:Date)
-    {method}importarHechos(pathCSV:String, fuenteEstatica:FuenteEstatica)
-}
-
-class FuenteDinamica implements FuenteDeDatos{
-    {method}agregarHecho(titulo:String, descripcion:String, longitud:Float, latitud:Float, categoria: String, multimedia: Multimedia, fecha:Date, anonimidad:Boolean)
-}
-
-class FuenteProxy implements FuenteDeDatos{
-    {method}agregarHecho(titulo:String, descripcion:String, longitud:Float, latitud:Float, categoria: String, multimedia: Multimedia, fecha:Date)
-}
-
-interface DetectorDeSpam{    
-    {method}esSpam(String texto)
-}
-
 
 
 @enduml
