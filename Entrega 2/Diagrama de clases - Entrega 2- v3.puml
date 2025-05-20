@@ -1,0 +1,205 @@
+@startuml Diagrama de clases - Entrega 2 - v3
+
+skinparam linetype ortho
+
+FuenteDeDatos --* Coleccion
+Criterio -up-* Coleccion
+Hecho --o Multimedia
+Hecho --o Perfil
+SolicitudEliminacion -- EstadoSolicitud
+SolicitudEliminacion *-- Hecho
+SolicitudEliminacion *-- Perfil
+Hecho --* FuenteDeDatos
+Usuario -- Rol
+DetectorDeSpamService -- DetectorDeSpam
+DetectorDeSpamService --> SolicitudEliminacion
+Hecho --* Ubicacion
+Perfil --* Usuario
+Multimedia -- TipoMultimedia
+FuenteEstatica -- HechoParser
+FuenteProxy -- HechoParser
+
+'-----------------Hechos----------------
+class Hecho {
+    +titulo: String
+    +descripcion: String
+    +categoria: String
+    +ubicacion: Ubicacion
+    +fechaHecho: Date
+    +fechaCarga: Date
+    +fuente: FuenteDeDatos
+    +autor: Perfil
+    -anonimo: Boolean
+    -eliminado: Boolean
+    +multimedia : List<Multimedia>
+    +metadata: List<String> 
+    {method} añadirEtiqueta(metadata:String)
+    {method}getNombreAutor() 
+}
+
+class Ubicacion{
+    +latitud: Float
+    +longitud: Float
+}
+
+class Multimedia{
+    tipo: TipoMultimedia
+    +path: String
+} 
+enum TipoMultimedia {
+  FOTO
+  VIDEO
+  AUDIO
+}
+
+'-----------------Fuentes de datos----------------
+
+interface FuenteDeDatos{
+    +nombre: String
+    +hechos: List<Hecho>
+    {method}agregarHecho()
+}
+
+interface HechoParser{
+    {method}parsearHecho()
+    }
+
+'-----------------Fuentes de datos Dinamica----------------
+class FuenteDinamica implements FuenteDeDatos{
+    {method}agregarHecho(titulo:String, descripcion:String, ubicacion: Ubicacion, categoria: String, multimedia: list<Multimedia>, fecha:Date, anonimidad:Boolean)
+}
+
+
+
+
+'-----------------Fuentes de datos Estatica----------------
+class FuenteEstatica implements FuenteDeDatos{
+    +pathCSV: String
+    -parser: HechoParser
+    {method}agregarHecho()
+}
+
+class CsvHechoParser implements HechoParser{
+    {method}parsearHecho()
+    }
+
+'-----------------Fuentes de datos Proxy----------------
+class FuenteProxy implements FuenteDeDatos{
+    +endpointBase: String
+    -parser: HechoParser
+    {method}agregarHecho()
+    {method}getHechosDeColeccion()
+    {method}solicitarEliminacion()
+    
+    }
+class JsonHechoParser implements HechoParser{
+    {method}parsearHecho()
+    }
+
+
+
+'-----------------Colecciones----------------
+
+class Coleccion{
+    +titulo: String
+    +descripcion: String
+    +criterioPertenencia: List<Criterio>
+    +fuenteDeDatos: FuenteDeDatos
+    +handle: String
+    {method}agregarCriterioPertenencia(criterio:Criterio)
+    {method}eliminarCriterioPertenencia(criterio:Criterio)
+    {method}filtrarPorCriterios(criterios:List<Criterio>)
+}
+
+
+
+
+
+'-----------------Solicitud de eliminacion----------------
+
+class SolicitudEliminacion{
+    +hechoAEliminar: Hecho
+    +motivo: String
+    -estado: EstadoSolicitud
+    {method}aceptarSolicitud()
+    {method}rechazarSolicitud()
+}
+
+enum EstadoSolicitud{
+    PENDIENTE
+    APROBADA
+    RECHAZADA
+}
+
+
+interface DetectorDeSpam {
+    +esSpam(texto: String): Boolean
+}
+
+class DetectorDeSpamService {
+    -detector: DetectorDeSpam
+    {method}crearSolicitud(perfil: Perfil, hecho: Hecho, motivo: String)
+}
+
+
+' ----Usuario rol perfil ----
+
+class Usuario{
+    -email: String
+    -contraseñaHasheada: String
+    -roles: list<Rol>
+    {method}tieneRol(rol:Rol)
+}
+
+enum Rol{
+    VISUALIZADOR
+    EDITOR
+    CONTRIBUYENTE
+    ADMINISTRADOR 
+}
+
+class Perfil{
+    +nombre: String
+    +apellido: String
+    +edad: Int
+    +usuario: Usuario
+    +solicitudesEliminacion: List<SolicitudEliminacion>
+}
+
+' -----------Criterios-----------------
+interface Criterio{ 
+    {method}cumple(Hecho)
+}
+class CriterioFecha implements Criterio{
+    +fechaDesde:Date
+    +fechaHasta:Date
+    {method}cumple(Hecho)
+}
+class CriterioTitulo implements Criterio{
+    +titulo:String 
+    {method}cumple(Hecho)
+}
+class CriterioDescripcion implements Criterio{
+    +descripcion:String
+    {method}cumple(Hecho)
+}
+class CriterioCategoria implements Criterio{
+    +categoria:String
+    {method}cumple(Hecho)
+}
+class CriterioZona implements Criterio{
+    +latitud:Float
+    +longitud:Float
+    {method}cumple(Hecho)
+}
+class CriterioOrigen implements Criterio{
+    +origen:FuenteDeDatos
+    {method}cumple(Hecho)
+}
+class CriterioMultimedia implements Criterio{
+    +multimedia:Multimedia
+    {method}cumple(Hecho)
+}
+
+
+@enduml

@@ -6,9 +6,8 @@ FuenteDeDatos --* Coleccion
 Criterio --* Coleccion
 Hecho --* Multimedia
 SolicitudEliminacion -- EstadoSolicitud
-SolicitudEliminacion -- Contribuyente
 SolicitudEliminacion *-- Hecho
-SolicitudEliminacion <-- Administrador
+SolicitudEliminacion <-- Usuario
 HechoFD -- FuenteDinamica
 HechoFE -- FuenteEstatica
 HechoFP -- FuenteProxy
