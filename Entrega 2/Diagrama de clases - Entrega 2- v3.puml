@@ -2,22 +2,22 @@
 
 skinparam linetype ortho
 
-FuenteDeDatos --* Coleccion
-Criterio -up-* Coleccion
-Hecho --o Multimedia
-Hecho --o Perfil
-SolicitudEliminacion -- EstadoSolicitud
-SolicitudEliminacion *-- Hecho
-SolicitudEliminacion *-- Perfil
+Hecho o-right- Multimedia
+Hecho o-left- Perfil
 Hecho --* FuenteDeDatos
-Usuario -- Rol
-DetectorDeSpamService -- DetectorDeSpam
-DetectorDeSpamService --> SolicitudEliminacion
-Hecho --* Ubicacion
-Perfil --* Usuario
-Multimedia -- TipoMultimedia
-FuenteEstatica -- HechoParser
-FuenteProxy -- HechoParser
+Hecho *-left- Ubicacion
+Hecho -up-* SolicitudEliminacion
+Multimedia -right- TipoMultimedia
+Perfil *-up- Usuario
+Usuario -up- Rol
+Perfil o-right- SolicitudEliminacion
+SolicitudEliminacion -right- EstadoSolicitud
+SolicitudEliminacion <-up- DetectorDeSpam
+FuenteDeDatos --* Coleccion
+FuenteProxy *-- HechoParser
+FuenteEstatica *-- HechoParser
+Criterio -up-* Coleccion
+
 
 '-----------------Hechos----------------
 class Hecho {
@@ -134,11 +134,6 @@ enum EstadoSolicitud{
 
 interface DetectorDeSpam {
     +esSpam(texto: String): Boolean
-}
-
-class DetectorDeSpamService {
-    -detector: DetectorDeSpam
-    {method}crearSolicitud(perfil: Perfil, hecho: Hecho, motivo: String)
 }
 
 
