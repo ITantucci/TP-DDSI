@@ -1,4 +1,4 @@
-@startuml Diagrama de clases - Entrega 2 - v3
+ @startuml Diagrama de clases - Entrega 2 - v3
 
 skinparam linetype ortho
 
@@ -33,7 +33,7 @@ class Hecho {
     -eliminado: Boolean
     +multimedia : List<Multimedia>
     +metadata: List<String> 
-    {method} añadirEtiqueta(metadata:String)
+    {method}añadirEtiqueta(metadata:String)
     {method}getNombreAutor() 
 }
 
@@ -46,6 +46,11 @@ class Multimedia{
     tipo: TipoMultimedia
     +path: String
 } 
+
+note top of TipoMultimedia
+chequear si es necesario que sean clases 
+end note
+
 enum TipoMultimedia {
   FOTO
   VIDEO
@@ -62,15 +67,12 @@ interface FuenteDeDatos{
 
 interface HechoParser{
     {method}parsearHecho()
-    }
+}
 
 '-----------------Fuentes de datos Dinamica----------------
 class FuenteDinamica implements FuenteDeDatos{
     {method}agregarHecho(titulo:String, descripcion:String, ubicacion: Ubicacion, categoria: String, multimedia: list<Multimedia>, fecha:Date, anonimidad:Boolean)
 }
-
-
-
 
 '-----------------Fuentes de datos Estatica----------------
 class FuenteEstatica implements FuenteDeDatos{
@@ -81,7 +83,7 @@ class FuenteEstatica implements FuenteDeDatos{
 
 class CsvHechoParser implements HechoParser{
     {method}parsearHecho()
-    }
+}
 
 '-----------------Fuentes de datos Proxy----------------
 class FuenteProxy implements FuenteDeDatos{
@@ -91,28 +93,28 @@ class FuenteProxy implements FuenteDeDatos{
     {method}getHechosDeColeccion()
     {method}solicitarEliminacion()
     
-    }
+}
+
 class JsonHechoParser implements HechoParser{
     {method}parsearHecho()
-    }
-
-
+}
 
 '-----------------Colecciones----------------
+note left of Coleccion
+chequear si para la entrega 3 piden que una coleccion tenga una lista de fuentes de datos
+o que tenga una lista de hechos y que se actualicen 
+end note
 
 class Coleccion{
     +titulo: String
     +descripcion: String
     +criterioPertenencia: List<Criterio>
-    +fuenteDeDatos: FuenteDeDatos
+    +fuentesDeDatos: list<FuenteDeDatos>
     +handle: String
     {method}agregarCriterioPertenencia(criterio:Criterio)
     {method}eliminarCriterioPertenencia(criterio:Criterio)
     {method}filtrarPorCriterios(criterios:List<Criterio>)
 }
-
-
-
 
 
 '-----------------Solicitud de eliminacion----------------
@@ -138,6 +140,10 @@ interface DetectorDeSpam {
 
 
 ' ----Usuario rol perfil ----
+
+note left of Usuario
+chequear si es necesario tener un usuario y un perfil o organizar todo en uno
+end note
 
 class Usuario{
     -email: String
@@ -182,9 +188,8 @@ class CriterioCategoria implements Criterio{
     +categoria:String
     {method}cumple(Hecho)
 }
-class CriterioZona implements Criterio{
-    +latitud:Float
-    +longitud:Float
+class CriterioUbicacion implements Criterio{
+    +ubicacion:Ubicacion
     {method}cumple(Hecho)
 }
 class CriterioOrigen implements Criterio{
