@@ -5,7 +5,7 @@ skinparam linetype ortho
 Hecho o-right- Multimedia
 Hecho o-left- Perfil
 Hecho --* FuenteDeDatos
-Hecho *-left- Ubicacion
+Hecho *-right- Ubicacion
 Hecho -up-* SolicitudEliminacion
 Multimedia -right- TipoMultimedia
 Perfil *-up- Usuario
@@ -13,11 +13,15 @@ Usuario -up- Rol
 Perfil o-right- SolicitudEliminacion
 Solicitud -right- EstadoSolicitud
 SolicitudEliminacion <-up- DetectorDeSpam
-FuenteDeDatos --* Coleccion
+'FuenteDeDatos --* Coleccion
 FuenteProxy *-- HechoParser
 FuenteEstatica *-- HechoParser
 Criterio -up-* Coleccion
 SolicitudEdicion --* Hecho
+
+Coleccion -down- Agregador
+Agregador -- FuenteDeDatos
+Agregador -- Hecho
 
 '-----------------Hechos----------------
 class Hecho {
@@ -48,15 +52,23 @@ class Multimedia{
     +path: String
 } 
 
-note top of TipoMultimedia
-chequear si es necesario que sean clases 
-end note
 
 enum TipoMultimedia {
   FOTO
   VIDEO
   AUDIO
 }
+
+
+
+'----------- Agregador -------------
+class Agregador{
+    +fuentesDeDatos: List<FuenteDeDatos>
+    +hechos: List<Hecho>
+    {method}actualizarHechos()
+}
+
+
 
 '-----------------Fuentes de datos----------------
 interface FuenteDeDatos{
@@ -106,7 +118,7 @@ class Coleccion{
     +titulo: String
     +descripcion: String
     +criterioPertenencia: List<Criterio>
-    +fuentesDeDatos: List<FuenteDeDatos>
+    +agregador: Agregador
     +handle: String
     {method}agregarCriterioPertenencia(criterio:Criterio)
     {method}eliminarCriterioPertenencia(criterio:Criterio)
@@ -127,13 +139,11 @@ class SolicitudEliminacion extends Solicitud{
     +motivo: String
 }
 
-
 enum EstadoSolicitud{
     PENDIENTE
     APROBADA
     RECHAZADA
 }
-
 
 interface DetectorDeSpam {
     +esSpam(texto: String): Boolean
@@ -202,7 +212,7 @@ class CriterioUbicacion implements Criterio{
     {method}cumple(Hecho)
 }
 class CriterioOrigen implements Criterio{
-    +origen:FuenteDeDatos
+    +origen: Class
     {method}cumple(Hecho)
 }
 class CriterioMultimedia implements Criterio{
@@ -210,4 +220,9 @@ class CriterioMultimedia implements Criterio{
     {method}cumple(Hecho)
 }
 
+'enum tipoFuenteDatos{
+'    ESTATICA
+'    DINAMICA
+'    PROXY
+'}
 @enduml
