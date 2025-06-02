@@ -2,7 +2,7 @@
 <h1 align="center">
 Metamapa
 <p align="center">
-  <img src=https://raw.githubusercontent.com/ITantucci/TP-DDSI/78a488c5f20d7c4ea1e5600967b8c1ea45bef5cb/Archivos/MetaMapa.png?token=GHSAT0AAAAAADASR5BBWJEPAS46KYWLHZAQ2B46MZA>
+  <img src=https://i.imgur.com/iAa9Kh5.png>
 </p>
 </h1>
 Trabajo práctico anual de la materia Diseño de Sistemas de Informacion, correspondiente al 3° año de la carrera Ingeniería en Sistemas de Información, UTN FRBA.
