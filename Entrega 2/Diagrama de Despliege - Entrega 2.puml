@@ -17,7 +17,7 @@ database Hechos_y_Solicitudes
 
 node node as "Fuente Estatica" {
     component modelo as cosa3{
-        component Fuentes as Fuentes
+        component FuenteDeDatos as Fuentes
         component Parsers as Parsers
     }
 
@@ -31,7 +31,7 @@ node node as "Fuente Estatica" {
 
 node node1 as "Fuente Proxy" {
     component modelo as cosa2{
-        component Fuentes as Fuentes2
+        component FuenteDeDatos as Fuentes2
         component Parsers as Parsers2
     }
     component API as API2
@@ -43,17 +43,17 @@ node node1 as "Fuente Proxy" {
 
 node node2 as "Fuente Dinamica" {
     component modelo as cosa1{
-        component Fuentes as Fuentes3
-        component Solicitudes
+        component FuenteDeDatos as Fuentes3
+        component GestorSolicitudes
     }
     component API as API3
     component UI_SolicitudesEliminacion
     component UI_SolicitudesEdicion
 
     API3 --> Fuentes3
-    Solicitudes --> Fuentes3
-    UI_SolicitudesEdicion --> Solicitudes
-    UI_SolicitudesEliminacion --> Solicitudes
+    GestorSolicitudes --> Fuentes3
+    UI_SolicitudesEdicion --> GestorSolicitudes
+    UI_SolicitudesEliminacion --> GestorSolicitudes
     Fuentes3 --> Hechos_y_Solicitudes
 }
 
@@ -62,8 +62,8 @@ database Hechos_y_Solicitudes as HyS
 node node3 as "Agregador"{
     component modelo{
         component Agregacion as Agregador1
-        component Fuentes as Fuentes4
-        component Solicitudes as Soli2
+        component FuenteDeDatos as Fuentes4
+        component GestorSolicitudes as Soli2
     }
 
     component UI_SolicitudesEliminacion as UI_solisEl
@@ -79,7 +79,6 @@ node node3 as "Agregador"{
     Fuentes4 --> API2
     Fuentes4 --> API3
     modelo--> HyS
-
 }
 
 @enduml

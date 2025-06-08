@@ -118,13 +118,17 @@ class Coleccion{
     +titulo: String
     +descripcion: String
     +criterioPertenencia: List<Criterio>
+    +criterioNoPertenencia: List<Criterio> 
     +agregador: Agregador
     +handle: String
     {method}agregarCriterioPertenencia(criterio:Criterio)
     {method}eliminarCriterioPertenencia(criterio:Criterio)
     {method}filtrarPorCriterios(criterios:List<Criterio>)
 }
-
+note top of Coleccion
+se agrego el criterio de no pertenencia para poder incluir por ejemplo si se 
+quiere filtrar por fechas que no sean 2012 o filtrar por fuentes que no sean estaticas
+end note
 '-------------------Interfaz solicitud--------------------
 Abstract Solicitud{
     +hechoAfectado: Hecho
@@ -213,6 +217,10 @@ class CriterioUbicacion implements Criterio{
 }
 class CriterioOrigen implements Criterio{
     +origen: Class
+    {method}cumple(Hecho)
+}
+class CriterioFuenteDeDatos implements Criterio{
+    +origen: FuenteDeDatos
     {method}cumple(Hecho)
 }
 class CriterioMultimedia implements Criterio{
