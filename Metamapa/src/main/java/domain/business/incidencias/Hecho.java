@@ -41,9 +41,9 @@ public class Hecho {
   private HashMap<String,String> metadata;
 
 
-  //constructor
+  //TODO: revisar constructor modificado con menos atributos??
 
-  public Hecho(String titulo, String desc, String categoria, Float latitud,Float longitud, LocalDate fechaHecho, Perfil autor, Boolean anonimidad, FuenteDeDatos fuenteDeDatos, ArrayList<Multimedia> multimedia) {
+  public Hecho(String titulo, String desc, String categoria, Float latitud, Float longitud, LocalDate fechaHecho) {
     this.titulo = titulo;
     this.descripcion = desc;
     this.categoria = categoria;
@@ -51,14 +51,12 @@ public class Hecho {
     this.fechaHecho = fechaHecho;
     this.fechaCarga = LocalDate.now();
     this.fechaModificacion = LocalDate.now();
-    this.fuenteDeDatos = fuenteDeDatos;
-    this.autor = autor;
-    this.anonimo = anonimidad;
+    this.fuenteDeDatos = null;
+    this.autor = null;
+    this.anonimo = false;
     this.eliminado = false;
-    this.multimedia = multimedia;
+    this.multimedia = new ArrayList<>();
     this.metadata = new HashMap<>();
-
-
   }
 
   public Boolean tieneEtiqueta(String key,String value) {

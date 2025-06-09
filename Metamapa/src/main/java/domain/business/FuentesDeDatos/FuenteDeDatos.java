@@ -17,5 +17,5 @@ abstract class FuenteDeDatos {
   @Getter
   LinkedList<Hecho> listaHecho;
 
-  void agregarHecho();
+  void agregarHecho(){};
 }

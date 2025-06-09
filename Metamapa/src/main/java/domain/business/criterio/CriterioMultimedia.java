@@ -1,6 +1,5 @@
 package domain.business.criterio;
 import domain.business.incidencias.Hecho;
-import domain.business.incidencias.Multimedia;
 import domain.business.incidencias.TipoMultimedia;
 import lombok.Getter;
 

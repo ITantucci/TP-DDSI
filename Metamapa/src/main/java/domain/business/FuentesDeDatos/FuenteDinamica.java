@@ -21,7 +21,7 @@ public class FuenteDinamica extends FuenteDeDatos{
   }
 
   public void agregarHecho(String titulo, String desc, String categoria, Float latitud, Float longitud, LocalDate fechaHecho, Perfil
-      autor, Boolean anonimidad, FuenteDeDatos Self, ArrayList< Multimedia > multimedia) {
+      autor, Boolean anonimidad, FuenteDeDatos Self, ArrayList<Multimedia> multimedia) {
 
   }
 }

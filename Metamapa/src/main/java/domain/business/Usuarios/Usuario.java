@@ -24,4 +24,6 @@ public class Usuario {
     return this.getRoles().contains(rol);
   }
 
+
+
 }
