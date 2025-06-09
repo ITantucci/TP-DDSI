@@ -5,16 +5,19 @@ import lombok.Getter;
 
 public class CriterioUbicacion implements Criterio{
   @Getter
-  private Ubicacion ubicacion;
+  private Float latitud;
+  @Getter
+  private Float longitud;
 
-  public CriterioUbicacion(Ubicacion ubicacion) {
+  public CriterioUbicacion(Float latitud, Float longitud) {
 
-    this.ubicacion = ubicacion;
+    this.latitud = latitud;
+    this.longitud = longitud;
   }
 
   public boolean cumple(Hecho hechoAValidar) {
     Ubicacion ubicacionAValidar = hechoAValidar.getUbicacion();
 
-    return this.getUbicacion().esIgual(ubicacionAValidar);
+    return ubicacionAValidar.esIgual(this.getLatitud(), this.getLongitud());
   }
 }

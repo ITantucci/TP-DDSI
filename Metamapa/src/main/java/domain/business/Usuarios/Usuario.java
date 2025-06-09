@@ -1,54 +1,27 @@
 package domain.business.Usuarios;
 import java.util.List;
+import lombok.Getter;
+
 
 public class Usuario {
+  @Getter
   private String email;
+  @Getter
   private String contraseniaHasheada;
+  @Getter
   private Perfil perfil;
+  @Getter
   private List<Rol> roles;
 
-  //TODO: cambiar getters y setters
-
-  //getters
-
-  public String getContraseniaHasheada() {
-    return contraseniaHasheada;
-  }
-
-  public String getEmail() {
-    return email;
-  }
-
-  public Perfil getPerfil() {
-    return perfil;
-  }
-
-  public List<Rol> getRoles() {
-    return roles;}
-
-  //setters
-
-  public void setContraseniaHasheada(String contraseniaHasheada) {
-    this.contraseniaHasheada = contraseniaHasheada;
-  }
-
-  public void setEmail(String email) {
+  public Usuario(String email, String contraseniaHasheada, Perfil perfil, List<Rol> roles) {
     this.email = email;
-  }
-
-  public void setPerfil(Perfil perfil) {
+    this.contraseniaHasheada = contraseniaHasheada;
     this.perfil = perfil;
-  }
-
-  public void setRoles(List<Rol> roles) {
     this.roles = roles;
   }
 
-
-  // metodos
-
-  public Boolean tieneRole(Rol rol) {
-    return this.roles.contains(rol);
+  public Boolean tieneRol(Rol rol) {
+    return this.getRoles().contains(rol);
   }
 
 }

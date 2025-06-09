@@ -7,7 +7,7 @@ import lombok.Getter;
 
 public class CriterioMultimedia implements Criterio {
   @Getter
-  private TipoMultimedia tipoMultimedia; //TODO: Cambiar en el diagrama de clases
+  private TipoMultimedia tipoMultimedia;
 
   public CriterioMultimedia(TipoMultimedia tipoMultimedia) {
     this.tipoMultimedia = tipoMultimedia;

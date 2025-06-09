@@ -28,10 +28,7 @@ public class SolicitudEdicion extends Solicitud{
   private String sugerencia;
 
   // Constructor
-  public SolicitudEdicion(String tituloMod, String descMod, String categoriaMod,
-                          Ubicacion ubicacionMod, Date fechaHechoMod,
-                          List<Multimedia> multimediaMod, Boolean anonimidadMod, String sugerencia,
-                          Hecho hechoAfectado, EstadoSolicitud estado) {
+  public SolicitudEdicion(String tituloMod, String descMod, String categoriaMod, Ubicacion ubicacionMod, Date fechaHechoMod, List<Multimedia> multimediaMod, Boolean anonimidadMod, String sugerencia, Hecho hechoAfectado, EstadoSolicitud estado) {
     super(hechoAfectado, estado);
     if(hechoAfectado.getFechaCarga().plusDays(7).isBefore(LocalDate.now()))
     {
@@ -54,4 +51,8 @@ public class SolicitudEdicion extends Solicitud{
   public void rechazarSolicitud(){
     throw new UnsupportedOperationException("Not supported yet.");
   }
+  public void agregarSugerencia(String sugerencia){
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
 }

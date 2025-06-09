@@ -37,14 +37,17 @@ class Hecho {
     -anonimo: Boolean
     -eliminado: Boolean
     +multimedia : List<Multimedia>
-    +metadata: List<String> 
-    {method}añadirEtiqueta(metadata:String)
-    {method}getNombreAutor() 
+    +metadata: HashMap<key:String,value:String> 
+    {method}tieneEtiqueta(String key, String value)
+    {method}editarHecho(SolicitudEdicion solicitud)
+    {method}aniadirEtiqueta(String key, String value)
+    {method}getNombreAutor()
 }
 
 class Ubicacion{
     +latitud: Float
     +longitud: Float
+    {method}esIgual(latitud:Float, longitud:Float)
 }
 
 class Multimedia{
@@ -141,6 +144,8 @@ Abstract Solicitud{
 '-----------------Solicitud de eliminacion----------------
 class SolicitudEliminacion extends Solicitud{
     +motivo: String
+    {method}aceptarSolicitud()
+    {method}rechazarSolicitud()
 }
 
 enum EstadoSolicitud{
@@ -164,15 +169,17 @@ class SolicitudEdicion extends Solicitud{
     '+anonimidadMod: Boolean
     +Sugerencia: String
     {method}agregarSugerencia(String: Sugerencia)
+    {method}aceptarSolicitud()
+    {method}rechazarSolicitud()
 }
 
 ' ----Usuario rol perfil ----
 
 class Usuario{
-    -email: String
-    -contraseñaHasheada: String
-    +perfil: Perfil
-    -rol: List<Rol>
+    email: String
+    contraseniaHasheada: String
+    perfil: Perfil
+    rol: List<Rol>
     {method}tieneRol(rol:Rol)
 }
 
@@ -183,11 +190,13 @@ enum Rol{
 }
 
 class Perfil{
-    +nombre: String
-    +apellido: String
-    +edad: Int
-    +solicitudesEliminacion: List<SolicitudEliminacion>
-    +solicitudesEdicion: List<SolicitudEdicion>
+    nombre: String
+    apellido: String
+    edad: Int
+    solicitudesEliminacion: List<SolicitudEliminacion>
+    solicitudesEdicion: List<SolicitudEdicion>
+    {method}agregarSolicitudEliminacion(SolicitudEliminacion)
+    {method}agregarSolicitudEdicion(SolicitudEdicion)
 }
 
 ' -----------Criterios-----------------
@@ -224,7 +233,7 @@ class CriterioFuenteDeDatos implements Criterio{
     {method}cumple(Hecho)
 }
 class CriterioMultimedia implements Criterio{
-    +multimedia:Multimedia
+    +tipoMultimedia:TipoMultimedia
     {method}cumple(Hecho)
 }
 

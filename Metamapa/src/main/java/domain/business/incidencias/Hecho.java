@@ -4,6 +4,8 @@ package domain.business.incidencias;
 import domain.business.FuentesDeDatos.FuenteDeDatos;
 import domain.business.Usuarios.Perfil;
 import domain.business.tiposSolicitudes.SolicitudEdicion;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.time.LocalDate;
@@ -26,7 +28,7 @@ public class Hecho {
   @Getter
   private LocalDate fechaModificacion;
   @Getter
-  private FuenteDeDatos fuenteDeDatos; //porque estaba comentada? TODO:Agregar en el constructor
+  private FuenteDeDatos fuenteDeDatos;
   @Getter
   private Perfil autor;
   @Getter
@@ -34,59 +36,68 @@ public class Hecho {
   @Getter
   private Boolean eliminado;
   @Getter
-  private List<Multimedia> multimedia;
-  private List<String> metadata;
+  private ArrayList<Multimedia> multimedia;
+  @Getter
+  private HashMap<String,String> metadata;
 
 
   //constructor
 
-  public Hecho(String titulo, String desc, String categoria, Ubicacion ubicacion, LocalDate fechaHecho, Perfil autor, Boolean anonimidad, List<Multimedia> multimedia) {
+  public Hecho(String titulo, String desc, String categoria, Float latitud,Float longitud, LocalDate fechaHecho, Perfil autor, Boolean anonimidad, FuenteDeDatos fuenteDeDatos, ArrayList<Multimedia> multimedia) {
     this.titulo = titulo;
     this.descripcion = desc;
     this.categoria = categoria;
-    this.ubicacion = ubicacion;
+    this.ubicacion = new Ubicacion(latitud,longitud);
     this.fechaHecho = fechaHecho;
     this.fechaCarga = LocalDate.now();
     this.fechaModificacion = LocalDate.now();
-    //this.fuente = fuente
+    this.fuenteDeDatos = fuenteDeDatos;
     this.autor = autor;
     this.anonimo = anonimidad;
     this.eliminado = false;
     this.multimedia = multimedia;
-    this.metadata = new LinkedList<>();
+    this.metadata = new HashMap<>();
 
 
   }
 
-  public Boolean tieneEtiqueta(String etiqueta)
-  {
-    return metadata.contains(etiqueta);
+  public Boolean tieneEtiqueta(String key,String value) {
+    return getMetadata().get(key).equals(value);
   }
-  
-  //setters
 
-  // TODO: agregar al diagrama de clases
-  public void editarHecho(SolicitudEdicion solicitud)
-  {
-      if(solicitud.getTituloMod() != null) {this.titulo = solicitud.getTituloMod();}
-      if(solicitud.getDescMod() != null){this.descripcion = solicitud.getDescMod();}
-      if(solicitud.getCategoriaMod() != null){this.categoria = solicitud.getCategoriaMod();}
-      if(solicitud.getUbicacionMod() != null){this.ubicacion = solicitud.getUbicacionMod();}
-      if(solicitud.getAnonimidadMod() != null){this.anonimo = solicitud.getAnonimidadMod();}
-      this.fechaModificacion = LocalDate.now();
+  public void editarHecho(SolicitudEdicion solicitud) {
+    if (solicitud.getTituloMod() != null) {
+      this.titulo = solicitud.getTituloMod();
+    }
+    if (solicitud.getDescMod() != null) {
+      this.descripcion = solicitud.getDescMod();
+    }
+    if (solicitud.getCategoriaMod() != null) {
+      this.categoria = solicitud.getCategoriaMod();
+    }
+    if (solicitud.getUbicacionMod() != null) {
+      this.ubicacion = solicitud.getUbicacionMod();
+    }
+    if (solicitud.getAnonimidadMod() != null) {
+      this.anonimo = solicitud.getAnonimidadMod();
+    }
+    this.fechaModificacion = LocalDate.now();
   }
-  public void aniadirEtiqueta(String etiqueta) {
-    this.metadata.add(etiqueta);
+
+  public void aniadirEtiqueta(String key, String value) {
+    if (this.tieneEtiqueta(key,value)) {
+      throw new RuntimeException("Esa etiqueta ya existe");
+    }else this.metadata.put(key,value);
   }
-  // TODO: agregar al diagrama de clases
+  // TODO: agregar al diagrama de clases, rta Que es actualizarse?
 //  public void actualizarse(String )
 //  {
 //
 //  }
 
-//  public String getNombreAutor()
-//  {
-//    Perfil.
-//  }
-
+  public String getNombreAutor() {
+    if (this.getFuenteDeDatos().getClass().getName() != "FuenteDinamica"){
+       return this.getFuenteDeDatos().getNombre(); //Todavia no esta creado getter
+    }else return this.getAutor().getNombre() + " " + this.getAutor().getApellido();
+  }
 }

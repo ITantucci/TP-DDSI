@@ -1,12 +1,17 @@
 package domain.business.tiposSolicitudes;
+import domain.business.incidencias.Hecho;
 import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 
 public class SolicitudEliminacion extends Solicitud{
-  private String motivo;
+
+  @Getter
+  public String motivo;
+
+  public SolicitudEliminacion(Hecho hechoAfectado, EstadoSolicitud estado, String motivo) {
+    super(hechoAfectado, estado);
+    this.motivo = motivo;
+  }
 
   @Override
   public void aceptarSolicitud(){

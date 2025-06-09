@@ -9,7 +9,7 @@ import lombok.Setter;
 
 public abstract class Solicitud {
   // Atributos
-  protected Hecho hechoAfectado;  // Hecho relacionado con la solicitud
+  private Hecho hechoAfectado;  // Hecho relacionado con la solicitud
   private EstadoSolicitud estado; // Estado de la solicitud (puede ser un enum o clase)
 
   // Constructor
