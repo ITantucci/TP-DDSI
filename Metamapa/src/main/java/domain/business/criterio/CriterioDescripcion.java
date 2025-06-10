@@ -11,7 +11,7 @@ public class CriterioDescripcion {
 
     this.descripcion = descripcion;
   }
-  @Override
+
   public boolean cumple(Hecho hechoAValidar){
     String descripcionAValidar = hechoAValidar.getDescripcion();
 

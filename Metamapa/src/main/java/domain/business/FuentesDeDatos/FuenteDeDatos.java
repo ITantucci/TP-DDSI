@@ -9,7 +9,7 @@ import java.util.LinkedList;
 import lombok.Getter;
 
 //TODO: CAMBIAR A ABSTRACTA EN DIAGRAMA?
-abstract class FuenteDeDatos {
+public abstract class FuenteDeDatos {
 
   @Getter
   String nombre;

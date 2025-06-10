@@ -2,16 +2,15 @@ package domain.business;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import java.time.localDate;
-import lombok.Getter;
-import lombok.Setter;
 
-
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {
+		"domain.business",
+		"infrastructure.controller",
+		"infrastructure.dto",
+		"infrastructure.mapper"
+})
 public class Metamapa {
-
 	public static void main(String[] args) {
 		SpringApplication.run(Metamapa.class, args);
 	}
-
 }
