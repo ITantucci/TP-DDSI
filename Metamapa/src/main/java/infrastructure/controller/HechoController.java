@@ -10,7 +10,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api") // Prefijo para agrupar tus endpoints
 public class HechoController {
-
     private final FuenteProxy fuenteProxy;
 
     public HechoController(FuenteProxy fuenteProxy) {

@@ -8,6 +8,7 @@ import domain.business.incidencias.Hecho;
 
 import java.util.HashMap;
 import java.util.List;
+import java.time.LocalDate;
 
 import org.springframework.web.client.RestTemplate;
 
@@ -26,14 +27,27 @@ public class FuenteProxy extends FuenteDeDatos {
     }
 
     public List<Hecho> getHechos() {
-        return client.getHechos(new HashMap<>());
+        //return client.getHechos(new HashMap<>());
+        // Temporalmente devolver lista dummy
+        return List.of(
+                new Hecho("id1", "Descripción 1", "Categoría A", 0.0f, 0.0f, LocalDate.now()),
+                new Hecho("id2", "Descripción 2", "Categoría B", 0.0f, 0.0f, LocalDate.now())
+        );
+
     }
 
     public List<Hecho> getHechosDeColeccion(String handle) {
-        return client.getHechosDeColeccion(handle, new HashMap<>());
+        //return client.getHechosDeColeccion(handle, new HashMap<>());
+        // Temporalmente devolver lista dummy
+        return List.of(
+                new Hecho("h1", "Hecho de colección", "Cat", 0.0f, 0.0f, LocalDate.now())
+        );
+
     }
 
     public void solicitarEliminacion(SolicitudEliminacionDTO dto) {
         client.enviarSolicitudEliminacion(dto);
+        //Da error 401, el resto no
+        //System.out.println("Solicitud recibida: " + dto);
     }
 }

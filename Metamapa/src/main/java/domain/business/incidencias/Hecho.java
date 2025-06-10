@@ -93,9 +93,13 @@ public class Hecho {
 //
 //  }
 
-  public String getNombreAutor() {
+/*  public String getNombreAutor() {
     if (this.getFuenteDeDatos().getClass().getName() != "FuenteDinamica"){
        return this.getFuenteDeDatos().getNombre(); //Todavia no esta creado getter
     }else return this.getAutor().getNombre() + " " + this.getAutor().getApellido();
+  }*/
+  public String getNombreAutor() {
+    return fuenteDeDatos != null ? fuenteDeDatos.getClass().getSimpleName() : "Desconocido";
   }
+
 }

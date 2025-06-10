@@ -7,7 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 		"domain.business",
 		"infrastructure.controller",
 		"infrastructure.dto",
-		"infrastructure.mapper"
+		"infrastructure.mapper",
+		"infrastructure.config" // <-- agregá este si no lo tenías
 })
 public class Metamapa {
 	public static void main(String[] args) {
