@@ -3,18 +3,15 @@ import domain.business.incidencias.Hecho;
 import lombok.Getter;
 
 
-public class CriterioDescripcion {
+public class CriterioDescripcion implements Criterio {
   @Getter
   private String descripcion;
 
   public CriterioDescripcion(String descripcion) {
-
     this.descripcion = descripcion;
   }
 
   public boolean cumple(Hecho hechoAValidar){
-    String descripcionAValidar = hechoAValidar.getDescripcion();
-
-    return this.descripcion.equals(descripcionAValidar);
+    return this.descripcion.equals(hechoAValidar.getDescripcion());
   }
 }

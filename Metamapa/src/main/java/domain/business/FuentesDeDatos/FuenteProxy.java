@@ -1,10 +1,16 @@
 package domain.business.FuentesDeDatos;
 
 import domain.business.Parsers.HechoParser;
+import domain.business.criterio.CriterioUbicacion;
 import infrastructure.dto.SolicitudEliminacionDTO;
 import lombok.Getter;
 import infrastructure.client.MetaMapaRestClient;
 import domain.business.incidencias.Hecho;
+import infrastructure.dto.FiltroHechosDTO;
+import domain.business.criterio.Criterio;
+import domain.business.criterio.Coleccion;
+import domain.business.criterio.CriterioCategoria;
+
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,24 +32,29 @@ public class FuenteProxy extends FuenteDeDatos {
         this.client = new MetaMapaRestClient(endpointBase, restTemplate);
     }
 
-    public List<Hecho> getHechos() {
-        //return client.getHechos(new HashMap<>());
-        // Temporalmente devolver lista dummy
-        return List.of(
-                new Hecho("id1", "Descripción 1", "Categoría A", 0.0f, 0.0f, LocalDate.now()),
-                new Hecho("id2", "Descripción 2", "Categoría B", 0.0f, 0.0f, LocalDate.now())
+    public void agregarHecho(){}
+
+    public List<Hecho> getHechos(FiltroHechosDTO filtros) {
+        // Obtener todos los hechos desde la fuente externa (dummy o real)
+        List<Hecho> hechos = List.of(
+                new Hecho("id1", "Descripción 1", "A", 0.0f, 0.0f, LocalDate.now()),
+                new Hecho("id2", "Descripción 2", "B", 0.0f, 0.0f, LocalDate.now())
         );
 
+        // Aplicar los criterios generados por el DTO
+        List<Criterio> criterios = filtros.aCriterios();
+        return hechos.stream()
+                .filter(h -> criterios.stream().allMatch(c -> c.cumple(h)))
+                .toList();
     }
 
-    public List<Hecho> getHechosDeColeccion(String handle) {
-        //return client.getHechosDeColeccion(handle, new HashMap<>());
-        // Temporalmente devolver lista dummy
-        return List.of(
-                new Hecho("h1", "Hecho de colección", "Cat", 0.0f, 0.0f, LocalDate.now())
-        );
+    public List<Hecho> getHechosDeColeccion(String handle, FiltroHechosDTO filtros) {
+        //TODO: revisar Por ahora asi
+        Coleccion coleccion = new Coleccion();
 
+        return coleccion.filtrarPorCriterios(filtros.aCriterios());
     }
+
 
     public void solicitarEliminacion(SolicitudEliminacionDTO dto) {
         client.enviarSolicitudEliminacion(dto);
