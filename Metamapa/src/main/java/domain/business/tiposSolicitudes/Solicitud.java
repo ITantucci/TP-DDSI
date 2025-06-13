@@ -4,12 +4,12 @@ import domain.business.incidencias.Hecho;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
 
 public abstract class Solicitud {
   // Atributos
+  @Setter @Getter
   Hecho hechoAfectado;  // Hecho relacionado con la solicitud
+  @Setter @Getter
   EstadoSolicitud estado; // Estado de la solicitud (puede ser un enum o clase)
 
   // Constructor

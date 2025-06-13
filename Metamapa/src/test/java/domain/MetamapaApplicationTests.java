@@ -10,6 +10,7 @@ import domain.business.Usuarios.Usuario;
 import domain.business.criterio.Coleccion;
 import domain.business.criterio.CriterioCategoria;
 import domain.business.criterio.CriterioFecha;
+import domain.business.tiposSolicitudes.EstadoSolicitud;
 import domain.business.tiposSolicitudes.SolicitudEliminacion;
 import java.nio.channels.MulticastChannel;
 import java.util.LinkedList;
@@ -29,9 +30,10 @@ import domain.business.criterio.Criterio;
 
 import domain.business.incidencias.TipoMultimedia;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-@SpringBootTest
+
 class MetamapaTests {
 
 	@Test
@@ -43,16 +45,22 @@ class MetamapaTests {
 		if (!admin.tieneRol(Rol.ADMINISTRADOR)) {
 			throw new IllegalStateException("El usuario no tiene rol de ADMINISTRADOR.");
 		}
+
+		// creamos el agregador y la fuente
 		FuenteDinamica fuente = new FuenteDinamica();
 		fuente.agregarHecho("Incendio en el monumental",
 				"El club atletico River Plate descendio a la primera nacional y sus hinchas quemaron la cancha",
-			"futbol",0,0,);
+			"futbol",0f,0f,LocalDate.of(2011, 6, 26),admin01,false,fuente,new ArrayList<Multimedia>());
 
+		ArrayList<FuenteDeDatos> lista = new ArrayList<FuenteDeDatos>();
+		lista.add(fuente);
 
+		Agregador agregador = new Agregador(lista);
 
+		// creamos la coleccion
+		Coleccion coleccion = new Coleccion("Incendios 2025", "incendios",new ArrayList<Criterio>(),new ArrayList<Criterio>(), agregador);
 
-		Agregador agregador = new Agregador(new ArrayList<>());
-		Coleccion coleccion = new Coleccion("Incendios 2025", "incendios",null,null, null);
+		assertThat(coleccion.getHechos().size()).isEqualTo(1);
 	}
 
 
@@ -65,14 +73,14 @@ class MetamapaTests {
 		if (!admin.tieneRol(Rol.ADMINISTRADOR)) {
 			throw new IllegalStateException("El usuario no tiene rol de ADMINISTRADOR.");
 		}
-		
-		String path = "ruta";
+
+		String path = "C:/Users/lucas/IdeaProjects/TP-DDSI/Metamapa/src/main/resources/desastres_naturales_argentina.csv";
 		CSVHechoParser parser = new CSVHechoParser();
 		FuenteEstatica fuente = new FuenteEstatica(path, parser);
 
 		fuente.cargarCSV();
 
-		assertThat(fuente.getListaHecho()).isNotEmpty();
+		assertThat(fuente.getHechos()).isNotEmpty();
 
 	}
 
@@ -83,6 +91,10 @@ class MetamapaTests {
 		Usuario admin = new Usuario("admin1@frba.utn.edu.ar", "algo", admin01, List.of(Rol.VISUALIZADOR));
 		FuenteDinamica fuenteDinamica = new FuenteDinamica();
 		List<Multimedia> multimedia = new LinkedList<Multimedia>();
+
+		if (!admin.tieneRol(Rol.VISUALIZADOR)) {
+			throw new IllegalStateException("El usuario no tiene rol de VISUALIZADOR.");
+		}
 
 		Hecho h1 = new Hecho("Incendio en Córdoba",
 				"Se detecta foco en zona norte",
@@ -108,12 +120,22 @@ class MetamapaTests {
 				multimedia
 		);
 
+		fuenteDinamica.agregarHecho("Incendio en Córdoba",
+				"Se detecta foco en zona norte",
+				"A",
+				-31.4f,
+				64.2f,LocalDate.of(2025, 6, 12),admin01,false,fuenteDinamica,new ArrayList<Multimedia>());
+
+		fuenteDinamica.agregarHecho("Incendio en BSAs",
+				"Se detecta foco en zona norte",
+				"B",
+				-31.4f,
+				64.2f,LocalDate.of(2025, 6, 12),admin01,false,fuenteDinamica,new ArrayList<Multimedia>());
+
+
 		Agregador agregador = new Agregador(List.of(fuenteDinamica));
-		Coleccion coleccion = new Coleccion("Incendios 2025", "incendios",null,null, agregador);
-		List<Hecho> hechosMostrados = coleccion.filtrarPorCriterios(
-				List.of(),  // sin filtros adicionales
-				List.of()
-		);
+		Coleccion coleccion = new Coleccion("Incendios 2025", "incendios",new ArrayList<Criterio>(),new ArrayList<Criterio>(), agregador);
+		List<Hecho> hechosMostrados = coleccion.getHechos();
 
 		/* ---------- 3. Verificaciones ---------- */
 		assertThat(hechosMostrados)
@@ -132,6 +154,10 @@ public void navegarHechosAplicandoFiltros(){
 	FuenteDinamica fuenteDinamica = new FuenteDinamica();
 	List<Multimedia> multimedia = new LinkedList<Multimedia>();
 
+	if (!admin.tieneRol(Rol.VISUALIZADOR)) {
+		throw new IllegalStateException("El usuario no tiene rol de VISUALIZADOR.");
+	}
+
 	Hecho h1 = new Hecho("Incendio en Córdoba",
 			"Se detecta foco en zona norte",
 			"A",
@@ -143,12 +169,12 @@ public void navegarHechosAplicandoFiltros(){
 			false,
 			multimedia
 	);
-	Hecho h2 = new Hecho("Incendio en Córdoba",
-			"Se detecta foco en zona norte",
+	Hecho h2 = new Hecho("Guerra en BSAs",
+			"Se detecta foco en zona sur",
 			"A",
 			-31.4f,
 			-64.2f,
-			LocalDate.of(2025, 6, 12),
+			LocalDate.of(2026, 6, 10),
 			fuenteDinamica,
 			admin01,
 			false,
@@ -156,11 +182,11 @@ public void navegarHechosAplicandoFiltros(){
 	);
 
 	fuenteDinamica.agregarHecho(
-			"Incendio en BSAs",
+			"Guerra en BSAs",
 			"Se detecta foco en zona sur",
 			"B",
 			-31.4f,-64.2f,
-			LocalDate.of(2025, 6, 12),
+			LocalDate.of(2026, 6, 10),
 			admin01,
 			false,
 			fuenteDinamica, null
@@ -175,53 +201,86 @@ public void navegarHechosAplicandoFiltros(){
 			false,
 			fuenteDinamica, null
 	);
+
 	Agregador agregador = new Agregador(List.of(fuenteDinamica));
-	Coleccion coleccion = new Coleccion("Incendios 2025", "incendios",null,null, agregador);
-	List<Criterio> filtrosPertenencia = List.of(
-			new CriterioCategoria("Incendio"),
-			new CriterioFecha(LocalDate.of(2025, 6, 10),
-					LocalDate.of(2025, 6, 12))
-	);
+	Coleccion coleccion = new Coleccion("Incendios 2025", "incendios",new ArrayList<Criterio>(),new ArrayList<Criterio>(), agregador);
+
+
+	ArrayList<Criterio> filtrosPertenencia = new ArrayList<>();
+	filtrosPertenencia.add(new CriterioCategoria("Incendio"));
+	filtrosPertenencia.add(new CriterioFecha(LocalDate.of(2025, 6, 12),
+			LocalDate.of(2025, 6, 12)));
 
 	// ningún criterio extra de “no pertenencia”
-	List<Criterio> filtrosNoPertenencia = List.of();
+	ArrayList<Criterio> filtrosNoPertenencia =  new ArrayList<>();
 
 	/* ---------- 3. Acción: navegar con filtros ---------- */
-	List<Hecho> resultado = coleccion.filtrarPorCriterios(
-			filtrosPertenencia, filtrosNoPertenencia);
+	coleccion.agregarCriterioPertenencia(new CriterioCategoria("Incendio"));
+	coleccion.agregarCriterioPertenencia(new CriterioFecha(LocalDate.of(2025, 6, 12),
+			LocalDate.of(2026, 6, 12)));
+
+	ArrayList<Hecho> resultado = coleccion.filtrarPorCriterios(
+			coleccion.getCriterioPertenencia(), filtrosNoPertenencia);
 
 	/* ---------- 4. Verificaciones ---------- */
 	assertThat(resultado)
 			.containsExactly(h1)   // solo el hecho que cumple ambos filtros
 			.doesNotContain(h2);
-
 }
 
 
 	// TODO: 5 Como persona contribuyente, deseo poder solicitar la eliminación de un hecho.
-
+@Test
 public void solicitarEliminacionHecho(){
 		Hecho unHecho= new Hecho("incendio", "desc",null,null,null,null,null,null,null,null);
-		Perfil contrib01 = new Perfil("Juan", "Perez", 30);
-		Usuario admin = new Usuario("admin1@frba.utn.edu.ar", "algo", contrib01, List.of(Rol.CONTRIBUYENTE, Rol.VISUALIZADOR));
+		Perfil perfil1 = new Perfil("Juan", "Perez", 30);
+		Usuario user1 = new Usuario("cont1@frba.utn.edu.ar", "algo", perfil1, List.of(Rol.CONTRIBUYENTE, Rol.VISUALIZADOR));
 
-	if (!contrib01.tieneRol(Rol.CONTRIBUYENTE)) {
+	if (!user1.tieneRol(Rol.CONTRIBUYENTE)) {
 		throw new IllegalStateException("El usuario no tiene rol de CONTRIBUYENTE.");
 	}
-
 		SolicitudEliminacion solicitudEliminacion1 = new SolicitudEliminacion(unHecho, "Este hecho no me gusta");
+
+	assertThat(solicitudEliminacion1.getHecho()).isEqualTo(unHecho);
+	assertThat(solicitudEliminacion1.getMotivo()).isEqualTo("Este hecho no me gusta");
 }
 
 	//TODO : 6 Como persona administradora, deseo poder aceptar o rechazar la solicitud de eliminación de un hecho.
-
-	public void manejarSolicitudEliminacion(){
-
-	}
 	@Test
+	public void aceptarSolicitudEliminacion(){
+		Hecho unHecho= new Hecho("incendio", "desc",null,null,null,null,null,null,null,null);
+		SolicitudEliminacion solicitudEliminacion1 = new SolicitudEliminacion(unHecho, "Este hecho no me gusta");
+		Perfil perfil1 = new Perfil("Juan", "Perez", 30);
+		Usuario user1 = new Usuario("admin1@frba.utn.edu.ar", "algo", perfil1, List.of(Rol.CONTRIBUYENTE, Rol.VISUALIZADOR,Rol.ADMINISTRADOR));
+		if (!user1.tieneRol(Rol.ADMINISTRADOR)) {
+			throw new IllegalStateException("El usuario no tiene rol de CONTRIBUYENTE.");
+		}
+		solicitudEliminacion1.aceptarSolicitud();
+		assertEquals(EstadoSolicitud.APROBADA,solicitudEliminacion1.getEstadoSolicitud());
+	}
+
+	@Test
+	public void rechazarSolicitudEliminacion(){
+		Hecho unHecho= new Hecho("incendio", "desc",null,null,null,null,null,null,null,null);
+		SolicitudEliminacion solicitudEliminacion1 = new SolicitudEliminacion(unHecho, "Este hecho no me gusta");
+		Perfil perfil1 = new Perfil("Juan", "Perez", 30);
+		Usuario user1 = new Usuario("admin1@frba.utn.edu.ar", "algo", perfil1, List.of(Rol.CONTRIBUYENTE, Rol.VISUALIZADOR,Rol.ADMINISTRADOR));
+		if (!user1.tieneRol(Rol.ADMINISTRADOR)) {
+			throw new IllegalStateException("El usuario no tiene rol de CONTRIBUYENTE.");
+		}
+		solicitudEliminacion1.rechazarSolicitud();
+		assertEquals(EstadoSolicitud.RECHAZADA,solicitudEliminacion1.getEstadoSolicitud());
+	}
+
+
+	/*@Test
 	void contextLoads() {
-	}
+	}*/
 
-	@Test
+	//Como persona usuaria, quiero poder obtener todos los hechos de una fuente proxy demo configurada
+	//en una colección, con un nivel de antigüedad máximo de una hora.
+
+	/*@Test
 	public void testFuenteDemo(){
 		FuenteDeDatos fuenteDemo = new FuenteProxy("", new HechoParser() {
 			@Override
@@ -229,7 +288,7 @@ public void solicitarEliminacionHecho(){
 				return ArrayList.of();
 			}
 		});
-	}
+	}*/
 
 
 //Como persona contribuyente, deseo poder crear un hecho a partir de una fuente dinámica.
@@ -268,4 +327,10 @@ public void solicitarEliminacionHecho(){
 		assertThat(nuevo.getFechaCarga()).isToday();
 
 	}
+
+// TODO: Como persona usuaria, quiero poder obtener todos los hechos de las fuentes MetaMapa
+//configuradas en cada colección, en tiempo real.
+
+	//TODO: El Sistema debe permitir el rechazo de solicitudes de eliminación en forma automática cuando se
+	//detecta que se trata de spam.
 }

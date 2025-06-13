@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import infrastructure.dto.HechoDTO;
+//import infrastructure.dto.HechoDTO;
 
 import lombok.Getter;
 import org.javatuples.Pair;

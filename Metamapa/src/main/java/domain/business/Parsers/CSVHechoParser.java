@@ -4,7 +4,7 @@ import domain.business.incidencias.Hecho;
 import domain.business.Parsers.HechoParser;
 import domain.business.incidencias.Ubicacion;
 
-import infrastructure.dto.HechoDTO;
+//import infrastructure.dto.HechoDTO;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -12,13 +12,19 @@ import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.List;
 import java.time.LocalDate;
-
+import com.opencsv.CSVParser;
+import com.opencsv.CSVParserBuilder;
 
 
 public class CSVHechoParser implements HechoParser {
     @Override
     public ArrayList<Hecho> parsearHecho(String path) {
         ArrayList<Hecho> listaHecho = new ArrayList<Hecho>();
+
+        CSVParser parser = new CSVParserBuilder()
+                .withSeparator(',')
+                .withQuoteChar('"')
+                .build();
 
         try (BufferedReader br = new BufferedReader(new FileReader(path))) {
             String linea;
@@ -30,7 +36,7 @@ public class CSVHechoParser implements HechoParser {
                     continue; // salteamos el encabezado
                 }
 
-                String[] campos = linea.split(",");
+                String[] campos = parser.parseLine(linea);
 
                 // El formato del archivo debe tener 6 columnas
                 if (campos.length < 6) {

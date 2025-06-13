@@ -29,7 +29,7 @@ public class JSONHechoParser implements HechoParser {
       return mapper.readValue(new File(path), new TypeReference<ArrayList<Hecho>>() {});
     } catch (Exception e) {
       System.out.println("Error al leer el archivo JSON: " + e.getMessage());
-      return ArrayList.of(); // Devuelve lista vacía en caso de error
+      return new ArrayList<>(); // Devuelve lista vacía en caso de error
     }
   }
 }

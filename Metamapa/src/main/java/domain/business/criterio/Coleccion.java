@@ -7,6 +7,7 @@ import domain.business.incidencias.Hecho;
 import java.util.*;
 //import org.apache.commons.lang
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class Coleccion {
     @Getter
@@ -14,15 +15,15 @@ public class Coleccion {
     @Getter
     private String descripcion;
     @Getter
-    private List<Criterio> criterioPertenencia;
+    private ArrayList<Criterio> criterioPertenencia;
     @Getter
-    private List<Criterio> criterioNoPertenencia;
+    private ArrayList<Criterio> criterioNoPertenencia;
     @Getter
     private Agregador agregador;
     @Getter
-    private String handle; 
+    private String handle;
 
-    public Coleccion(String titulo, String desc, List<Criterio> pertenencia, List<Criterio> noPertenencia,Agregador agregador){
+    public Coleccion(String titulo, String desc,ArrayList<Criterio> pertenencia,ArrayList<Criterio> noPertenencia,Agregador agregador){
         this.titulo=titulo;
         this.descripcion = desc;
         this.criterioPertenencia = pertenencia;
@@ -46,37 +47,40 @@ public class Coleccion {
     }
 
 
-    /*public List<Hecho> filtrarPorCriterios(){
-        List<Hecho> hechos = agregador.getListaDeHechos();
+    /*publicArrayList<Hecho> filtrarPorCriterios(){
+       ArrayList<Hecho> hechos = agregador.getListaDeHechos();
         return hechos.stream()
             .filter(h -> this.getCriterioPertenencia().stream().allMatch(c -> c.cumple(h)))
             .filter(h -> this.getCriterioNoPertenencia().stream().noneMatch(c -> c.cumple(h)))
             .toList();
     }
-    public List<Hecho> filtrarPorCriterios(List<Criterio> criterioPertenenciaAdicional, List<Criterio> criterioNoPertenenciaAdicional){
-        List<Hecho> hechos = agregador.getListaDeHechos();
+    publicArrayList<Hecho> filtrarPorCriterios(List<Criterio> criterioPertenenciaAdicional,ArrayList<Criterio> criterioNoPertenenciaAdicional){
+       ArrayList<Hecho> hechos = agregador.getListaDeHechos();
         return hechos.stream()
             .filter(h -> this.getCriterioPertenencia().add(criterioPertenenciaAdicional).stream().allMatch(c -> c.cumple(h)))
             .filter(h -> this.getCriterioNoPertenencia().add(criterioNoPertenenciaAdicional).stream().noneMatch(c -> c.cumple(h)))
             .toList();
     }*/
 
-    public List<Hecho> filtrarPorCriterios(List<Criterio> criterioPertenenciaAdicional, List<Criterio> criterioNoPertenenciaAdicional) {
-        List<Hecho> hechos = agregador.getListaDeHechos();
+    public ArrayList<Hecho> filtrarPorCriterios(ArrayList<Criterio> criterioPertenenciaAdicional, ArrayList<Criterio> criterioNoPertenenciaAdicional) {
+       ArrayList<Hecho> hechos = agregador.getListaDeHechos();
 
-        List<Criterio> criteriosPertenenciaCombinados = new ArrayList<>(this.getCriterioPertenencia());
+        ArrayList<Criterio> criteriosPertenenciaCombinados = new ArrayList<Criterio>(this.getCriterioPertenencia());
         if (!criterioPertenenciaAdicional.isEmpty())
             criteriosPertenenciaCombinados.addAll(criterioPertenenciaAdicional);
 
-        List<Criterio> criteriosNoPertenenciaCombinados = new ArrayList<>(this.getCriterioNoPertenencia());
+       ArrayList<Criterio> criteriosNoPertenenciaCombinados = new ArrayList<Criterio>(this.getCriterioNoPertenencia());
         if (!criterioNoPertenenciaAdicional.isEmpty())
             criteriosNoPertenenciaCombinados.addAll(criterioNoPertenenciaAdicional);
 
         return hechos.stream()
             .filter(h -> criteriosPertenenciaCombinados.stream().allMatch(c -> c.cumple(h)))
-            .filter(h -> criteriosNoPertenenciaCombinados.stream().noneMatch(c -> c.cumple(h)))
-            .toList();
+            .filter(h -> criteriosNoPertenenciaCombinados.stream().noneMatch(c -> c.cumple(h))).collect(Collectors.toCollection(ArrayList::new));
     }
 
+    public ArrayList<Hecho> getHechos()
+    {
+        return filtrarPorCriterios(new ArrayList<Criterio>(),new ArrayList<Criterio>());
+    }
 
 }

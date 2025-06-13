@@ -10,6 +10,7 @@ import lombok.Setter;
 public class Metamapa {
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(Metamapa.class, args);
 	}
 
