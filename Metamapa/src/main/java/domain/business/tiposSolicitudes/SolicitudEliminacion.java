@@ -17,7 +17,7 @@ public class SolicitudEliminacion extends Solicitud{
     }
 
     if (DetectorDeSpam.esSpam(motivo)) {
-      this.rechazarSolicitud();
+      this.estado = EstadoSolicitud.RECHAZADA;
       return;
     }
 

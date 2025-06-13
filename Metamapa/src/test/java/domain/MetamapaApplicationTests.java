@@ -1,6 +1,6 @@
 package domain;
 
-import ch.qos.logback.core.joran.sanity.Pair;
+
 import domain.business.FuentesDeDatos.FuenteDeDatos;
 import domain.business.FuentesDeDatos.FuenteEstatica;
 import domain.business.Parsers.CSVHechoParser;
@@ -12,23 +12,17 @@ import domain.business.criterio.CriterioCategoria;
 import domain.business.criterio.CriterioFecha;
 import domain.business.tiposSolicitudes.EstadoSolicitud;
 import domain.business.tiposSolicitudes.SolicitudEliminacion;
-import java.nio.channels.MulticastChannel;
 import java.util.LinkedList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import domain.business.FuentesDeDatos.FuenteDinamica;
-import domain.business.FuentesDeDatos.FuenteProxy;
 import domain.business.Usuarios.Rol;
 import domain.business.incidencias.Hecho;
 import domain.business.incidencias.Multimedia;
 import domain.business.Agregador.Agregador;
 import java.util.ArrayList;
-import domain.business.incidencias.Ubicacion;
 import java.time.LocalDate;
 import domain.business.criterio.Criterio;
-
-import domain.business.incidencias.TipoMultimedia;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -310,12 +304,11 @@ public void solicitarEliminacionHecho(){
 
 	}
 
-// TODO: Como persona usuaria, quiero poder obtener todos los hechos de las fuentes MetaMapa
-//configuradas en cada colección, en tiempo real.
+// TODO: Como persona usuaria, quiero poder obtener todos los hechos de las fuentes MetaMapa configuradas en cada colección, en tiempo real.
+	public void obtenerTodosLosHechos(){
 
-	//TODO: El Sistema debe permitir el rechazo de solicitudes de eliminación en forma automática cuando se
-	//detecta que se trata de spam.
-
+	}
+	// El Sistema debe permitir el rechazo de solicitudes de eliminación en forma automática cuando se detecta que se trata de spam.
 	@Test
 
 	public void rechazarSolicitudPorSpam(){
