@@ -4,18 +4,21 @@ import domain.business.incidencias.Hecho;
 import domain.business.Parsers.HechoParser;
 import domain.business.incidencias.Ubicacion;
 
+import infrastructure.dto.HechoDTO;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
 import java.time.LocalDate;
 
 
+
 public class CSVHechoParser implements HechoParser {
     @Override
-    public List<Hecho> parsearHecho(String path) {
-        List<Hecho> listaHecho = new ArrayList<Hecho>();
+    public ArrayList<Hecho> parsearHecho(String path) {
+        ArrayList<Hecho> listaHecho = new ArrayList<Hecho>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(path))) {
             String linea;
@@ -40,9 +43,9 @@ public class CSVHechoParser implements HechoParser {
                 String categoria = campos[2].trim();
                 Float latitud = Float.parseFloat(campos[3].trim());
                 Float longitud = Float.parseFloat(campos[4].trim());
-                LocalDate fechaHecho = LocalDate.parse(campos[5].trim()); // Formato YYYY-MM-DD
+                LocalDate fechaHecho = LocalDate.parse(campos[5].trim()); // Formato DD/MM/YYYY
 
-                Hecho hecho = new Hecho(titulo, descripcion, categoria, latitud, longitud, fechaHecho);
+                Hecho hecho = new Hecho(titulo,descripcion, categoria, latitud, longitud, fechaHecho,null,null,null, new ArrayList<>());
                 // TODO: revisar Deberiamos inicializar en NULL el resto de los campos del contructor del hecho???
                 listaHecho.add(hecho);
             }
@@ -52,4 +55,3 @@ public class CSVHechoParser implements HechoParser {
         return listaHecho;
     }
 }
-

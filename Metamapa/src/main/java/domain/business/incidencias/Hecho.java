@@ -1,17 +1,16 @@
 package domain.business.incidencias;
-
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import domain.business.FuentesDeDatos.FuenteDeDatos;
 import domain.business.Usuarios.Perfil;
 import domain.business.tiposSolicitudes.SolicitudEdicion;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.time.LocalDate;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
+import org.javatuples.Pair;
 
 public class Hecho {
   @Getter
@@ -28,35 +27,36 @@ public class Hecho {
   private final LocalDate fechaCarga;
   @Getter
   private LocalDate fechaModificacion;
-  @Getter
+  @Getter @Setter
   private FuenteDeDatos fuenteDeDatos;
-  @Getter
+  @Getter @Setter
   private Perfil autor;
-  @Getter
+  @Getter @Setter
   private Boolean anonimo;
   @Getter @Setter
   private Boolean eliminado;
-  @Getter
-  private ArrayList<Multimedia> multimedia;
-  @Getter
+  @Getter @Setter
+  private List<Multimedia> multimedia;
+  @Getter @Setter
   private HashMap<String,String> metadata;
 
 
-  //TODO: revisar constructor modificado con menos atributos??
-
-  public Hecho(String titulo, String desc, String categoria, Float latitud, Float longitud, LocalDate fechaHecho) {
+  //TODO: Chequear si Categoria lo modelamos como string o un enum
+  public Hecho(String titulo, String descripcion, String categoria, Float latitud, Float longitud, LocalDate fechaHecho, FuenteDeDatos fuenteDeDatos, Perfil autor, Boolean anonimo,List<Multimedia>multimedia) {
     this.titulo = titulo;
-    this.descripcion = desc;
+    this.descripcion = descripcion;
     this.categoria = categoria;
     this.ubicacion = new Ubicacion(latitud,longitud);
     this.fechaHecho = fechaHecho;
     this.fechaCarga = LocalDate.now();
     this.fechaModificacion = LocalDate.now();
-    this.fuenteDeDatos = null;
-    this.autor = null;
-    this.anonimo = false;
+    this.fuenteDeDatos = fuenteDeDatos;
+    this.autor = autor;
+    this.anonimo = anonimo;
     this.eliminado = false;
-    this.multimedia = new ArrayList<>();
+    this.multimedia = multimedia;
+    //ArrayList<Pair<TipoMultimedia, String>> tuplaMultimedia
+    //this.multimedia = tuplaMultimedia.stream().map(p -> new Multimedia(p.getValue0(),p.getValue1())).collect(Collectors.toCollection(ArrayList::new));
     this.metadata = new HashMap<>();
   }
 

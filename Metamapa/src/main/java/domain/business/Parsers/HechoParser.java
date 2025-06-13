@@ -1,9 +1,10 @@
 package domain.business.Parsers;
 
 import domain.business.incidencias.Hecho;
+import java.util.ArrayList;
 import java.util.List;
 
 public interface HechoParser {
 
-    List<Hecho> parsearHecho(String path);
+    ArrayList<Hecho> parsearHecho(String path);
 }

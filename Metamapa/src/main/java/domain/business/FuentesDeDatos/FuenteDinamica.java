@@ -6,18 +6,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import lombok.Getter;
-
+import java.util.List;
 public class FuenteDinamica extends FuenteDeDatos{
-
-  @Getter
-  String nombre;
-
-  @Getter
-  LinkedList<Hecho> listaHecho;
 
   public FuenteDinamica() {
     this.nombre = "Fuente Dinamica";
-    this.listaHecho = new LinkedList<>();
+    this.hechos =  new ArrayList<>();
   }
 
   public void agregarHecho(String titulo, String desc, String categoria, Float latitud, Float longitud, LocalDate fechaHecho, Perfil

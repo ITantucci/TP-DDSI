@@ -11,6 +11,8 @@ public class CriterioTitulo implements Criterio {
   public CriterioTitulo(String titulo) {
     this.titulo = titulo;
   }
+
+  @Override
   public boolean cumple(Hecho hechoAValidar){
     String tituloAValidar = hechoAValidar.getTitulo();
 

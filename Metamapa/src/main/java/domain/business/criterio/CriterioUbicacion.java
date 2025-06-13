@@ -15,6 +15,7 @@ public class CriterioUbicacion implements Criterio{
     this.longitud = longitud;
   }
 
+  @Override
   public boolean cumple(Hecho hechoAValidar) {
     Ubicacion ubicacionAValidar = hechoAValidar.getUbicacion();
 

@@ -12,13 +12,13 @@ public class Perfil {
   @Getter
   private String apellido;
   @Getter
-  private String edad;
+  private Integer edad;
   @Getter
   private List<SolicitudEliminacion> solicitudesDeEliminacion;
   @Getter
   private List<SolicitudEdicion> solicitudesDeEdicion;
 
-  public Perfil(String nombre, String apellido, String edad) {
+  public Perfil(String nombre, String apellido, Integer edad) {
     this.nombre = nombre;
     this.apellido = apellido;
     this.edad = edad;
