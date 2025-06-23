@@ -1,10 +1,6 @@
 package domain.business.Parsers;
-
-import java.lang.reflect.Array;
-import java.util.List;
 import java.util.ArrayList;
 import domain.business.incidencias.Hecho;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,7 +15,7 @@ public class JSONHechoParser implements HechoParser {
 
     return listaHecho;
   }*/
-  public ArrayList<Hecho> parsearHecho(String path) {
+  public ArrayList<Hecho> parsearHechos(String path) {
     ObjectMapper mapper = new ObjectMapper();
     mapper.registerModule(new JavaTimeModule()); // Para LocalDate
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // Ignorar campos extra

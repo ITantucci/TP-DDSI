@@ -1,9 +1,7 @@
 package domain;
-
 import domain.business.FuentesDeDatos.FuenteDeDatos;
 import domain.business.FuentesDeDatos.FuenteEstatica;
 import domain.business.Parsers.CSVHechoParser;
-import domain.business.Parsers.HechoParser;
 import domain.business.Usuarios.Perfil;
 import domain.business.Usuarios.Usuario;
 import domain.business.criterio.Coleccion;
@@ -22,12 +20,10 @@ import domain.business.Agregador.Agregador;
 import java.util.ArrayList;
 import java.time.LocalDate;
 import domain.business.criterio.Criterio;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MetamapaTests {
-
   @Test
   // 1- Como persona administradora, deseo crear una colección.
   public void crearColeccion() {
@@ -40,9 +36,9 @@ class MetamapaTests {
 
     // creamos el agregador y la fuente
     FuenteDinamica fuente = new FuenteDinamica();
-    fuente.agregarHecho("Incendio en el monumental",
-        "El club atletico River Plate descendio a la primera nacional y sus hinchas quemaron la cancha",
-        "futbol", 0f, 0f, LocalDate.of(2011, 6, 26), admin01, false, fuente, new ArrayList<Multimedia>());
+    fuente.agregarHecho("Incendio",
+        "",
+        "incendios", 0f, 0f, LocalDate.of(2021, 6, 26), admin01, false,  new ArrayList<Multimedia>());
 
     ArrayList<FuenteDeDatos> lista = new ArrayList<FuenteDeDatos>();
     lista.add(fuente);
@@ -66,13 +62,12 @@ class MetamapaTests {
       throw new IllegalStateException("El usuario no tiene rol de ADMINISTRADOR.");
     }
 
-    //String path = "C:/Users/lucas/IdeaProjects/TP-DDSI/Metamapa/src/main/resources/desastres_naturales_argentina.csv";
-    String path = "C:/Nacho/Facu/2025/DDS/TP-DDSI/Metamapa/src/main/resources/desastres_naturales_argentina.csv";
-//    String path = "C:/Users/IgnacioJavierTantucc/Desktop/DDSI/TP-DDSI/Metamapa/src/main/resources/desastres_naturales_argentina.csv";
+    //path relativo
+    String path = "src/main/resources/desastres_naturales_argentina.csv";
     CSVHechoParser parser = new CSVHechoParser();
     FuenteEstatica fuente = new FuenteEstatica(path, parser);
 
-    fuente.cargarCSV();
+    fuente.cargarCSV(path);
     assertThat(fuente.getHechos()).isNotEmpty();
     System.out.println("La fuente " + fuente.getNombre() + " no esta vacia, tiene " + fuente.getHechos().size() + " hechos cargados de un CSV");
 
@@ -96,7 +91,6 @@ class MetamapaTests {
         -31.4f,
         -64.2f,
         LocalDate.of(2025, 6, 12),
-        fuenteDinamica,
         admin01,
         false,
         multimedia
@@ -110,7 +104,6 @@ class MetamapaTests {
         -31.4f,
         -64.2f,
         LocalDate.of(2025, 6, 12),
-        fuenteDinamica,
         admin01,
         false,
         multimedia
@@ -154,7 +147,6 @@ class MetamapaTests {
         -31.4f,
         -64.2f,
         LocalDate.of(2025, 7, 12),
-        fuenteDinamica,
         admin01,
         false,
         multimedia
@@ -166,7 +158,6 @@ class MetamapaTests {
         -31.4f,
         -64.2f,
         LocalDate.of(2026, 6, 10),
-        fuenteDinamica,
         admin01,
         false,
         multimedia
@@ -204,7 +195,7 @@ class MetamapaTests {
   // 5 - Como persona contribuyente, deseo poder solicitar la eliminación de un hecho.
   @Test
   public void solicitarEliminacionHecho() {
-    Hecho unHecho = new Hecho("incendio", "desc", null, null, null, null, null, null, null, null);
+    Hecho unHecho = new Hecho("incendio", "desc", null, null, null, null, null, null, null);
     Perfil perfil1 = new Perfil("Juan", "Perez", 30);
     Usuario user1 = new Usuario("cont1@frba.utn.edu.ar", "algo", perfil1, List.of(Rol.CONTRIBUYENTE, Rol.VISUALIZADOR));
 
@@ -220,7 +211,7 @@ class MetamapaTests {
   // 6 - Como persona administradora, deseo poder aceptar o rechazar la solicitud de eliminación de un hecho.
   @Test
   public void aceptarSolicitudEliminacion() {
-    Hecho unHecho = new Hecho("incendio", "desc", null, null, null, null, null, null, null, null);
+    Hecho unHecho = new Hecho("incendio", "desc", null, null, null, null, null, null, null);
     SolicitudEliminacion solicitudEliminacion1 = new SolicitudEliminacion(unHecho, "Motivo que no contiene SPAM y no deberia rechazar la solicitud");
     Perfil perfil1 = new Perfil("Juan", "Perez", 30);
     Usuario user1 = new Usuario("admin1@frba.utn.edu.ar", "algo", perfil1, List.of(Rol.CONTRIBUYENTE, Rol.VISUALIZADOR, Rol.ADMINISTRADOR));
@@ -234,7 +225,7 @@ class MetamapaTests {
 
   @Test
   public void rechazarSolicitudEliminacion() {
-    Hecho unHecho = new Hecho("incendio", "desc", null, null, null, null, null, null, null, null);
+    Hecho unHecho = new Hecho("incendio", "desc", null, null, null, null, null, null, null);
     SolicitudEliminacion solicitudEliminacion1 = new SolicitudEliminacion(unHecho, "Motivo que no contiene SPAM y no deberia rechazar la solicitud");
     Perfil perfil1 = new Perfil("Juan", "Perez", 30);
     Usuario user1 = new Usuario("admin1@frba.utn.edu.ar", "algo", perfil1, List.of(Rol.CONTRIBUYENTE, Rol.VISUALIZADOR, Rol.ADMINISTRADOR));
@@ -275,7 +266,6 @@ class MetamapaTests {
         -31.4f,
         -64.2f,
         LocalDate.of(2025, 6, 12),
-        fuenteDinamica,
         perfilTest,
         false,
         multimedia
@@ -296,7 +286,7 @@ class MetamapaTests {
   @Test
 
   public void rechazarSolicitudPorSpam() {
-    Hecho unHecho = new Hecho("incendio", "desc", null, null, null, null, null, null, null, null);
+    Hecho unHecho = new Hecho("incendio", "desc", null, null, null,  null, null, null, null);
     SolicitudEliminacion solicitudEliminacion1 = new SolicitudEliminacion(unHecho, "Esta solicitud es Spam");
     assertEquals(EstadoSolicitud.RECHAZADA, solicitudEliminacion1.getEstadoSolicitud());
     System.out.println("Solicitud rechazada por Spam: " + solicitudEliminacion1);

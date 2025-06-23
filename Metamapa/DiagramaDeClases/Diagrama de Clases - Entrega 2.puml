@@ -1,25 +1,28 @@
 @startuml asd
 'https://plantuml.com/sequence-diagram
-
 skinparam linetype ortho
+skinparam arrowthickness 2
+skinparam classFontSize 17
+skinparam classAttributeFontSize 15
 
 Hecho o-right- Multimedia
 Hecho o-left- Perfil
 Hecho --* FuenteDeDatos
 Hecho *-right- Ubicacion
-Hecho -up-* SolicitudEliminacion
+'Hecho -up-* SolicitudEliminacion
 Multimedia -right- TipoMultimedia
 Perfil *-up- Usuario
 Usuario -up- Rol
 Perfil o-right- SolicitudEliminacion
+Perfil --> SolicitudEdicion
 Solicitud -right- EstadoSolicitud
 SolicitudEliminacion <-up- DetectorDeSpam
 'FuenteDeDatos --* Coleccion
 FuenteProxy *-- HechoParser
 FuenteEstatica *-- HechoParser
 Criterio -up-* Coleccion
-SolicitudEdicion --* Hecho
-
+'SolicitudEdicion --* Hecho
+Hecho<--Solicitud
 Coleccion -down- Agregador
 Agregador -- FuenteDeDatos
 Agregador -- Hecho
@@ -93,10 +96,10 @@ class FuenteDinamica extends FuenteDeDatos{
 
 '-----------------Fuentes de datos Estatica----------------
 class FuenteEstatica extends FuenteDeDatos{
-    +pathCSV: String
+    '+pathCSV: String
     -parser: HechoParser
     {method}agregarHecho()
-    {method}cargarCSV()
+    {method}cargarCSV(path: String)
 
 }
 
@@ -109,13 +112,22 @@ class CsvHechoParser implements HechoParser{
 class FuenteProxy extends FuenteDeDatos{
     +endpointBase: String
     -parser: HechoParser
-    {method}agregarHecho()
-    {method}getHechosDeColeccion()
-    {method}solicitarEliminacion()
+    '{method}agregarHecho()
+    '{method}getHechosDeColeccion()
+    '{method}solicitarEliminacion()
+}
+
+class FuenteDemo extends FuenteProxy{
+    +conexion: Conexion
+    +fechaUltimaConsulta: LocalDateTime
+    {method}actualizarHechos()
+}
+
+class FuenteMetamapa extends FuenteProxy{
 }
 
 class JsonHechoParser implements HechoParser{
-    {method}parsearHecho(path)
+    {method}parsearHecho(path: String)
 }
 
 '-----------------Colecciones----------------

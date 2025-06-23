@@ -1,25 +1,17 @@
 package domain.business.Parsers;
-
 import domain.business.incidencias.Hecho;
-import domain.business.Parsers.HechoParser;
-import domain.business.incidencias.Ubicacion;
-
 //import infrastructure.dto.HechoDTO;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.HashMap;
-import java.util.List;
 import java.time.LocalDate;
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 
-
 public class CSVHechoParser implements HechoParser {
     @Override
-    public ArrayList<Hecho> parsearHecho(String path) {
+    public ArrayList<Hecho> parsearHechos(String path) {
         ArrayList<Hecho> listaHecho = new ArrayList<Hecho>();
 
         CSVParser parser = new CSVParserBuilder()
@@ -45,7 +37,6 @@ public class CSVHechoParser implements HechoParser {
                     continue;
                 }
 
-
                 String titulo = campos[0].trim();
                 String descripcion = campos[1].trim();
                 String categoria = campos[2].trim();
@@ -53,7 +44,7 @@ public class CSVHechoParser implements HechoParser {
                 Float longitud = Float.parseFloat(campos[4].trim());
                 LocalDate fechaHecho = LocalDate.parse(campos[5].trim(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
-                Hecho hecho = new Hecho(titulo,descripcion, categoria, latitud, longitud, fechaHecho,null,null,null, new ArrayList<>());
+                Hecho hecho = new Hecho(titulo,descripcion, categoria, latitud, longitud, fechaHecho,null,null, new ArrayList<>());
                 // TODO: revisar Deberiamos inicializar en NULL el resto de los campos del contructor del hecho???
                 listaHecho.add(hecho);
             }

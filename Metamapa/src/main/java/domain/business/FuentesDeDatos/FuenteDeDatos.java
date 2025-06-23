@@ -25,7 +25,7 @@ public abstract class FuenteDeDatos {
 /*  LinkedList<Hecho> listaHecho;*/
   public ArrayList<Hecho> hechos;
 
-   void agregarHecho(String titulo, String descripcion, String categoria, Float latitud, Float longitud, LocalDate fechaHecho, FuenteDeDatos fuenteDeDatos, Perfil autor, Boolean anonimo, Boolean eliminado, ArrayList<Pair<TipoMultimedia,String>> multimedia)
+   void agregarHecho(String titulo, String descripcion, String categoria, Float latitud, Float longitud, LocalDate fechaHecho , Perfil autor, Boolean anonimo, Boolean eliminado, ArrayList<Pair<TipoMultimedia,String>> multimedia)
    {
    }
 }
@@ -35,4 +35,3 @@ public abstract class FuenteDeDatos {
     hechos.stream().map(h->agregarHecho(h.getTitulo(), h.getDescripcion(), h.getCategoria(), h.getUbicacion().getLatitud(), h.getUbicacion().getLongitud(), h.getFechaHecho(),))
   }
 }*/
-

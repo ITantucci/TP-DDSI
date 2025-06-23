@@ -11,14 +11,14 @@ import lombok.Getter;
 
 public class FuenteEstatica extends FuenteDeDatos{
 
-  @Getter
-  private String pathCSV;
+  //@Getter
+  //private String pathCSV;
 
   @Getter
   private HechoParser parser;
-  public FuenteEstatica(String pathCSV, HechoParser parser){
-    this.nombre = FilenameUtils.getBaseName(pathCSV);
-    this.pathCSV = pathCSV;
+  public FuenteEstatica( String nombre, HechoParser parser){
+    this.nombre = nombre;
+   // this.pathCSV = pathCSV;
     this.parser = parser;
     this.hechos = new ArrayList<>();
   }
@@ -26,11 +26,10 @@ public class FuenteEstatica extends FuenteDeDatos{
 
   public void agregarHecho(){throw new UnsupportedOperationException("Not supported yet.");};
 
-  public void cargarCSV(){
-    ArrayList<Hecho> hechosParseados = parser.parsearHecho(this.pathCSV);
+  public void cargarCSV(String pathCSV){
+    ArrayList<Hecho> hechosParseados = parser.parsearHechos(pathCSV);
     for (Hecho h : hechosParseados) {
-      h.setFuenteDeDatos(this);
-      h.setAutor(null);
+      h.setPerfil(null);
       h.setAnonimo(false);
     }
     this.hechos = hechosParseados;

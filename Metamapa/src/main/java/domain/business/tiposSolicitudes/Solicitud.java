@@ -1,9 +1,7 @@
 package domain.business.tiposSolicitudes;
 import domain.business.incidencias.Hecho;
-
 import lombok.Getter;
 import lombok.Setter;
-
 
 public abstract class Solicitud {
   // Atributos

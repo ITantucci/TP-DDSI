@@ -1,11 +1,8 @@
 package domain.business.tiposSolicitudes;
 import domain.business.incidencias.Hecho;
-
 import lombok.Getter;
 
-
 public class SolicitudEliminacion extends Solicitud{
-
   @Getter
   public String motivo;
 

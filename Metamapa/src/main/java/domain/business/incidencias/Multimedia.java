@@ -1,5 +1,4 @@
 package domain.business.incidencias;
-
 import lombok.Getter;
 
 public class Multimedia {

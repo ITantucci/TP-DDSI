@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 public class SolicitudEdicion extends Solicitud{
-
   @Getter
   private String tituloMod;
   @Getter

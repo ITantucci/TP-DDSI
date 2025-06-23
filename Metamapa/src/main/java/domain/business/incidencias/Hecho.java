@@ -3,7 +3,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import domain.business.FuentesDeDatos.FuenteDeDatos;
 import domain.business.Usuarios.Perfil;
 import domain.business.tiposSolicitudes.SolicitudEdicion;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.time.LocalDate;
@@ -28,9 +27,7 @@ public class Hecho {
   @Getter
   private LocalDate fechaModificacion;
   @Getter @Setter
-  private FuenteDeDatos fuenteDeDatos;
-  @Getter @Setter
-  private Perfil autor;
+  private Perfil perfil;
   @Getter @Setter
   private Boolean anonimo;
   @Getter @Setter
@@ -42,7 +39,17 @@ public class Hecho {
 
 
   //TODO: Chequear si Categoria lo modelamos como string o un enum
-  public Hecho(String titulo, String descripcion, String categoria, Float latitud, Float longitud, LocalDate fechaHecho, FuenteDeDatos fuenteDeDatos, Perfil autor, Boolean anonimo,List<Multimedia>multimedia) {
+  public Hecho(
+      String titulo,
+      String descripcion,
+      String categoria,
+      Float latitud,
+      Float longitud,
+      LocalDate fechaHecho,
+      Perfil perfil,
+      Boolean anonimo,
+      List<Multimedia>multimedia) {
+
     this.titulo = titulo;
     this.descripcion = descripcion;
     this.categoria = categoria;
@@ -50,8 +57,7 @@ public class Hecho {
     this.fechaHecho = fechaHecho;
     this.fechaCarga = LocalDate.now();
     this.fechaModificacion = LocalDate.now();
-    this.fuenteDeDatos = fuenteDeDatos;
-    this.autor = autor;
+    this.perfil = perfil;
     this.anonimo = anonimo;
     this.eliminado = false;
     this.multimedia = multimedia;
@@ -88,24 +94,6 @@ public class Hecho {
       throw new RuntimeException("Esa etiqueta ya existe");
     }else this.metadata.put(key,value);
   }
-  // TODO: agregar al diagrama de clases, rta Que es actualizarse?
-//  public void actualizarse(String )
-//  {
-//
-//  }
 
-  @JsonIgnore
-  public String getNombreAutor() {
-    if (this.getFuenteDeDatos() == null) {
-      return "Fuente desconocida";
-    }
 
-    if (!this.getFuenteDeDatos().getClass().getSimpleName().equals("FuenteDinamica")) {
-      return this.getFuenteDeDatos().getNombre();
-    }
-
-    return this.getAutor() != null
-            ? this.getAutor().getNombre() + " " + this.getAutor().getApellido()
-            : "Autor desconocido";
-  }
 }

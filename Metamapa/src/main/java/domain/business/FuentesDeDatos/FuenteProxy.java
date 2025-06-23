@@ -1,6 +1,7 @@
 package domain.business.FuentesDeDatos;
 
 import domain.business.Parsers.HechoParser;
+import java.net.URL;
 import lombok.Getter;
 import org.springframework.web.client.RestTemplate;
 import java.util.List;
@@ -12,23 +13,18 @@ import java.time.LocalDate;
 
 public class FuenteProxy extends FuenteDeDatos {
     @Getter
-    private String endpointBase;
+    public URL endpointBase;
     @Getter
-    private HechoParser parser;
+    public HechoParser parser;
 
-    public FuenteProxy(String endpointBase, HechoParser parser) {
+    public FuenteProxy(URL endpointBase, HechoParser parser) {
         this.endpointBase = endpointBase;
         this.parser = parser;
     }
-
     public void agregarHecho() {
     }
-
     public void getHechosDeColeccion() {
-
     }
-
     public void solicitarEliminacion() {
     }
-
 }

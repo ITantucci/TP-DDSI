@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
 @RestController
-
 public class controllerSolicitudes {
   public static void main(String[] args) {
     //SpringApplication.run(testApplication.class, args);
@@ -19,8 +18,10 @@ public class controllerSolicitudes {
     app.run(args);
   }
 
-  @GetMapping("/solicitudesEliminacion")
+  /*@GetMapping("/solicitudesEliminacion")
   public String solicitudesEliminacion(@RequestParam(value = "nombre", defaultValue = "") String nombre, @RequestParam(value = "Estado",defaultValue = "Pendiente") String estado) {
-
-  }
+return "as";
+  } */
 }
+
+

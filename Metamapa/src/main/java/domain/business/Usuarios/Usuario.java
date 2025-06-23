@@ -2,7 +2,6 @@ package domain.business.Usuarios;
 import java.util.List;
 import lombok.Getter;
 
-
 public class Usuario {
   @Getter
   private String email;
@@ -23,7 +22,5 @@ public class Usuario {
   public Boolean tieneRol(Rol rol) {
     return this.getRoles().contains(rol);
   }
-
-
 
 }

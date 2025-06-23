@@ -1,10 +1,12 @@
 package domain.business.Parsers;
 
+import domain.business.FuentesDeDatos.FuenteDeDatos;
 import domain.business.incidencias.Hecho;
 import java.util.ArrayList;
 import java.util.List;
 
 public interface HechoParser {
 
-    ArrayList<Hecho> parsearHecho(String path);
+    ArrayList<Hecho> parsearHechos(String path);
+
 }

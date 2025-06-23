@@ -1,7 +1,5 @@
 package domain.business.Agregador;
-
 import domain.business.FuentesDeDatos.FuenteDeDatos;
-import domain.business.criterio.CriterioFuenteDeDatos;
 import java.util.ArrayList;
 import lombok.Getter;
 import java.util.List;
@@ -20,14 +18,12 @@ public class Agregador {
         return hecho;
     };
 
-    public Agregador(List<FuenteDeDatos> fuentes)
-    {
+    public Agregador(List<FuenteDeDatos> fuentes) {
         this.fuenteDeDatos = fuentes;
         this.actualizarHechos();
     }
 
-    public void actualizarHechos()
-    {
+    public void actualizarHechos(){
         var listaHechos = new ArrayList<Hecho>();
         fuenteDeDatos.forEach(f -> listaHechos.addAll(f.getHechos()));
         this.listaDeHechos = listaHechos;
