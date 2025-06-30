@@ -23,7 +23,7 @@ public class ControllerFuentesDeDatos {
 //    app.setDefaultProperties(Collections.singletonMap("server.address", "192.168.0.169"));
     var context = app.run(args);
     // para cerrar la app, comentar cuando se prueben cosas
-    //context.close();
+    context.close();
   }
 
   @GetMapping("/fuentesDeDatos/{idFuenteDeDatos}/hechos")

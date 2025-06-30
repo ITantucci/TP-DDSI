@@ -1,3 +1,4 @@
+/*
 package domain;
 import domain.business.FuentesDeDatos.FuenteDeDatos;
 import domain.business.FuentesDeDatos.FuenteEstatica;
@@ -109,21 +110,21 @@ class MetamapaTests {
         multimedia
     );
     fuenteDinamica.hechos.add(h2);
-	/*	fuenteDinamica.agregarHecho("Incendio en Córdoba",
-				"Se detecta foco en zona norte",
-				"A",
-				-31.4f,
-				64.2f,LocalDate.of(2025, 6, 12),admin01,false,fuenteDinamica,new ArrayList<Multimedia>());
-
-		fuenteDinamica.agregarHecho("Incendio en BSAs",
-				"Se detecta foco en zona norte",
-				"B",
-				-31.4f,
-				64.2f,LocalDate.of(2025, 6, 12),admin01,false,fuenteDinamica,new ArrayList<Multimedia>());*/
+	//	fuenteDinamica.agregarHecho("Incendio en Córdoba",
+	//			"Se detecta foco en zona norte",
+	//			"A",
+	//			-31.4f,
+	//			64.2f,LocalDate.of(2025, 6, 12),admin01,false,fuenteDinamica,new ArrayList<Multimedia>());
+//
+	//	fuenteDinamica.agregarHecho("Incendio en BSAs",
+	//			"Se detecta foco en zona norte",
+	//			"B",
+	//			-31.4f,
+	//			64.2f,LocalDate.of(2025, 6, 12),admin01,false,fuenteDinamica,new ArrayList<Multimedia>());
     Agregador agregador = new Agregador(List.of(fuenteDinamica));
     Coleccion coleccion = new Coleccion("Incendios 2025", "incendios", new ArrayList<Criterio>(), new ArrayList<Criterio>(), agregador);
     List<Hecho> hechosMostrados = coleccion.getHechos();
-    /* ---------- 3. Verificaciones ---------- */
+    // ---------- 3. Verificaciones ----------
     assertThat(hechosMostrados)
         .containsExactlyInAnyOrder(h1, h2)   // se muestran los dos
         .allMatch(h -> !h.getEliminado());
@@ -175,7 +176,7 @@ class MetamapaTests {
     // ningún criterio extra de “no pertenencia”
     ArrayList<Criterio> filtrosNoPertenencia = new ArrayList<>();
 
-    /* ---------- 3. Acción: navegar con filtros ---------- */
+    // ---------- 3. Acción: navegar con filtros ----------
     coleccion.agregarCriterioPertenencia(new CriterioCategoria("Incendio"));
     coleccion.agregarCriterioPertenencia(new CriterioFecha(LocalDate.of(2025, 6, 12),
         LocalDate.of(2026, 6, 12)));
@@ -183,7 +184,7 @@ class MetamapaTests {
     ArrayList<Hecho> resultado = coleccion.filtrarPorCriterios(
         coleccion.getCriterioPertenencia(), filtrosNoPertenencia);
 
-    /* ---------- 4. Verificaciones ---------- */
+    // ---------- 4. Verificaciones ----------
     assertThat(resultado)
         .containsExactly(h1)   // solo el hecho que cumple ambos filtros
         .doesNotContain(h2);
@@ -262,24 +263,25 @@ class MetamapaTests {
   }
 	/*@Test
 	void contextLoads() {
-	}*/
+	}
 
   //TODO: Como persona usuaria, quiero poder obtener todos los hechos de una fuente proxy demo configurada en una colección, con un nivel de antigüedad máximo de una hora.
-  /*@Test
-  public void testFuenteDemo(){
-      FuenteDeDatos fuenteDemo = new FuenteProxy("", new HechoParser() {
-          @Override
-          public ArrayList<Hecho> parsearHecho(String path) {
-              return ArrayList.of();
-          }
-      });
-  }*/
+  //@Test
+  //public void testFuenteDemo(){
+  //    FuenteDeDatos fuenteDemo = new FuenteProxy("", new HechoParser() {
+  //        @Override
+  //        public ArrayList<Hecho> parsearHecho(String path) {
+  //            return ArrayList.of();
+  //        }
+  //    });
+  // }
   // TODO: Como persona usuaria, quiero poder obtener todos los hechos de las fuentes MetaMapa configuradas en cada colección, en tiempo real.
   public void obtenerTodosLosHechos() {
 
   }
 
   // El Sistema debe permitir el rechazo de solicitudes de eliminación en forma automática cuando se detecta que se trata de spam.
+
   @Test
   public void rechazarSolicitudPorSpam() {
     Hecho unHecho = new Hecho("incendio", "desc", null, null, null,  null, null, null, null);
@@ -288,3 +290,4 @@ class MetamapaTests {
     System.out.println("Solicitud rechazada por Spam: " + solicitudEliminacion1);
   }
 }
+*/

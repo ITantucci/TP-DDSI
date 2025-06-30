@@ -22,14 +22,14 @@ public class ControllerAgregador {
 
     //SpringApplication.run(testApplication.class, args);
     SpringApplication app = new SpringApplication(controllers.ControllerAgregador.class);
-    app.setDefaultProperties(Collections.singletonMap("server.port", "9008"));
+    app.setDefaultProperties(Collections.singletonMap("server.port", "9002"));
 //    app.setDefaultProperties(Collections.singletonMap("server.address", "192.168.0.169"));
     var context = app.run(args);
     // para cerrar la app, comentar cuando se prueben cosas
     //context.close();
   }
 
-  @GetMapping("/Agregador/{idAgregador}/hechos")
+  @GetMapping("/agregador/{idAgregador}/hechos")
   public String  getAgregador(
       @PathVariable(value = "idAgregador") Integer idAgregador,
       Model model) {

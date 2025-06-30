@@ -9,7 +9,7 @@ import java.util.concurrent.*;
 public class Agregador {
     static public int contadorID = 1;
     @Getter
-    private int id;
+    public int id;
     @Getter
     private ArrayList<FuenteDeDatos> fuentesDeDatos;
 
@@ -23,7 +23,9 @@ public class Agregador {
     }
 
     public Agregador() {
-        this.id = Agregador.contadorID++;
+        this.id = contadorID++;
+        this.fuentesDeDatos= new ArrayList<>();
+        this.listaDeHechos= new ArrayList<>();
 
 
 //        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
