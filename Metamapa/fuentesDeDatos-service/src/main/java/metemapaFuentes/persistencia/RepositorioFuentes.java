@@ -44,7 +44,7 @@ public class RepositorioFuentes {
     agregarFuente(fuenteDinamicaID1);
 
     //String path = "src/main/resources/desastres_naturales_argentina.csv";
-    String path ="C:/Nacho/Facu/2025/DDS/TP-DDSI/Metamapa/fuentesDeDatos-service/src/main/resources/desastres_naturales_argentina.csv";
+    String path ="fuentesDeDatos-service/src/main/resources/desastres_naturales_argentina.csv";
     CSVHechoParser parser = new CSVHechoParser();
     FuenteEstatica fuenteEstaticaID2 = new FuenteEstatica(path, parser);
     fuenteEstaticaID2.cargarCSV(path);

@@ -6,10 +6,15 @@
 </head>
 <body>
 <section>
-    <h1 th:text="${agregador.id}">Nombre de la Fuente</h1>
+    <h1 th:text="${agregador.id}">Id Agregador</h1>
 </section>
 
 <section>
+    <h2>Fuentes asociadas</h2>
+
+    <tr th:each="fuente : ${agregador.fuentesDeDatos}">
+        <h2 th:text="${fuente.nombre}">Nombre de la Fuente</h2>
+
     <h2>Hechos asociados</h2>
     <table border="1">
         <thead>
@@ -21,9 +26,15 @@
         </tr>
         </thead>
         <tbody>
-
+        <tr th:each="hecho : ${fuente.hechos}">
+            <td th:text="${hecho.titulo}">Título</td>
+            <td th:text="${hecho.descripcion}">Descripción</td>
+            <td th:text="${hecho.categoria}">Categoría</td>
+            <td th:text="${hecho.fechaHecho}">Fecha</td>
+        </tr>
         </tbody>
     </table>
 </section>
+</tr>
 </body>
 </html>

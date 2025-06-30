@@ -8,6 +8,7 @@ import domain.business.Usuarios.Perfil;
 import domain.business.Usuarios.Rol;
 import domain.business.Usuarios.Usuario;
 import domain.business.incidencias.Multimedia;
+import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,11 +45,10 @@ public class RepositorioAgregador {
         new ArrayList<Multimedia>());
 
 
-
-    String path = "src/main/resources/desastres_naturales_argentina.csv";
+    String path = "agregador-service/src/main/resources/desastres_naturales_argentina.csv";
     CSVHechoParser parser = new CSVHechoParser();
-    FuenteEstatica fuenteEstaticaID2 = new FuenteEstatica(path, parser);
-    fuenteEstaticaID2.cargarCSV(path);
+    FuenteEstatica fuenteEstaticaID2 = new FuenteEstatica(path.toString(), parser);
+    fuenteEstaticaID2.cargarCSV(path.toString());
 
 
     agregador1.agregarFuenteDeDatos(fuenteDinamicaID1);
