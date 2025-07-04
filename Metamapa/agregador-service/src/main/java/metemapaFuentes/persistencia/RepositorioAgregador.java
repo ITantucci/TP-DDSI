@@ -44,11 +44,12 @@ public class RepositorioAgregador {
         false,
         new ArrayList<Multimedia>());
 
+    //String path = "agregador-service/src/main/resources/desastres_naturales_argentina.csv";
+    String path = "Metamapa/agregador-service/src/main/resources/desastres_naturales_argentina.csv";
 
-    String path = "agregador-service/src/main/resources/desastres_naturales_argentina.csv";
     CSVHechoParser parser = new CSVHechoParser();
     FuenteEstatica fuenteEstaticaID2 = new FuenteEstatica(path.toString(), parser);
-    fuenteEstaticaID2.cargarCSV(path.toString());
+    fuenteEstaticaID2.cargarCSV(path);
 
 
     agregador1.agregarFuenteDeDatos(fuenteDinamicaID1);

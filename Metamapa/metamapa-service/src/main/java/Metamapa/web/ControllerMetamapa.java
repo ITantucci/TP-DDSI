@@ -33,14 +33,24 @@ public class ControllerMetamapa {
     model.addAttribute("agregador", serviceAgregador.getAgregador(id));
     return "agregador";
   }
-  @GetMapping("/metamapa/asd")
-  public String mostrarAgregador(Model model) {
-    return "asd";
+  @GetMapping("/")
+  public String redirectRoot() {
+    return "redirect:/metamapa";
+  }
+
+  @GetMapping("/metamapa")
+  public String mostrarHome(Model model) {
+    return "home";
+  }
+
+  @GetMapping("/metamapa/consultas")
+  public String mostrarConsultas(Model model) {
+    return "consultas";
   }
   //API
   @GetMapping("/metamapa/api/colecciones/{idColeccion}/hechos")
   public ArrayList<Hecho> consultarHechos (@PathVariable ("idColeccion")Integer id) {
-
-    return serviceColecciones.;
+  return new ArrayList<>();
+    //return serviceColecciones.getColeccion(idColeccion);
   }
 }

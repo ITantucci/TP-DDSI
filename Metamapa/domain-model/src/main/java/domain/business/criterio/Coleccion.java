@@ -16,7 +16,7 @@ public class Coleccion {
     private String titulo;
     @Getter
     private String descripcion;
-    @Getter`
+    @Getter
     private ArrayList<Criterio> criterioPertenencia;
     @Getter
     private ArrayList<Criterio> criterioNoPertenencia;
