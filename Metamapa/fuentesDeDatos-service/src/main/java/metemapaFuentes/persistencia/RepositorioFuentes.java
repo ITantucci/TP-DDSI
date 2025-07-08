@@ -1,5 +1,6 @@
 package metemapaFuentes.persistencia;
 
+import com.opencsv.CSVParser;
 import domain.business.FuentesDeDatos.FuenteDeDatos;
 import domain.business.FuentesDeDatos.FuenteDinamica;
 import domain.business.FuentesDeDatos.FuenteEstatica;
@@ -11,12 +12,14 @@ import domain.business.incidencias.Multimedia;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.text.html.parser.Parser;
 import lombok.Getter;
 
 public class RepositorioFuentes {
   @Getter
   public ArrayList<FuenteDeDatos> fuentesDeDatos = new ArrayList<>();
-
+  @Getter
+  public CSVHechoParser parserCSV = new CSVHechoParser();
   public void agregarFuente(FuenteDeDatos fuente) {
     this.fuentesDeDatos.add(fuente);
   }
@@ -48,8 +51,8 @@ public class RepositorioFuentes {
 
     CSVHechoParser parser = new CSVHechoParser();
     FuenteEstatica fuenteEstaticaID2 = new FuenteEstatica("desastres_naturales_argentina");
-    fuenteEstaticaID2.setParser(parser);
-    fuenteEstaticaID2.cargarCSV(path);
+    //fuenteEstaticaID2.setParser(parser);
+    //fuenteEstaticaID2.cargarCSV(path);
     agregarFuente(fuenteEstaticaID2);
     }
 }

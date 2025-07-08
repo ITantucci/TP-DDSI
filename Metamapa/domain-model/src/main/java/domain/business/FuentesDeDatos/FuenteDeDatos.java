@@ -40,9 +40,12 @@ public abstract class FuenteDeDatos {
   @Getter
   public TipoFuente tipoFuente;
 
-   void agregarHecho(String titulo, String descripcion, String categoria, Float latitud, Float longitud, LocalDate fechaHecho , Perfil autor, Boolean anonimo, Boolean eliminado, ArrayList<Pair<TipoMultimedia,String>> multimedia)
+  public void agregarHecho(String titulo, String descripcion, String categoria, Float latitud, Float longitud, LocalDate fechaHecho , Perfil autor, Boolean anonimo, Boolean eliminado, ArrayList<Pair<TipoMultimedia,String>> multimedia)
    {
    }
+
+  public void agregarHecho(ArrayList<Hecho> hechos) {
+  }
 }
 
 

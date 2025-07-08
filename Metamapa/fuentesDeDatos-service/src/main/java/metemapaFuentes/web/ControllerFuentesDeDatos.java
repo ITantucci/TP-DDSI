@@ -9,14 +9,17 @@ import domain.business.FuentesDeDatos.TipoFuente;
 import java.util.Map;
 import metemapaFuentes.persistencia.RepositorioFuentes;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api-fuentesDeDatos")
@@ -30,14 +33,20 @@ public class ControllerFuentesDeDatos {
       @PathVariable(value = "idFuenteDeDatos") Integer idfuenteDeDatos) {
     return repositorioFuentes.buscarFuente(idfuenteDeDatos);
   }
-  @PostMapping (value = "/{idFuenteDeDatos}/cargarCSV", consumes = "application/json", produces = "application/json")
+  @PostMapping (value = "/{idFuenteDeDatos}/cargarCSV", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = "application/json")
   @ResponseBody
   public ResponseEntity agregarHechosFuenteDeDatos(
-      @PathVariable(value = "idFuenteDeDatos") Integer idfuenteDeDatos) {
+      @PathVariable(value = "idFuenteDeDatos") Integer idfuenteDeDatos,
+      @RequestParam("file") MultipartFile file) {
     try{
-      if (repositorioFuentes.buscarFuente(idfuenteDeDatos).tipoFuente.equals(TipoFuente.FUENTEESTATICA)){
-
+      if (!repositorioFuentes.buscarFuente(idfuenteDeDatos).getTipoFuente().equals(TipoFuente.FUENTEESTATICA)) {
+        return ResponseEntity
+            .badRequest()
+            .body("Sólo se puede cargar CSV en fuentes estáticas");
       }
+      //TODO repositorioFuentes.getParserCSV().parsearHechos(file.getInputStream()).forEach(h -> repositorioHechos.agregar(h)); para tratar directamente con el repositorio de hechos en vez de con las fuentes
+      repositorioFuentes.buscarFuente(idfuenteDeDatos).agregarHecho(repositorioFuentes.getParserCSV().parsearHechos(file.getInputStream()));
+      return ResponseEntity.ok(repositorioFuentes.getParserCSV().parsearHechos(file.getInputStream()));
 
 
 

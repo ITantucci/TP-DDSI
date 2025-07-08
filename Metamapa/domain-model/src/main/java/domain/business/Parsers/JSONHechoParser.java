@@ -8,7 +8,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.io.File;
 
-public class JSONHechoParser implements HechoParser {
+public abstract class JSONHechoParser implements HechoParser {
   @Override
  /* public List<Hecho> parsearHecho(String path){
     ArrayList<Hecho> listaHecho = new ArrayList<Hecho>();
