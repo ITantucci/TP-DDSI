@@ -11,22 +11,24 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 public class ControllerMetamapa {
 
-  private final ServiceFuenteDeDatos servicefuenteDeDatos;
+  private final ServiceFuenteDeDatos serviceFuenteDeDatos;
   private final ServiceAgregador serviceAgregador;
 
-  public ControllerMetamapa(ServiceFuenteDeDatos servicefuenteDeDatos,
+  public ControllerMetamapa(ServiceFuenteDeDatos serviceFuenteDeDatos,
                             ServiceAgregador serviceAgregador) {
-    this.servicefuenteDeDatos = servicefuenteDeDatos;
+    this.serviceFuenteDeDatos = serviceFuenteDeDatos;
     this.serviceAgregador = serviceAgregador;
   }
 
   @GetMapping("/metamapa/fuentesDeDatos/{id}")
   public String mostrarFuente(@PathVariable("id") Integer id, Model model) {
-    model.addAttribute("fuente", servicefuenteDeDatos.getFuenteDeDatos(id));
+    model.addAttribute("fuente", serviceFuenteDeDatos.getFuenteDeDatos(id));
     return "fuenteDeDatos";
   }
 
@@ -47,6 +49,11 @@ public class ControllerMetamapa {
   public void removerFuente(@PathVariable("idFuente") Integer idFuente)
   {
     serviceAgregador.removerFuente(idFuente);
+  }
+  @PostMapping("/metamapa/fuentesDeDatos/{idFuenteDeDatos}/cargarCSV")
+  public void cargarCSV(@PathVariable("idFuenteDeDatos") Integer idFuente,@RequestParam("file") MultipartFile file)
+  {
+    serviceFuenteDeDatos.cargarCSV(idFuente,file);
   }
 
   //@GetMapping ("/metamapa/colecciones/{id}/hechos")

@@ -35,7 +35,7 @@ public class ControllerFuentesDeDatos {
   }
   @PostMapping (value = "/{idFuenteDeDatos}/cargarCSV", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = "application/json")
   @ResponseBody
-  public ResponseEntity agregarHechosFuenteDeDatos(
+  public ResponseEntity cargarCSV(
       @PathVariable(value = "idFuenteDeDatos") Integer idfuenteDeDatos,
       @RequestParam("file") MultipartFile file) {
     try{
