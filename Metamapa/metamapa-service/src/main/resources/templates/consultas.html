@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Consulta de Fuentes y Agregadores</title>
+</head>
+<body>
+<h1>Consultas Metamapa</h1>
+
+<div>
+    <label for="fuenteId">ID de Fuente:</label>
+    <input type="number" id="fuenteId" placeholder="Ingrese un ID entero">
+    <button type="button" onclick="irFuente()">Consultar Fuente</button>
+</div>
+
+<div style="margin-top:1em;">
+    <label for="agregadorId">ID de Agregador:</label>
+    <input type="number" id="agregadorId" placeholder="Ingrese un ID entero">
+    <button type="button" onclick="irAgregador()">Consultar Agregador</button>
+</div>
+
+<script>
+    function irFuente() {
+        const id = document.getElementById('fuenteId').value;
+        if (!id) {
+            alert('Por favor ingresa un ID de fuente');
+            return;
+        }
+        // Ajusta la ruta a tu @GetMapping exacto
+        window.location.href = '/metamapa/fuenteDeDatos/' + id + '/hechos';
+    }
+
+    function irAgregador() {
+        const id = document.getElementById('agregadorId').value;
+        if (!id) {
+            alert('Por favor ingresa un ID de agregador');
+            return;
+        }
+        window.location.href = '/metamapa/agregador/' + id + '/hechos';
+    }
+</script>
+</body>
+</html>

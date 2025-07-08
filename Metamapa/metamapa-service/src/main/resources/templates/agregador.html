@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Todos los hechos del agregador</title>
+</head>
+<body>
+<section>
+    <h1>Todos los hechos del agregador</h1>
+</section>
+
+<section>
+    <h2>Hechos</h2>
+    <table border="1">
+        <thead>
+        <tr>
+            <th>Título</th>
+            <th>Descripción</th>
+            <th>Categoría</th>
+            <th>Fecha</th>
+            <th>Fuente ID</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="hecho : ${hechos}">
+            <td th:text="${hecho.id}">Título</td>
+            <td th:text="${hecho.titulo}">Título</td>
+            <td th:text="${hecho.descripcion}">Descripción</td>
+            <td th:text="${hecho.categoria}">Categoría</td>
+            <td th:text="${hecho.fechaHecho}">Fecha</td>
+            <td th:text="${hecho.fuenteId}">Fecha</td>
+        </tr>
+        </tbody>
+    </table>
+</section>
+</tr>
+</body>
+</html>
