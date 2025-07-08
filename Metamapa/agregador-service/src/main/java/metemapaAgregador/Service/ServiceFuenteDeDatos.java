@@ -1,4 +1,4 @@
-package Metamapa.service;
+package metemapaAgregador.Service;
 
 import domain.business.FuentesDeDatos.FuenteDeDatos;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,7 +12,7 @@ public class ServiceFuenteDeDatos {
   private final String baseUrl;
 
   public ServiceFuenteDeDatos(RestTemplate restTemplate,
-                             @Value("${fuentes.service.url}") String baseUrl) {
+                              @Value("${fuentes.service.url}") String baseUrl) {
     this.restTemplate = restTemplate;
     this.baseUrl = baseUrl;
   }

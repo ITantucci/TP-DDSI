@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @JsonTypeName("FUENTEMETAMAPA")
 public class FuenteMetamapa extends FuenteProxy{
   final private RestTemplate restTemplate;
-
+//TODO agregar el id al hecho
   public FuenteMetamapa(String nombre, URL endpointBase, HechoParser parser) {
     super(endpointBase, parser);
     this.id = contadorID++;

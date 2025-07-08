@@ -18,6 +18,6 @@ public class FuenteDinamica extends FuenteDeDatos{
 
   public void agregarHecho(String titulo, String desc, String categoria, Float latitud, Float longitud, LocalDate fechaHecho,
                            Perfil autor, Boolean anonimidad, ArrayList<Multimedia> multimedia) {
-    this.hechos.add(new Hecho(titulo,desc,categoria,latitud,longitud,fechaHecho,autor,anonimidad,multimedia));
+    this.hechos.add(new Hecho(titulo,desc,categoria,latitud,longitud,fechaHecho,autor,this.id ,anonimidad,multimedia));
   }
 }

@@ -5,14 +5,16 @@ import lombok.Getter;
 import domain.business.incidencias.Hecho;
 
 public class Agregador {
+    private static Agregador agregador = null;
+
     static public int contadorID = 1;
     @Getter
     public int id;
     @Getter
-    private ArrayList<FuenteDeDatos> fuentesDeDatos;
+    public ArrayList<FuenteDeDatos> fuentesDeDatos;
 
     @Getter
-    private ArrayList<Hecho> listaDeHechos;
+    public ArrayList<Hecho> listaDeHechos;
 
     public void actualizarHechos() {
         ArrayList<Hecho> hechos = new ArrayList<>();
@@ -20,7 +22,7 @@ public class Agregador {
         listaDeHechos = hechos;
     }
 
-    public Agregador() {
+    private Agregador() {
         this.id = contadorID++;
         this.fuentesDeDatos= new ArrayList<>();
         this.listaDeHechos= new ArrayList<>();
@@ -32,14 +34,23 @@ public class Agregador {
 //
 //        scheduler.scheduleAtFixedRate(tarea, 0, 2, TimeUnit.HOURS);
         }
+        //Instancio el agregador como singleton
+        public static Agregador getInstance() {
+        if (agregador == null)
+            agregador = new Agregador();
+            return agregador;
+        }
 
     public void agregarFuenteDeDatos(FuenteDeDatos fuente){
-        this.fuentesDeDatos.add(fuente);
-        this.actualizarHechos();
+        if (!fuentesDeDatos.contains(fuente)){
+            fuentesDeDatos.add(fuente);
+            this.actualizarHechos();
+        }
     }
 
-    public void eliminarFuenteDeDatos(FuenteDeDatos fuente){
-        this.fuentesDeDatos.remove(fuente);
+
+    public void removerFuenteDeDatos(Integer idFuente){
+        this.fuentesDeDatos.removeIf(f -> f.getId() == idFuente);
         this.actualizarHechos();
     }
 

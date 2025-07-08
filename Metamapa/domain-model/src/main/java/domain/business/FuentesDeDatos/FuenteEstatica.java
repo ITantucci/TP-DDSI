@@ -35,6 +35,7 @@ public class FuenteEstatica extends FuenteDeDatos{
     for (Hecho h : hechosParseados) {
       h.setPerfil(null);
       h.setAnonimo(false);
+      h.setFuenteId(this.id );
     }
     this.hechos = hechosParseados;
   }

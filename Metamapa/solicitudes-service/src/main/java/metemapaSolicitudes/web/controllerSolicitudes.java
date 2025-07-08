@@ -22,14 +22,6 @@ public class controllerSolicitudes {
   private final RepositorioSolicitudEliminacion solicitudEliminacionRepository = new RepositorioSolicitudEliminacion();
   private final RepositorioSolicitudEdicion solicitudEdicionRepository = new RepositorioSolicitudEdicion();
 
-  public static void main(String[] args) {
-    SpringApplication app = new SpringApplication(controllerSolicitudes.class);
-    app.setDefaultProperties(Collections.singletonMap("server.port", "8082"));
-//    app.setDefaultProperties(Collections.singletonMap("server.address", "192.168.0.169"));
-    var context = app.run(args);
-    // para cerrar la app, comentar cuando se prueben cosas
-    context.close();
-  }
 
   @GetMapping(value = "/solicitudesEliminacion", produces = "application/json")
   public ResponseEntity<List<SolicitudEliminacion>> obtenerTodasLasSolicitudesEliminacion() {

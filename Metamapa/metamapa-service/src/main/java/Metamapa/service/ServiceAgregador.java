@@ -2,6 +2,8 @@ package Metamapa.service;
 
 
 import domain.business.Agregador.Agregador;
+import domain.business.incidencias.Hecho;
+import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -18,8 +20,17 @@ public class ServiceAgregador {
     this.baseUrl = baseUrl;
   }
 
-  public Agregador getAgregador(Integer idAgregador) {
-    String url = String.format("%s/agregador/%d/hechos", baseUrl, idAgregador);
-    return restTemplate.getForObject(url, Agregador.class);
+  public ArrayList<Hecho> getAgregadorHechos() {
+    String url = String.format("%s/api-agregador/hechos", baseUrl);
+    return restTemplate.getForObject(url, ArrayList.class);
+  }
+
+  public void agregarFuente(Integer idFuente){
+    String url = String.format("%s/api-agregador/fuentesDeDatos/agregar/%d", baseUrl, idFuente);
+    restTemplate.postForObject(url, null, Void.class);
+  }
+  public void removerFuente(Integer idFuente){
+    String url = String.format("%s/api-agregador/fuentesDeDatos/remover/%d", baseUrl, idFuente);
+    restTemplate.postForObject(url, null, Void.class);
   }
 }

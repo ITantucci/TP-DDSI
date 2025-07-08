@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 public class ControllerMetamapa {
@@ -23,7 +24,7 @@ public class ControllerMetamapa {
     this.serviceAgregador = serviceAgregador;
   }
 
-  @GetMapping("/metamapa/fuenteDeDatos/{id}/hechos")
+  @GetMapping("/metamapa/fuentesDeDatos/{id}")
   public String mostrarFuente(@PathVariable("id") Integer id, Model model) {
     model.addAttribute("fuente", servicefuenteDeDatos.getFuenteDeDatos(id));
     return "fuenteDeDatos";
@@ -31,14 +32,25 @@ public class ControllerMetamapa {
 
 
   //TODO No necesitamos conectarnos con el agregador
-  @GetMapping("/metamapa/agregador/{id}/hechos")
-  public String mostrarAgregador(@PathVariable("id") Integer id, Model model) {
-    model.addAttribute("agregador", serviceAgregador.getAgregador(id));
+  @GetMapping("/metamapa/agregador/hechos")
+  public String mostrarAgregador(Model model) {
+    model.addAttribute("hechos", serviceAgregador.getAgregadorHechos());
     return "agregador";
   }
 
-  @GetMapping ("/metamapa/colecciones/{handler}/hechos")
-  public String mostrarColeccion(@PathVariable("handler")UUID handler,)
+  @PostMapping("/metamapa/agregador/fuentesDeDatos/agregar/{idFuente}")
+  public void agregarFuente(@PathVariable("idFuente") Integer idFuente)
+  {
+    serviceAgregador.agregarFuente(idFuente);
+  }
+  @PostMapping("/metamapa/agregador/fuentesDeDatos/remover/{idFuente}")
+  public void removerFuente(@PathVariable("idFuente") Integer idFuente)
+  {
+    serviceAgregador.removerFuente(idFuente);
+  }
+
+  //@GetMapping ("/metamapa/colecciones/{id}/hechos")
+  //public String mostrarColeccion(@PathVariable("handler")UUID handler,)
 
 
   @GetMapping("/")

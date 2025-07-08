@@ -26,6 +26,8 @@ public class Hecho {
   @Getter @Setter
   private Perfil perfil;
   @Getter @Setter
+  private Integer fuenteId;
+  @Getter @Setter
   private Boolean anonimo;
   @Getter @Setter
   private Boolean eliminado;
@@ -37,7 +39,7 @@ public class Hecho {
   private int id;
 
   //para pruebas con el repositorio
-  static private int contadorID = 0;
+  static private int contadorID = 1;
 
   public Hecho() { }
 
@@ -50,6 +52,7 @@ public class Hecho {
       Float longitud,
       LocalDate fechaHecho,
       Perfil perfil,
+      Integer fuenteId,
       Boolean anonimo,
       List<Multimedia>multimedia) {
 
@@ -61,6 +64,7 @@ public class Hecho {
     this.fechaCarga = LocalDate.now();
     this.fechaModificacion = LocalDate.now();
     this.perfil = perfil;
+    this.fuenteId = fuenteId; //AGREGO ESTE CAMPO
     this.anonimo = anonimo;
     this.eliminado = false;
     this.multimedia = multimedia;

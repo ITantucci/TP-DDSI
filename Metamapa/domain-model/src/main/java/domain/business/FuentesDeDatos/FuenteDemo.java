@@ -47,6 +47,7 @@ public class FuenteDemo extends FuenteProxy{
           (Float) datos.get("longitud"),
           (LocalDate) datos.get("fechaHecho"),
           (Perfil) datos.get("perfil"),
+          this.id,
           (Boolean) datos.get("anonimo"),
           (List<Multimedia>) datos.get("multimedia")
           //Metamapa?

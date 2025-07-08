@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/fuenteDeDatos")
+@RequestMapping("/fuentesDeDatos")
 
 public class ControllerFuentesDeDatos {
 
   public RepositorioFuentes repositorioFuentes = new RepositorioFuentes();
 
-  @GetMapping("/{idFuenteDeDatos}/hechos")
+  @GetMapping("/{idFuenteDeDatos}")
   public FuenteDeDatos getFuenteDeDatos(
       @PathVariable(value = "idFuenteDeDatos") Integer idfuenteDeDatos) {
     return repositorioFuentes.buscarFuente(idfuenteDeDatos);

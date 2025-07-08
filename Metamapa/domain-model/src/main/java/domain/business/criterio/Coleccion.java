@@ -1,5 +1,7 @@
 package domain.business.criterio;
 
+
+
 import lombok.Getter;
 
 import domain.business.Agregador.Agregador;
@@ -23,11 +25,13 @@ public class Coleccion {
     //@Getter
     //private Agregador agregador;
     @Getter
-    private String handle;
+    private UUID handle;
     @Getter @Setter
     private Consenso consenso;
    // @Getter @Setter
    // private ModosDeNavegacion modoNavegacion;
+
+    private final Agregador agregador = Agregador.getInstance();
 
     public Coleccion(String titulo, String desc,ArrayList<Criterio> pertenencia,ArrayList<Criterio> noPertenencia){
         //TODO: Agregar consenso? : al crear una colección, se podrá especificar opcionalmente un algoritmo de consenso
@@ -36,7 +40,7 @@ public class Coleccion {
         this.criterioPertenencia = pertenencia;
         this.criterioNoPertenencia = noPertenencia;
         //this.agregador=agregador;
-        this.handle = String.valueOf(UUID.randomUUID());
+        this.handle = UUID.randomUUID();
     }
 
     public void agregarCriterioPertenencia(Criterio criterio){
@@ -69,7 +73,7 @@ public class Coleccion {
     }*/
 
     public ArrayList<Hecho> filtrarPorCriterios(ArrayList<Criterio> criterioPertenenciaAdicional, ArrayList<Criterio> criterioNoPertenenciaAdicional,ModosDeNavegacion modoDeNavegacion) {
-       ArrayList<Hecho> hechos = Agregador.getListaDeHechos();
+        ArrayList<Hecho> hechos = agregador.getListaDeHechos();
 
         ArrayList<Criterio> criteriosPertenenciaCombinados = new ArrayList<Criterio>(this.getCriterioPertenencia());
         if (!criterioPertenenciaAdicional.isEmpty())
