@@ -76,7 +76,6 @@ public class controllerColecciones {
 
   }*/
   @GetMapping("/colecciones/{identificador}/hechos")
-  @ResponseBody
   public ResponseEntity<ArrayList<Hecho>> getHechosColeccion(
           @PathVariable("identificador") UUID identificador,
           @RequestParam(value = "modoNavegacion", required = false, defaultValue = "IRRESTRICTA") String modoNavegacion,
@@ -100,7 +99,6 @@ public class controllerColecciones {
           @RequestParam(value = "latitudNP", required = false) String latitudNP,
           @RequestParam(value = "longitudNP", required = false) String longitudNP,
           @RequestParam(value = "tipoMultimediaNP", required = false) String tipoMultimediaNP) {
-
     try {
       Optional<Coleccion> coleccionOpt = repositorioColecciones.findById(identificador);
       if (coleccionOpt.isEmpty()) {
@@ -141,7 +139,6 @@ public class controllerColecciones {
 
   // Obtener todas las colecciones (get /colecciones)
   @GetMapping("/colecciones")
-  @ResponseBody
   public ResponseEntity<List<ColeccionDTO>> obtenerTodasLasColecciones() {
     try {
       List<ColeccionDTO> coleccionesDTO = repositorioColecciones.obtenerTodas().stream()
@@ -156,14 +153,11 @@ public class controllerColecciones {
 
   // Obtener una colección por ID (get /colecciones/{id})
   @GetMapping("/colecciones/{id}")
-  @ResponseBody
   public ResponseEntity<ColeccionDTO> obtenerColeccionPorId(@PathVariable("id") UUID id) {
     try {
       Optional<Coleccion> coleccionOpt = repositorioColecciones.findById(id);
-      if (coleccionOpt.isEmpty()) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-      }
-      return ResponseEntity.ok(new ColeccionDTO(coleccionOpt.get()));
+      return coleccionOpt.map(coleccion -> ResponseEntity.ok(new ColeccionDTO(coleccion)))
+              .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     } catch (IllegalArgumentException e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
     } catch (Exception e) {
@@ -174,12 +168,10 @@ public class controllerColecciones {
 
   // Crear una coleccion (post /colecciones)
   @PostMapping(value = "/colecciones", consumes = "application/json", produces = "application/json")
-  @ResponseBody
   public ResponseEntity<ColeccionDTO> crearColeccion(@RequestBody Map<String, Object> requestBody) {
     try {
       String titulo = (String) requestBody.get("titulo");
       String descripcion = (String) requestBody.get("descripcion");
-      // Validar que el título no sea null ni vacío
       if (titulo == null || titulo.trim().isEmpty()) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
       }
@@ -214,30 +206,24 @@ public class controllerColecciones {
 
   // Actualizar una colección completa (put /colecciones/{id})
   @PutMapping(value = "/colecciones/{id}", consumes = "application/json", produces = "application/json")
-  @ResponseBody
   public ResponseEntity<ColeccionDTO> actualizarColeccion(@PathVariable("id") UUID id, @RequestBody Map<String, Object> requestBody) {
     try {
-      // Buscar la colección existente
       Optional<Coleccion> coleccionOpt = repositorioColecciones.findById(id);
       if (coleccionOpt.isEmpty()) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
       }
       Coleccion coleccion = coleccionOpt.get();
-      // Actualizar título si está presente
       if (requestBody.containsKey("titulo")) {
         coleccion.setTitulo((String) requestBody.get("titulo"));
       }
-      // Actualizar descripción si está presente
       if (requestBody.containsKey("descripcion")) {
         coleccion.setDescripcion((String) requestBody.get("descripcion"));
       }
-      // Actualizar consenso si está presente
       if (requestBody.containsKey("consenso")) {
         String consensoStr = (String) requestBody.get("consenso");
         Consenso nuevoConsenso = Consenso.stringToConsenso(consensoStr);
         coleccion.setConsenso(nuevoConsenso);
       }
-      // Actualizar criterios de pertenencia si están presentes
       if (requestBody.containsKey("criteriosPertenencia")) {
         List<Map<String, Object>> criteriosData = (List<Map<String, Object>>) requestBody.get("criteriosPertenencia");
         ArrayList<Criterio> nuevosCriterios = new ArrayList<>();
@@ -250,7 +236,6 @@ public class controllerColecciones {
         }
         coleccion.setCriterioPertenencia(nuevosCriterios);
       }
-      // Actualizar criterios de no pertenencia si están presentes
       if (requestBody.containsKey("criteriosNoPertenencia")) {
         List<Map<String, Object>> criteriosData = (List<Map<String, Object>>) requestBody.get("criteriosNoPertenencia");
         ArrayList<Criterio> nuevosCriterios = new ArrayList<>();
@@ -263,12 +248,9 @@ public class controllerColecciones {
         }
         coleccion.setCriterioNoPertenencia(nuevosCriterios);
       }
-      // Guardar los cambios
       repositorioColecciones.update(coleccion);
-      // Retornar la colección actualizada como DTO
       return ResponseEntity.ok(new ColeccionDTO(coleccion));
     } catch (IllegalArgumentException e) {
-      // UUID inválido o consenso inválido
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
     } catch (Exception e) {
       System.err.println("Error al actualizar colección: " + e.getMessage());
@@ -278,7 +260,6 @@ public class controllerColecciones {
 
   // Modificar algoritmo de consenso (patch /colecciones/{id})
   @PatchMapping(value = "/colecciones/{id}", consumes = "application/json", produces = "application/json")
-  @ResponseBody
   public ResponseEntity<ColeccionDTO> modificarAlgoritmo(@PathVariable("id") UUID id, @RequestBody Map<String, Object> requestBody) {
     try {
       Optional<Coleccion> coleccionOpt = repositorioColecciones.findById(id);
@@ -302,7 +283,6 @@ public class controllerColecciones {
 
   // Eliminar una colección (delete /colecciones/{id})
   @DeleteMapping("/colecciones/{id}")
-  @ResponseBody
   public ResponseEntity<Void> eliminarColeccion(@PathVariable("id") UUID id) {
     try {
       Optional<Coleccion> coleccionOpt = repositorioColecciones.findById(id);
@@ -329,30 +309,10 @@ public class controllerColecciones {
           String fechaReporteDesde, String fechaReporteHasta,
           String fechaAcontecimientoDesde, String fechaAcontecimientoHasta,
           String latitud, String longitud, String tipoMultimedia) {
-
     List<Map<String, Object>> criterios = new ArrayList<>();
-    // Criterio de título
-    if (titulo != null) {
-      Map<String, Object> criterio = new HashMap<>();
-      criterio.put("tipo", "titulo");
-      criterio.put("valor", titulo);
-      criterios.add(criterio);
-    }
-    // Criterio de descripción
-    if (descripcion != null) {
-      Map<String, Object> criterio = new HashMap<>();
-      criterio.put("tipo", "descripcion");
-      criterio.put("valor", descripcion);
-      criterios.add(criterio);
-    }
-    // Criterio de categoría
-    if (categoria != null) {
-      Map<String, Object> criterio = new HashMap<>();
-      criterio.put("tipo", "categoria");
-      criterio.put("valor", categoria);
-      criterios.add(criterio);
-    }
-    // Criterio de fecha de reporte
+    agregarCriterio(criterios, "titulo", "valor", titulo);
+    agregarCriterio(criterios, "descripcion", "valor", descripcion);
+    agregarCriterio(criterios, "categoria", "valor", categoria);
     if (fechaReporteDesde != null || fechaReporteHasta != null) {
       Map<String, Object> criterio = new HashMap<>();
       criterio.put("tipo", "fechareportaje");
@@ -360,7 +320,6 @@ public class controllerColecciones {
       if (fechaReporteHasta != null) criterio.put("fechaHasta", fechaReporteHasta);
       criterios.add(criterio);
     }
-    // Criterio de fecha de acontecimiento
     if (fechaAcontecimientoDesde != null || fechaAcontecimientoHasta != null) {
       Map<String, Object> criterio = new HashMap<>();
       criterio.put("tipo", "fecha");
@@ -368,22 +327,28 @@ public class controllerColecciones {
       if (fechaAcontecimientoHasta != null) criterio.put("fechaHasta", fechaAcontecimientoHasta);
       criterios.add(criterio);
     }
-    // Criterio de ubicación
     if (latitud != null && longitud != null) {
-      Map<String, Object> criterio = new HashMap<>();
-      criterio.put("tipo", "ubicacion");
-      criterio.put("latitud", latitud);
-      criterio.put("longitud", longitud);
-      criterios.add(criterio);
+      criterios.add(Map.of(
+              "tipo", "ubicacion",
+              "latitud", latitud,
+              "longitud", longitud
+      ));
     }
-    // Criterio de multimedia
     if (tipoMultimedia != null) {
-      Map<String, Object> criterio = new HashMap<>();
-      criterio.put("tipo", "multimedia");
-      criterio.put("tipoMultimedia", tipoMultimedia);
-      criterios.add(criterio);
+      criterios.add(Map.of(
+              "tipo", "multimedia",
+              "tipoMultimedia", tipoMultimedia
+      ));
     }
     return criterios;
+  }
+  private void agregarCriterio(List<Map<String, Object>> criterios, String tipo, String claveValor, String valor) {
+    if (valor != null) {
+      criterios.add(Map.of(
+              "tipo", tipo,
+              claveValor, valor
+      ));
+    }
   }
 
   // Metodo auxiliar para crear criterios desde Map
@@ -403,7 +368,7 @@ public class controllerColecciones {
                 LocalDate.parse((String) parametros.get("fechaDesde")),
                 LocalDate.parse((String) parametros.get("fechaHasta"))
         );
-        case "CriterioUbicacion" -> new CriterioUbicacion(((Number)  parametros.get("latitud")).floatValue(), ((Number) parametros.get("longitud")).floatValue());
+        case "CriterioUbicacion" -> new CriterioUbicacion(((Number) parametros.get("latitud")).floatValue(), ((Number) parametros.get("longitud")).floatValue());
         case "CriterioMultimedia" -> new CriterioMultimedia(TipoMultimedia.valueOf(((String) parametros.get("tipoMultimedia")).toUpperCase()));
         default -> {
           System.err.println("Tipo de criterio no reconocido: " + tipo);
@@ -420,78 +385,58 @@ public class controllerColecciones {
   private ArrayList<Criterio> procesarCriterios(List<Map<String, Object>> criteriosJson) {
     ArrayList<Criterio> criterios = new ArrayList<>();
     for (Map<String, Object> criterioJson : criteriosJson) {
-      String tipo = (String) criterioJson.get("tipo");
-      switch (tipo.toLowerCase()) {
-        case "titulo":
-          String titulo = (String) criterioJson.get("valor");
-          if (titulo != null) {
-            criterios.add(new CriterioTitulo(titulo));
+      String tipo = ((String) criterioJson.get("tipo")).toLowerCase();
+      try {
+        switch (tipo) {
+          case "titulo" -> criterios.add(new CriterioTitulo((String) criterioJson.get("valor")));
+          case "descripcion" -> criterios.add(new CriterioDescripcion((String) criterioJson.get("valor")));
+          case "categoria" -> criterios.add(new CriterioCategoria((String) criterioJson.get("valor")));
+          case "fecha" -> {
+            LocalDate desde = parseFecha((String) criterioJson.get("fechaDesde"));
+            LocalDate hasta = parseFecha((String) criterioJson.get("fechaHasta"));
+            criterios.add(new CriterioFecha(desde, hasta));
           }
-          break;
-        case "descripcion":
-          String descripcion = (String) criterioJson.get("valor");
-          if (descripcion != null) {
-            criterios.add(new CriterioDescripcion(descripcion));
+          case "fechareportaje" -> {
+            LocalDate desde = parseFecha((String) criterioJson.get("fechaDesde"));
+            LocalDate hasta = parseFecha((String) criterioJson.get("fechaHasta"));
+            criterios.add(new CriterioFechaReportaje(desde, hasta));
           }
-          break;
-        case "categoria":
-          String categoria = (String) criterioJson.get("valor");
-          if (categoria != null) {
-            criterios.add(new CriterioCategoria(categoria));
+          case "ubicacion" -> {
+            Float lat = parseFloat(criterioJson.get("latitud"));
+            Float lon = parseFloat(criterioJson.get("longitud"));
+            if (lat != null && lon != null)
+              criterios.add(new CriterioUbicacion(lat, lon));
           }
-          break;
-        case "fecha":
-          String fechaDesdeStr = (String) criterioJson.get("fechaDesde");
-          String fechaHastaStr = (String) criterioJson.get("fechaHasta");
-          LocalDate fechaDesde = fechaDesdeStr != null ? LocalDate.parse(fechaDesdeStr) : null;
-          LocalDate fechaHasta = fechaHastaStr != null ? LocalDate.parse(fechaHastaStr) : null;
-          criterios.add(new CriterioFecha(fechaDesde, fechaHasta));
-          break;
-        case "fechareportaje":
-          String reportajeDesdeStr = (String) criterioJson.get("fechaDesde");
-          String reportajeHastaStr = (String) criterioJson.get("fechaHasta");
-          LocalDate reportajeDesde = reportajeDesdeStr != null ? LocalDate.parse(reportajeDesdeStr) : null;
-          LocalDate reportajeHasta = reportajeHastaStr != null ? LocalDate.parse(reportajeHastaStr) : null;
-          criterios.add(new CriterioFechaReportaje(reportajeDesde, reportajeHasta));
-          break;
-        case "ubicacion":
-          Object latitudObj = criterioJson.get("latitud");
-          Object longitudObj = criterioJson.get("longitud");
-          if (latitudObj != null && longitudObj != null) {
-            Float latitud = Float.parseFloat(latitudObj.toString());
-            Float longitud = Float.parseFloat(longitudObj.toString());
-            criterios.add(new CriterioUbicacion(latitud, longitud));
+          case "multimedia" -> {
+            String tipoMultimediaStr = (String) criterioJson.get("tipoMultimedia");
+            if (tipoMultimediaStr != null) {
+              TipoMultimedia tipoMultimedia = TipoMultimedia.valueOf(tipoMultimediaStr.toUpperCase());
+              criterios.add(new CriterioMultimedia(tipoMultimedia));
+            }
           }
-          break;
-        case "multimedia":
-          String tipoMultimediaStr = (String) criterioJson.get("tipoMultimedia");
-          if (tipoMultimediaStr != null) {
-            TipoMultimedia tipoMultimedia = TipoMultimedia.valueOf(tipoMultimediaStr.toUpperCase());
-            criterios.add(new CriterioMultimedia(tipoMultimedia));
-          }
-          break;
-        default:
-          System.err.println("Tipo de criterio no reconocido: " + tipo);
-          break;
+          default -> System.err.println("Tipo de criterio no reconocido: " + tipo);
+        }
+      } catch (Exception e) {
+        System.err.println("Error procesando criterio: " + e.getMessage());
       }
     }
     return criterios;
   }
+  private LocalDate parseFecha(String str) {
+    return str != null ? LocalDate.parse(str) : null;
+  }
+  private Float parseFloat(Object obj) {
+    return obj != null ? Float.parseFloat(obj.toString()) : null;
+  }
 
+  @Getter
   public static class ColeccionDTO {
-    @Getter
-    private String titulo;
-    @Getter
-    private String descripcion;
-    @Getter
-    private UUID handle;
-    @Getter
-    private String consenso;
-    @Getter
-    private List<CriterioDTO> criteriosPertenencia;
-    @Getter
-    private List<CriterioDTO> criteriosNoPertenencia;
-
+    private final String titulo;
+    private final String descripcion;
+    private final UUID handle;
+    private final String consenso;
+    private final List<CriterioDTO> criteriosPertenencia;
+    private final List<CriterioDTO> criteriosNoPertenencia;
     public ColeccionDTO(Coleccion coleccion) {
       this.titulo = coleccion.getTitulo();
       this.descripcion = coleccion.getDescripcion();
@@ -508,12 +453,10 @@ public class controllerColecciones {
     }
   }
 
+  @Getter
   public static class CriterioDTO {
-    @Getter
-    private String tipo;
-    @Getter
-    private Map<String, Object> parametros;
-
+    private final String tipo;
+    private final Map<String, Object> parametros;
     public CriterioDTO(Criterio criterio) {
       this.tipo = criterio.getClass().getSimpleName();
       this.parametros = new HashMap<>();
