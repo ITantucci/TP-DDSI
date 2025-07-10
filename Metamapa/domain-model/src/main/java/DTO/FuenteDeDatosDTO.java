@@ -32,8 +32,6 @@ public abstract class FuenteDeDatosDTO {
   //para pruebas con el repositorio
   //TODO me parece que no va a ir el contadorID, ya que deberia copiar el id de la fuente original
   @Getter
-  static public Integer contadorID = 1;
-  @Getter
   public Integer id;
   @Getter
   public String nombre;

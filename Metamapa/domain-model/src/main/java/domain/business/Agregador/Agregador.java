@@ -1,6 +1,4 @@
 package domain.business.Agregador;
-import DTO.FuenteDeDatosDTO;
-import DTO.HechoDTO;
 import domain.business.FuentesDeDatos.FuenteDeDatos;
 import java.util.ArrayList;
 import lombok.Getter;
@@ -10,13 +8,13 @@ public class Agregador {
     private static Agregador agregador = null;
 
     @Getter
-    public ArrayList<FuenteDeDatosDTO> fuentesDeDatos;
+    public ArrayList<FuenteDeDatos> fuentesDeDatos;
 
     @Getter
-    public ArrayList<HechoDTO> listaDeHechos;
+    public ArrayList<Hecho> listaDeHechos;
 
     public void actualizarHechos() {
-        ArrayList<HechoDTO> hechos = new ArrayList<>();
+        ArrayList<Hecho> hechos = new ArrayList<>();
         fuentesDeDatos.forEach(f -> hechos.addAll(f.getHechos()));
         listaDeHechos = hechos;
     }
@@ -39,7 +37,7 @@ public class Agregador {
             return agregador;
         }
 
-    public void agregarFuenteDeDatos(FuenteDeDatosDTO fuente){
+    public void agregarFuenteDeDatos(FuenteDeDatos fuente){
         if (!fuentesDeDatos.contains(fuente)){
             fuentesDeDatos.add(fuente);
             this.actualizarHechos();

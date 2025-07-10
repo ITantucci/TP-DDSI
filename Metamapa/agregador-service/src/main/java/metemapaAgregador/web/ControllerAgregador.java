@@ -47,29 +47,29 @@ public class ControllerAgregador {
     fuentes.forEach(f -> guardarHechos(f));
     */
     //TODO este metodo ya lo tiene el agregador
-    repositorioAgregador.agregador.actualizarHechos();
+    repositorioAgregador.getAgregador().actualizarHechos();
   }
 
   @GetMapping("/")
-  public AgregadorDTO getAgregador() {
-    return repositorioAgregador.getAgregadorDTO();
+  public Agregador getAgregador() {
+    return repositorioAgregador.getAgregador();
   }
 
 
   //TODO esto se va a comunicar con el servicio de colecciones
   //TODO y las colecciones filtran estos hechos
   @GetMapping("/hechos")
-  public ArrayList<HechoDTO> getAgregadorHechos() {
-    return repositorioAgregador.agregador.getListaDeHechos();
+  public ArrayList<Hecho> getAgregadorHechos() {
+    return repositorioAgregador.getAgregador().getListaDeHechos();
   }
 
   @PostMapping ("/fuentesDeDatos/agregar/{idFuente}")
   public void agregarFuente(@PathVariable int idFuente) {
-    repositorioAgregador.agregador.agregarFuenteDeDatos(servicefuenteDeDatos.getFuenteDeDatos(idFuente));
+    repositorioAgregador.getAgregador().agregarFuenteDeDatos(servicefuenteDeDatos.getFuenteDeDatos(idFuente));
   }
   @PostMapping ("/fuentesDeDatos/remover/{idFuente}")
   public void eliminarFuente(@PathVariable int idFuente) {
-    repositorioAgregador.agregador.removerFuenteDeDatos(idFuente);
+    repositorioAgregador.getAgregador().removerFuenteDeDatos(idFuente);
   }
 }
 

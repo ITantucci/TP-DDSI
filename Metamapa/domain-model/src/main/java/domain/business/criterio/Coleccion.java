@@ -68,8 +68,8 @@ public class Coleccion {
             .toList();
     }*/
 
-    public ArrayList<HechoDTO> filtrarPorCriterios(ArrayList<Criterio> criterioPertenenciaAdicional, ArrayList<Criterio> criterioNoPertenenciaAdicional,ModosDeNavegacion modoDeNavegacion) {
-        ArrayList<HechoDTO> hechos = agregador.getListaDeHechos();
+    public ArrayList<Hecho> filtrarPorCriterios(ArrayList<Criterio> criterioPertenenciaAdicional, ArrayList<Criterio> criterioNoPertenenciaAdicional,ModosDeNavegacion modoDeNavegacion) {
+        ArrayList<Hecho> hechos = agregador.getListaDeHechos();
 
         ArrayList<Criterio> criteriosPertenenciaCombinados = new ArrayList<Criterio>(this.getCriterioPertenencia());
         if (!criterioPertenenciaAdicional.isEmpty())
@@ -87,14 +87,14 @@ public class Coleccion {
         return curarHechos(hechos);
     }
 
-    public ArrayList<HechoDTO> getHechos(ModosDeNavegacion modo){
-        ArrayList<HechoDTO> hechos = filtrarPorCriterios(new ArrayList<Criterio>(), new ArrayList<Criterio>(),modo);
+    public ArrayList<Hecho> getHechos(ModosDeNavegacion modo){
+        ArrayList<Hecho> hechos = filtrarPorCriterios(new ArrayList<Criterio>(), new ArrayList<Criterio>(),modo);
         if(modo == ModosDeNavegacion.IRRESTRICTA) return hechos;
 
         return curarHechos(hechos);
     }
 
-    public ArrayList<HechoDTO> curarHechos(ArrayList<HechoDTO> hechos)
+    public ArrayList<Hecho> curarHechos(ArrayList<Hecho> hechos)
     {
         return hechos.stream().filter(h -> consenso.esConsensuado(h, agregador.getFuentesDeDatos())).collect(Collectors.toCollection(ArrayList::new));
     }

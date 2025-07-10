@@ -1,7 +1,10 @@
 package metemapaFuentes.persistencia;
 
+import DTO.FuenteDeDatosDTO;
+import DTO.FuenteDemoDTO;
 import com.opencsv.CSVParser;
 import domain.business.FuentesDeDatos.FuenteDeDatos;
+import domain.business.FuentesDeDatos.FuenteDemo;
 import domain.business.FuentesDeDatos.FuenteDinamica;
 import domain.business.FuentesDeDatos.FuenteEstatica;
 import domain.business.Parsers.CSVHechoParser;
@@ -27,6 +30,31 @@ public class RepositorioFuentes {
   public FuenteDeDatos buscarFuente(Integer id) {
     return fuentesDeDatos.stream().filter(f-> f.getId() == id).findFirst().orElseThrow(()-> new IllegalArgumentException("No se encontro una fuente con ese ID"));
   }
+  /*
+  public FuenteDeDatosDTO getFuenteDeDatosDTO(FuenteDeDatos fuente) {
+    switch (fuente.getTipoFuente()) {
+      case FUENTEDEMO:
+        FuenteDemo fuenteDemo = (FuenteDemo) fuente;
+        return FuenteDemoDTO.fromEntity(fuenteDemo);
+      case FUENTEDINAMICA:
+
+      case FUENTEESTATICA:
+
+      case FUENTEMETAMAPA:
+
+      case FUENTEPROXY:
+
+
+      default:
+        // Caso por defecto (opcional)
+        throw new IllegalArgumentException(
+            "Tipo de fuente desconocido: " + fuente.getTipoFuente()
+        );
+    }
+
+  }
+   */
+
   public RepositorioFuentes() {
 
     // Fuente Dinamica Con 1 Hecho

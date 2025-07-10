@@ -1,5 +1,4 @@
 package metemapaFuentes.web;
-import DTO.HechoDTO;
 import domain.business.FuentesDeDatos.*;
 import domain.business.incidencias.Hecho;
 import java.util.ArrayList;
@@ -37,8 +36,11 @@ public class ControllerFuentesDeDatos {
       @PathVariable(value = "idFuenteDeDatos") Integer idfuenteDeDatos) {
     return repositorioFuentes.buscarFuente(idfuenteDeDatos);
   }
+
+  //TODO este me parece que no se usa, ya que el agregador se actualiza solo
+  //TODO por ahi esta para otra cosa
   @GetMapping("/{idFuenteDeDatos}/hechos")
-  public ArrayList<HechoDTO> getHechosFuenteDeDatos(
+  public ArrayList<Hecho> getHechosFuenteDeDatos(
       @PathVariable(value = "idFuenteDeDatos") Integer idfuenteDeDatos) {
     return serviceIncidencias.obtenerHechosXIDFuente(idfuenteDeDatos);
   }

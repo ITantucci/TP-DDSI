@@ -11,9 +11,8 @@ import org.springframework.web.client.RestTemplate;
 public class FuenteMetamapaDTO extends FuenteProxyDTO {
   final private RestTemplate restTemplate;
   //TODO agregar el id al hecho
-  public FuenteMetamapaDTO(String nombre, String endpointBase) {
-    super(nombre,endpointBase);
-    this.id = contadorID++;
+  public FuenteMetamapaDTO(String nombre, String endpointBase, Integer id) {
+    this.id = id;
     this.nombre = nombre;
     this.hechos = new ArrayList<>();
     this.restTemplate = new RestTemplate();

@@ -1,6 +1,8 @@
 package Metamapa.Service;
 import DTO.AgregadorDTO;
 import DTO.HechoDTO;
+import domain.business.Agregador.Agregador;
+import domain.business.incidencias.Hecho;
 import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,14 +20,14 @@ public class ServiceAgregador {
     this.baseUrl = baseUrl;
   }
 //TODO esta no se va a usar(solo la deberia usar las colecciones), solo para pruebas
-  public ArrayList<HechoDTO> getAgregadorHechos() {
+  public ArrayList<Hecho> getAgregadorHechos() {
     String url = String.format("%s/api-agregador/hechos", baseUrl);
     return restTemplate.getForObject(url, ArrayList.class);
   }
 
-  public AgregadorDTO getAgregador() {
+  public Agregador getAgregador() {
     String url = String.format("%s/api-agregador/", baseUrl);
-    return restTemplate.getForObject(url, AgregadorDTO.class);
+    return restTemplate.getForObject(url, Agregador.class);
   }
 
   public void agregarFuente(Integer idFuente){

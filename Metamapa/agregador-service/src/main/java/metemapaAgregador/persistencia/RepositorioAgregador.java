@@ -1,27 +1,24 @@
 package metemapaAgregador.persistencia;
-import DTO.AgregadorDTO;
-import DTO.FuenteDeDatosDTO;
 import domain.business.Agregador.Agregador;
-import java.util.ArrayList;
 import lombok.Getter;
-import lombok.Setter;
-import java.util.Map;
-public class RepositorioAgregador {
-  @Getter @Setter
-  public  Agregador agregador;
-  public  AgregadorDTO agregadorDTO;
 
+
+public class RepositorioAgregador {
+  @Getter
+  public  Agregador agregador;
 
   public RepositorioAgregador() {
     this.agregador = Agregador.getInstance();
   }
-
+/*
   public AgregadorDTO getAgregadorDTO(){
-    this.agregadorDTO = AgregadorDTO.getInstance();
-    this.agregadorDTO.setFuentesDeDatos(this.agregador.getFuentesDeDatos());
-    this.agregadorDTO.setListaDeHechos(this.agregador.getListaDeHechos());
+    AgregadorDTO agregadorDTO = AgregadorDTO.getInstance();
+    agregadorDTO.setFuentesDeDatos(this.agregador.getFuentesDeDatos());
+    agregadorDTO.setListaDeHechos(this.agregador.getListaDeHechos());
     return agregadorDTO;
   }
+  */
+
   //TODO el agregador ya tiene una lista de fuentesDTO y HechosDTO,
   //TODO no hace falta lo demas. y desde aca no se persiste nada, se llama al
   //TODO servicio de fuentes de datos para una fuente de datos y al de hechos para un hecho.

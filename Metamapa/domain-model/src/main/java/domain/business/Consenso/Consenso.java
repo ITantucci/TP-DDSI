@@ -7,7 +7,7 @@ import domain.business.incidencias.Hecho;
 import java.util.List;
 
 public interface Consenso {
-  boolean esConsensuado(HechoDTO hecho, List<FuenteDeDatosDTO> fuentes);
+  boolean esConsensuado(Hecho hecho, List<FuenteDeDatos> fuentes);
 
   static Consenso stringToConsenso(String algoritmo) {
         switch (algoritmo)

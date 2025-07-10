@@ -1,6 +1,6 @@
 package metemapaAgregador.Service;
 
-import DTO.FuenteDeDatosDTO;
+
 import domain.business.FuentesDeDatos.FuenteDeDatos;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -19,9 +19,9 @@ public class ServiceFuenteDeDatos {
     this.baseUrl = baseUrl;
   }
 
-  public FuenteDeDatosDTO getFuenteDeDatos(Integer idFuente) {
+  public FuenteDeDatos getFuenteDeDatos(Integer idFuente) {
     String url = String.format("%s/api-fuentesDeDatos/%d", baseUrl, idFuente);
-    return restTemplate.getForObject(url, FuenteDeDatosDTO.class);
+    return restTemplate.getForObject(url, FuenteDeDatos.class);
   }
 
   //TODO no es necesario esto ya que el agregador cuenta con la fuente y la misma tiene los hechos.

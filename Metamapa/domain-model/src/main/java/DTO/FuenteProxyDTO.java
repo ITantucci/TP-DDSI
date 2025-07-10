@@ -14,10 +14,10 @@ public abstract class FuenteProxyDTO extends FuenteDeDatosDTO {
   @Getter @Setter
   public HechoParser parser;
 
-  public FuenteProxyDTO(String nombre,String endpointBase) {
+  public FuenteProxyDTO(String nombre,String endpointBase, Integer id) {
     this.nombre = nombre;
     this.endpointBase = endpointBase;
-    this.id =contadorID++;
+    this.id = id;
     this.tipoFuente = tipoFuente.FUENTEPROXY;
   }
   public FuenteProxyDTO() {}

@@ -13,7 +13,7 @@ public class CriterioCategoria implements Criterio{
     this.categoria = categoria;
   }
   @Override
-  public boolean cumple(HechoDTO hechoAValidar){
+  public boolean cumple(Hecho hechoAValidar){
     String categoriaAValidar = hechoAValidar.getCategoria();
 
     return this.getCategoria().equalsIgnoreCase(categoriaAValidar);

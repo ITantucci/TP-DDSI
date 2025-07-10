@@ -9,9 +9,9 @@ import java.util.ArrayList;
 public class FuenteEstaticaDTO extends FuenteDeDatosDTO {
 
   public FuenteEstaticaDTO() {} // va a haber que usar dtos para no modificar la capa de negocio
-  public FuenteEstaticaDTO(String nombre){
+  public FuenteEstaticaDTO(String nombre,Integer id){
     this.nombre = nombre;
-    this.id =contadorID++;
+    this.id =id;
     // this.pathCSV = pathCSV;
     this.hechos = new ArrayList<>();
     this.tipoFuente = tipoFuente.FUENTEESTATICA;
