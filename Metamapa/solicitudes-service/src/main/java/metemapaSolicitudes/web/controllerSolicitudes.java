@@ -1,6 +1,4 @@
 package metemapaSolicitudes.web;
-import domain.business.incidencias.Hecho;
-import jakarta.validation.Valid;
 import metemapaSolicitudes.Service.ServiceIncidencia;
 import DTO.SolicitudEdicionDTO;
 import DTO.SolicitudEliminacionDTO;
@@ -26,7 +24,7 @@ public class controllerSolicitudes {
   private final RepositorioSolicitudEdicion solicitudEdicionRepository = new RepositorioSolicitudEdicion();
   private final ServiceIncidencia serviceIncidencia;
 
-  public controllerSolicitudes(ServiceIncidencia serviceIncidencia){
+  public controllerSolicitudes(ServiceIncidencia serviceIncidencia) {
     this.serviceIncidencia = serviceIncidencia;
   }
 
@@ -60,14 +58,17 @@ public class controllerSolicitudes {
   }
 
   @PostMapping(value = "/solicitudesEliminacion", consumes = "application/json", produces = "application/json")
-  public ResponseEntity<SolicitudEliminacionDTO> subirSolicitudEliminacion(
-      @RequestBody @Valid SolicitudEliminacionDTO solicitudRequestDTO) {
+  public ResponseEntity<?> subirSolicitudEliminacion(@RequestBody SolicitudEliminacionDTO solicitudEliminacionDTO) {
     try {
-      String motivo = solicitudRequestDTO.getMotivo();
-      String hechoAfectado = solicitudRequestDTO.getHechoAfectado();
-      SolicitudEliminacion solicitud = new SolicitudEliminacion(hechoAfectado, motivo);
-      solicitudEliminacionRepository.save(solicitud);
-      return ResponseEntity.status(HttpStatus.CREATED).body(new SolicitudEliminacionDTO(solicitud));
+      SolicitudEliminacion solicitudEliminacion = new SolicitudEliminacion(
+              solicitudEliminacionDTO.getHechoAfectado(),
+              solicitudEliminacionDTO.getMotivo()
+      );
+      solicitudEliminacionRepository.save(solicitudEliminacion); // Si save no devuelve la entidad, se usa save sin asignar a una variable
+      SolicitudEliminacionDTO solicitudEliminacionDTORespuesta = new SolicitudEliminacionDTO(solicitudEliminacion);
+      return ResponseEntity.status(HttpStatus.CREATED).body(solicitudEliminacionDTORespuesta);
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El motivo no es válido");
     } catch (Exception e) {
       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -77,17 +78,17 @@ public class controllerSolicitudes {
     try {
       String nuevoEstado = (String) requestBody.get("estado");
       solicitud.setEstado(EstadoSolicitud.valueOf(nuevoEstado));
-      Hecho hecho = (Hecho) requestBody.get("hechoAfectado");
-      if(nuevoEstado.equals("APROBADO")){
-        hecho.setEliminado(true); //Marca hecho como eliminado
+      /*if(nuevoEstado.equals("APROBADO")){
+      String hechoId = (String) requestBody.get("hechoAfectado");
+
         //TODO: no mostrar mas en colecciones una vez que el hecho se "elimina"
-      }
+      }*/
     } catch (Exception e) {
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
   }
 
-  @PatchMapping(value = "/solicitudesElimincacion/{id}", consumes = "application/json", produces = "application/json")
+  @PatchMapping(value = "/solicitudesEliminacion/{id}", consumes = "application/json", produces = "application/json")
   public ResponseEntity<SolicitudEliminacionDTO> actualizarEstadoSolicitudEliminacion(@PathVariable("id") Integer id, @RequestBody Map<String, Object> requestBody) {
     try {
       Optional<SolicitudEliminacion> solicitudOpt = solicitudEliminacionRepository.findById(id);
@@ -117,22 +118,24 @@ public class controllerSolicitudes {
   }
 
   @PostMapping(value = "/solicitudesEdicion", consumes = "application/json", produces = "application/json")
-  public ResponseEntity subirSolicitudEdicion(@RequestBody SolicitudEdicionDTO solicitudEdicionDTO) {
+  public ResponseEntity<SolicitudEdicionDTO> subirSolicitudEdicion(@RequestBody SolicitudEdicionDTO solicitudEdicionDTO) {
     try {
-      SolicitudEdicion solicitud = new SolicitudEdicion(
-          solicitudEdicionDTO.getTituloMod(),
-          solicitudEdicionDTO.getDescMod(),
-          solicitudEdicionDTO.getCategoriaMod(),
-          solicitudEdicionDTO.getUbicacionMod(),
-          solicitudEdicionDTO.getFechaHechoMod(),
-          solicitudEdicionDTO.getMultimediaMod(),
-          solicitudEdicionDTO.getAnonimidadMod(),
-          solicitudEdicionDTO.getSugerencia(),
-          solicitudEdicionDTO.getHechoAfectado()
+      //TODO: antes de crear, llamar al service de indicencias con el id del hecho para obtener su fecha y verificar plazo maximo de una semana
+      SolicitudEdicion solicitudEdicion = new SolicitudEdicion(
+              solicitudEdicionDTO.getTituloMod(),
+              solicitudEdicionDTO.getDescMod(),
+              solicitudEdicionDTO.getCategoriaMod(),
+              solicitudEdicionDTO.getUbicacionMod(),
+              solicitudEdicionDTO.getFechaHechoMod(),
+              solicitudEdicionDTO.getMultimediaMod(),
+              solicitudEdicionDTO.getAnonimidadMod(),
+              solicitudEdicionDTO.getSugerencia(),
+              solicitudEdicionDTO.getHechoAfectado()
       );
-      System.out.println("Solicitud de edicion creada: " + solicitud);
-      solicitudEdicionRepository.save(solicitud);
-      return ResponseEntity.ok(solicitud);
+      System.out.println("Solicitud de edicion creada: " + solicitudEdicion);
+      solicitudEdicionRepository.save(solicitudEdicion);
+      SolicitudEdicionDTO respuestaDTO = new SolicitudEdicionDTO(solicitudEdicion);
+      return ResponseEntity.status(HttpStatus.CREATED).body(respuestaDTO);
     } catch (Exception e) {
       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -149,12 +152,12 @@ public class controllerSolicitudes {
       responderSolicitud(solicitud, requestBody);
       solicitudEdicionRepository.save(solicitud);
 
-      //Decirle al servicion de incidentes que se edite
-      if(solicitud.getEstado() == EstadoSolicitud.APROBADA){
+      //TODO: Decirle al servicio de incidentes que se edite
+     /* if(solicitud.getEstado() == EstadoSolicitud.APROBADA){
 
         serviceIncidencia.aplicarEdicionIncidencia(solicitud);
         //serviceIncidencia.aplicarEdicionIncidencia(solicitud.getHechoAfectado().getId(), requestBody);
-      }
+      }*/
       return ResponseEntity.ok(solicitud);
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);

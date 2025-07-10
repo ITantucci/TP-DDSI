@@ -16,7 +16,9 @@ public class RepositorioSolicitudEliminacion {
 
   // Metodo para guardar una solicitud
   public void save(SolicitudEliminacion solicitud) {
-    solicitudes.add(solicitud);  // Agrega la solicitud a la lista
+    Optional<SolicitudEliminacion> existingSolicitud = findById(solicitud.getId());
+    existingSolicitud.ifPresent(solicitudEliminacion -> solicitudes.remove(solicitudEliminacion));
+    solicitudes.add(solicitud);  // Luego, agregamos la nueva versión
   }
 
   // Metodo para encontrar una solicitud por ID

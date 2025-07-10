@@ -24,7 +24,7 @@ public class SolicitudEdicion extends Solicitud{
   private Boolean anonimidadMod;
   @Getter
   private String sugerencia;
-
+  static private Integer contadorID = 1;
   public SolicitudEdicion(String tituloMod,
                           String descMod,
                           String categoriaMod,
@@ -48,6 +48,7 @@ public class SolicitudEdicion extends Solicitud{
     this.multimediaMod = multimediaMod;
     this.anonimidadMod = anonimidadMod;
     this.sugerencia = sugerencia;
+    this.id = contadorID++;
   }
 
   public void agregarSugerencia(String sugerencia){

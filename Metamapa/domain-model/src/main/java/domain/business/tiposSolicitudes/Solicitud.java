@@ -13,9 +13,8 @@ public abstract class Solicitud {
   /*@Getter
   UUID id;*/
   @Getter
-  private Integer id;
-  static public Integer contadorID = 1;
-
+  protected Integer id;
+  static protected Integer contadorID = 1;
 
   public Solicitud(String hechoAfectado, EstadoSolicitud estado) {
     this.hechoAfectado = hechoAfectado;

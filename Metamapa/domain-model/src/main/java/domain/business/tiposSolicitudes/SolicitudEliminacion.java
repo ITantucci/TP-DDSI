@@ -5,7 +5,7 @@ import lombok.Getter;
 public class SolicitudEliminacion extends Solicitud{
   @Getter
   public String motivo;
-
+  static private Integer contadorID = 1;
   public SolicitudEliminacion(String hechoAfectado, String motivo) {
     super(hechoAfectado, EstadoSolicitud.PENDIENTE); //por defecto se inicializan pendientes
 
@@ -19,6 +19,7 @@ public class SolicitudEliminacion extends Solicitud{
     }
 
     this.motivo = motivo;
+    this.id = contadorID++;
   }
 
   @Override

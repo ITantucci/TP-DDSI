@@ -19,7 +19,9 @@ public class RepositorioSolicitudEdicion {
 
   // Metodo para guardar una solicitud
   public void save(SolicitudEdicion solicitud) {
-    solicitudes.add(solicitud);  // Agrega la solicitud a la lista
+    Optional<SolicitudEdicion> existingSolicitud = findById(solicitud.getId());
+    existingSolicitud.ifPresent(SolicitudEdicion -> solicitudes.remove(SolicitudEdicion));
+    solicitudes.add(solicitud);  // Luego, agregamos la nueva versión
   }
 
   // Metodo para encontrar una solicitud por ID
