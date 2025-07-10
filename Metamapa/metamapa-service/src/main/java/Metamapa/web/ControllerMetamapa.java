@@ -47,6 +47,12 @@ public class ControllerMetamapa {
     return "agregador";
   }
 
+  @PostMapping("/metamapa/agregador/fuentes/actualizar")
+  public ResponseEntity<Void> actualizarAgregador() {
+    serviceAgregador.actualizarAgregador();
+  return ResponseEntity.noContent().build();
+  }
+
   @PostMapping("/metamapa/agregador/fuentesDeDatos/agregar/{idFuenteDeDatos}")
   public ResponseEntity<Void>
   agregarFuente(

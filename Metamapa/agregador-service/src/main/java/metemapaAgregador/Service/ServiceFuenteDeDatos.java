@@ -30,4 +30,8 @@ public class ServiceFuenteDeDatos {
     String url = String.format("%s/%d/hechos", baseUrl, idFuente);
     return restTemplate.getForObject(url,ArrayList.class);
   }
+  public ArrayList<FuenteDeDatos> obtenerFuenteDeDatos() {
+    String url = String.format("%s/api-fuentesDeDatos/", baseUrl);
+    return restTemplate.getForObject(url, ArrayList.class);
+  }
 }

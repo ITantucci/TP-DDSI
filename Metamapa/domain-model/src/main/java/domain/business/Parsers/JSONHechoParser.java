@@ -15,7 +15,7 @@ public abstract class JSONHechoParser implements HechoParser {
 
     return listaHecho;
   }*/
-  public ArrayList<Hecho> parsearHechos(String path) {
+  public ArrayList<Hecho> parsearHechos(String path,Integer fuenteID) {
     ObjectMapper mapper = new ObjectMapper();
     mapper.registerModule(new JavaTimeModule()); // Para LocalDate
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // Ignorar campos extra

@@ -30,6 +30,10 @@ public class ServiceAgregador {
     return restTemplate.getForObject(url, Agregador.class);
   }
 
+  public void actualizarAgregador() {
+    String url = String.format("%s/api-agregador/fuentes/actualizar", baseUrl);
+    restTemplate.postForObject(url, null, Void.class);
+  }
   public void agregarFuente(Integer idFuente){
     String url = String.format("%s/api-agregador/fuentesDeDatos/agregar/%d", baseUrl, idFuente);
     restTemplate.postForObject(url, null, Void.class);

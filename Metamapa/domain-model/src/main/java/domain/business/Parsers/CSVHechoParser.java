@@ -14,7 +14,7 @@ import com.opencsv.CSVParserBuilder;
 
 public class CSVHechoParser implements HechoParser {
     @Override
-    public ArrayList<Hecho> parsearHechos(String path) {
+    public ArrayList<Hecho> parsearHechos(String path, Integer fuenteID) {
         ArrayList<Hecho> listaHecho = new ArrayList<Hecho>();
 
         CSVParser parser = new CSVParserBuilder()
@@ -47,7 +47,7 @@ public class CSVHechoParser implements HechoParser {
                 Float longitud = Float.parseFloat(campos[4].trim());
                 LocalDate fechaHecho = LocalDate.parse(campos[5].trim(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
-                Hecho hecho = new Hecho(titulo,descripcion, categoria, latitud, longitud, fechaHecho,null,null,null, new ArrayList<>());
+                Hecho hecho = new Hecho(titulo,descripcion, categoria, latitud, longitud, fechaHecho,null,fuenteID,null, new ArrayList<>());
                 // TODO: revisar Deberiamos inicializar en NULL el resto de los campos del contructor del hecho???
                 listaHecho.add(hecho);
             }
@@ -57,7 +57,7 @@ public class CSVHechoParser implements HechoParser {
         return listaHecho;
     }
 
-    public ArrayList<Hecho> parsearHechos(InputStream in) {
+    public ArrayList<Hecho> parsearHechos(InputStream in,Integer fuenteID) {
         ArrayList<Hecho> listaHecho = new ArrayList<>();
         CSVParser parser = new CSVParserBuilder().withSeparator(',').withQuoteChar('"').build();
 
@@ -78,7 +78,7 @@ public class CSVHechoParser implements HechoParser {
                 Float longitud = Float.parseFloat(campos[4].trim());
                 LocalDate fechaHecho = LocalDate.parse(campos[5].trim(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
-                Hecho hecho = new Hecho(titulo,descripcion, categoria, latitud, longitud, fechaHecho,null,null,null, new ArrayList<>());
+                Hecho hecho = new Hecho(titulo,descripcion, categoria, latitud, longitud, fechaHecho,null,fuenteID,null, new ArrayList<>());
                 // TODO: revisar Deberiamos inicializar en NULL el resto de los campos del contructor del hecho???
                 listaHecho.add(hecho);
             }

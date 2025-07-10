@@ -56,7 +56,7 @@ public class FuenteMetamapa extends FuenteProxy{
   private List<Hecho> obtenerHechosDesdeURL(String url) {
     try {
       String json = restTemplate.getForObject(url, String.class);
-      return parser.parsearHechos(json);
+      return parser.parsearHechos(json, this.getId());
     } catch (Exception e) {
       System.err.println("Error obteniendo hechos desde URL: " + e.getMessage());
       return Collections.emptyList();

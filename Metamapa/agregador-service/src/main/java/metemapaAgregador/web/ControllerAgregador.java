@@ -1,16 +1,13 @@
 package metemapaAgregador.web;
 
 
-import DTO.AgregadorDTO;
-import DTO.HechoDTO;
 import domain.business.Agregador.Agregador;
 import domain.business.incidencias.Hecho;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+
 import metemapaAgregador.Service.ServiceFuenteDeDatos;
 import metemapaAgregador.persistencia.RepositorioAgregador;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -53,6 +50,13 @@ public class ControllerAgregador {
   @GetMapping("/")
   public Agregador getAgregador() {
     return repositorioAgregador.getAgregador();
+  }
+
+
+  @PostMapping ("/fuentes/actualizar")
+  public ResponseEntity<Void> actualizarAgregador() {
+    repositorioAgregador.getAgregador().actualizarFuentesDeDatos(servicefuenteDeDatos.obtenerFuenteDeDatos());
+    return ResponseEntity.noContent().build();
   }
 
 

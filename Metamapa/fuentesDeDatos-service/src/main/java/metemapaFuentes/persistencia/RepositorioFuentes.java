@@ -79,6 +79,7 @@ public class RepositorioFuentes {
 
     CSVHechoParser parser = new CSVHechoParser();
     FuenteEstatica fuenteEstaticaID2 = new FuenteEstatica("desastres_naturales_argentina");
+    fuenteEstaticaID2.agregarHecho(parser.parsearHechos(path,fuenteEstaticaID2.getId()));
     //fuenteEstaticaID2.setParser(parser);
     //fuenteEstaticaID2.cargarCSV(path);
     agregarFuente(fuenteEstaticaID2);

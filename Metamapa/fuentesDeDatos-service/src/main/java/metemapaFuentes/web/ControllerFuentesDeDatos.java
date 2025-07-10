@@ -56,8 +56,8 @@ public class ControllerFuentesDeDatos {
             .body("Sólo se puede cargar CSV en fuentes estáticas");
       }
       //TODO repositorioFuentes.getParserCSV().parsearHechos(file.getInputStream()).forEach(h -> repositorioHechos.agregar(h)); para tratar directamente con el repositorio de hechos en vez de con las fuentes
-      repositorioFuentes.buscarFuente(idFuenteDeDatos).agregarHecho(repositorioFuentes.getParserCSV().parsearHechos(file.getInputStream()));
-      return ResponseEntity.ok(repositorioFuentes.getParserCSV().parsearHechos(file.getInputStream()));
+      repositorioFuentes.buscarFuente(idFuenteDeDatos).agregarHecho(repositorioFuentes.getParserCSV().parsearHechos(file.getInputStream(),idFuenteDeDatos));
+      return ResponseEntity.ok(repositorioFuentes.getParserCSV().parsearHechos(file.getInputStream(),idFuenteDeDatos));
 
 
 
@@ -65,6 +65,11 @@ public class ControllerFuentesDeDatos {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno " + e.getMessage());
     }
   }
+  @GetMapping("/")
+  public ArrayList<FuenteDeDatos> getFuenteDeDatos(){
+    return repositorioFuentes.getFuentesDeDatos();
+  }
+
 
   @PostMapping(value = "/", consumes = "application/json", produces = "application/json")
   public ResponseEntity crearFuenteDeDatos(@RequestBody Map<String, Object> requestBody) {

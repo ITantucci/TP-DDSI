@@ -44,6 +44,10 @@ public class Agregador {
         }
     }
 
+    public void actualizarFuentesDeDatos(ArrayList<FuenteDeDatos> fuentesDeDatos){
+        this.fuentesDeDatos = fuentesDeDatos;
+    }
+
 
     public void removerFuenteDeDatos(Integer idFuente){
         this.fuentesDeDatos.removeIf(f -> f.getId() == idFuente);

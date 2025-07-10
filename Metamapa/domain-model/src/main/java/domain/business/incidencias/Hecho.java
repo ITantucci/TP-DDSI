@@ -42,6 +42,7 @@ public class Hecho {
   static public Integer contadorID = 1;
 
   //TODO: Chequear si Categoria lo modelamos como string o un enum
+  public Hecho(){}
   public Hecho(
       String titulo,
       String descripcion,
