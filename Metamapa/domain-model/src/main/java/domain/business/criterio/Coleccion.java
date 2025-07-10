@@ -82,7 +82,7 @@ public class Coleccion {
             .filter(h -> criteriosPertenenciaCombinados.stream().allMatch(c -> c.cumple(h)))
             .filter(h -> criteriosNoPertenenciaCombinados.stream().noneMatch(c -> c.cumple(h))).collect(Collectors.toCollection(ArrayList::new));
 
-        if(modoDeNavegacion == ModosDeNavegacion.IRRESTRICTA) return hechos;
+        //if(modoDeNavegacion == ModosDeNavegacion.IRRESTRICTA) return hechos;
         return curarHechos(hechos);
     }
 

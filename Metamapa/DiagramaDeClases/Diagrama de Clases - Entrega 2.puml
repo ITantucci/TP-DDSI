@@ -1,4 +1,4 @@
-@startuml asd
+@startuml
 'https://plantuml.com/sequence-diagram
 skinparam linetype ortho
 skinparam arrowthickness 3
@@ -25,8 +25,7 @@ Coleccion -down-> Agregador
 Agregador --> FuenteDeDatos
 Agregador --> Hecho
 Consenso *-right- Coleccion
-metodosNavegacion -- Perfil
-metodosNavegacion -- Coleccion
+ModosDeNavegacion -left- Coleccion
 
 '-----------------Hechos----------------
 class Hecho {
@@ -92,11 +91,9 @@ class FuenteDinamica extends FuenteDeDatos{
 
 '-----------------Fuentes de datos Estatica----------------
 class FuenteEstatica extends FuenteDeDatos{
-    '+pathCSV: String
     -parser: HechoParser
     {method}agregarHecho()
     {method}cargarCSV(path: String)
-
 }
 
 class CsvHechoParser implements HechoParser{
@@ -138,12 +135,13 @@ class Coleccion{
     +agregador: Agregador
     +consenso: Consenso
     +handle: String
-
     {method}agregarCriterioPertenencia(criterio:Criterio)
     {method}eliminarCriterioPertenencia(criterio:Criterio)
     {method}agregarCriterioNoPertenencia(criterio:Criterio)
     {method}eliminarCriterioNoPertenencia(criterio:Criterio)
-    {method}filtrarPorCriterios(List<Criterio> criterioPertenenciaAdicional, List<Criterio> criterioNoPertenenciaAdicional)
+    {method}filtrarPorCriterios(criterioPertenenciaAdicional: List<Criterio>,  criterioNoPertenenciaAdicional: List<Criterio>, modo: ModosDeNavegacion)
+    {method}getHechos(modo: ModosDeNavegacion)
+    {method}curarHechos(hechos: ArrayList<Hecho>)
 }
 'note top of Coleccion
 'se agrego el criterio de no pertenencia para poder incluir por ejemplo si se
@@ -262,17 +260,21 @@ class CriterioFechaReportaje implements Criterio{
     {method}cumple(Hecho)
 }
 
-abstract class Consenso{
-    {method}consensuado(Hecho,List<FuenteDeDatos>)
+' -----------Consenso-----------------
+interface Consenso{
+    {method}consensuado(Hecho, List<FuenteDeDatos>)
 }
 
 class MultiplesMenciones implements Consenso{
+    {method}consensuado(Hecho, List<FuenteDeDatos>)
 }
 
 class MayoriaSimple implements Consenso{
+    {method}consensuado(Hecho, List<FuenteDeDatos>)
 }
 
 class Absoluto implements Consenso{
+    {method}consensuado(Hecho, List<FuenteDeDatos>)
 }
 
 enum ModosDeNavegacion{
