@@ -1,4 +1,5 @@
 package domain.business.criterio;
+import DTO.HechoDTO;
 import domain.business.incidencias.Hecho;
 import java.time.LocalDate;
 import lombok.Getter;
@@ -13,7 +14,7 @@ public class CriterioFecha implements Criterio{
     this.fechaDesde = fechaDesde;
     this.fechaHasta = fechaHasta;
   }
-  public boolean cumple(Hecho hechoAValidar){
+  public boolean cumple(HechoDTO hechoAValidar){
 
     LocalDate fechaAValidar = hechoAValidar.getFechaHecho();
     if(this.getFechaHasta() == null)return !fechaAValidar.isBefore(this.getFechaDesde());

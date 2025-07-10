@@ -37,8 +37,13 @@ public class ControllerMetamapa {
 
   //TODO No necesitamos conectarnos con el agregador
   @GetMapping("/metamapa/agregador/hechos")
-  public String mostrarAgregador(Model model) {
+  public String mostrarHechosAgregador(Model model) {
     model.addAttribute("hechos", serviceAgregador.getAgregadorHechos());
+    return "agregador";
+  }
+  @GetMapping("/metamapa/agregador/")
+  public String mostrarAgregador(Model model) {
+    model.addAttribute("agregador", serviceAgregador.getAgregador());
     return "agregador";
   }
 

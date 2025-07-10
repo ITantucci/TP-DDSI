@@ -2,37 +2,57 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
-    <title>Todos los hechos del agregador</title>
+    <title>Agregador</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
 </head>
-<body>
-<section>
-    <h1>Todos los hechos del agregador</h1>
-</section>
+<body class="p-4">
+<h1 class="mb-4">Agregador de Fuentes</h1>
 
-<section>
-    <h2>Hechos</h2>
-    <table border="1">
-        <thead>
-        <tr>
-            <th>Título</th>
-            <th>Descripción</th>
-            <th>Categoría</th>
-            <th>Fecha</th>
-            <th>Fuente ID</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="hecho : ${hechos}">
-            <td th:text="${hecho.id}">Título</td>
-            <td th:text="${hecho.titulo}">Título</td>
-            <td th:text="${hecho.descripcion}">Descripción</td>
-            <td th:text="${hecho.categoria}">Categoría</td>
-            <td th:text="${hecho.fechaHecho}">Fecha</td>
-            <td th:text="${hecho.fuenteId}">Fecha</td>
-        </tr>
-        </tbody>
-    </table>
-</section>
-</tr>
+<div class="accordion" id="accordionFuentes">
+    <div class="accordion-item" th:each="fuente : ${agregador.fuentesDeDatos}">
+        <!-- ID del header -->
+        <h2 class="accordion-header" th:id="'heading-' + ${fuente.id}">
+            <button class="accordion-button collapsed"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    th:data-bs-target="'#collapse-' + ${fuente.id}"
+                    aria-expanded="false"
+                    th:aria-controls="'collapse-' + ${fuente.id}">
+                <span th:text="${fuente.nombre}">Nombre Fuente</span>
+            </button>
+        </h2>
+        <!-- Panel colapsable -->
+        <div class="accordion-collapse collapse"
+             th:id="'collapse-' + ${fuente.id}"
+             th:aria-labelledby="'heading-' + ${fuente.id}"
+             data-bs-parent="#accordionFuentes">
+            <div class="accordion-body p-0">
+                <table class="table table-striped mb-0">
+                    <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Descripción</th>
+                        <th>Categoría</th>
+                        <th>Fecha</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="hecho : ${fuente.hechos}">
+                        <td th:text="${hecho.titulo}">Título</td>
+                        <td th:text="${hecho.descripcion}">Descripción</td>
+                        <td th:text="${hecho.categoria}">Categoría</td>
+                        <td th:text="${hecho.fechaHecho}">Fecha</td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(fuente.hechos)}">
+                        <td colspan="4" class="text-center">No hay hechos para esta fuente.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

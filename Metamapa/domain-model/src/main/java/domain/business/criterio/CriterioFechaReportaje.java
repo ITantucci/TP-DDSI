@@ -1,5 +1,6 @@
 package domain.business.criterio;
 
+import DTO.HechoDTO;
 import domain.business.incidencias.Hecho;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,7 +16,7 @@ public class CriterioFechaReportaje implements Criterio {
     this.hasta = hasta;
   }
 
-  public boolean cumple(Hecho hecho) {
+  public boolean cumple(HechoDTO hecho) {
     LocalDate fecha = hecho.getFechaCarga();
     return (desde == null || !fecha.isBefore(this.getDesde())) &&
         (hasta == null || !fecha.isAfter(this.getHasta()));

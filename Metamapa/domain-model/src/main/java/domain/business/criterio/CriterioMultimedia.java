@@ -1,4 +1,5 @@
 package domain.business.criterio;
+import DTO.HechoDTO;
 import domain.business.incidencias.Hecho;
 import domain.business.incidencias.TipoMultimedia;
 import lombok.Getter;
@@ -13,7 +14,7 @@ public class CriterioMultimedia implements Criterio {
   }
 
   @Override
-  public boolean cumple(Hecho hecho) {
+  public boolean cumple(HechoDTO hecho) {
     return hecho.getMultimedia().stream().anyMatch(m-> getTipoMultimedia() == this.getTipoMultimedia());
   }
 }

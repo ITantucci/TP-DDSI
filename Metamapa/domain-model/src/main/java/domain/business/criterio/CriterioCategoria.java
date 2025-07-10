@@ -1,4 +1,5 @@
 package domain.business.criterio;
+import DTO.HechoDTO;
 import domain.business.incidencias.Hecho;
 import lombok.Getter;
 
@@ -12,7 +13,7 @@ public class CriterioCategoria implements Criterio{
     this.categoria = categoria;
   }
   @Override
-  public boolean cumple(Hecho hechoAValidar){
+  public boolean cumple(HechoDTO hechoAValidar){
     String categoriaAValidar = hechoAValidar.getCategoria();
 
     return this.getCategoria().equalsIgnoreCase(categoriaAValidar);

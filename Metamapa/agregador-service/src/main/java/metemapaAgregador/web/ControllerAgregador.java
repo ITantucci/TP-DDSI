@@ -1,6 +1,9 @@
 package metemapaAgregador.web;
 
 
+import DTO.AgregadorDTO;
+import DTO.HechoDTO;
+import domain.business.Agregador.Agregador;
 import domain.business.incidencias.Hecho;
 import java.util.ArrayList;
 import java.util.Map;
@@ -28,24 +31,35 @@ public class ControllerAgregador {
 
   public RepositorioAgregador repositorioAgregador = new RepositorioAgregador();
 
-
+/*
   public void guardarHechos(int idFuente)
   {
     ArrayList<Map<String,Object>> hechos = servicefuenteDeDatos.getHechosDeFuente(idFuente);
 
     hechos.forEach(h -> repositorioAgregador.persistirHechos(h));
   }
-
+*/
   public void actualizarHechos()
   {
+    /*
     ArrayList<Integer> fuentes = repositorioAgregador.getFuentes();
 
     fuentes.forEach(f -> guardarHechos(f));
+    */
+    //TODO este metodo ya lo tiene el agregador
+    repositorioAgregador.agregador.actualizarHechos();
+  }
+
+  @GetMapping("/")
+  public AgregadorDTO getAgregador() {
+    return repositorioAgregador.getAgregadorDTO();
   }
 
 
+  //TODO esto se va a comunicar con el servicio de colecciones
+  //TODO y las colecciones filtran estos hechos
   @GetMapping("/hechos")
-  public ArrayList<Hecho> getAgregadorHechos() {
+  public ArrayList<HechoDTO> getAgregadorHechos() {
     return repositorioAgregador.agregador.getListaDeHechos();
   }
 
