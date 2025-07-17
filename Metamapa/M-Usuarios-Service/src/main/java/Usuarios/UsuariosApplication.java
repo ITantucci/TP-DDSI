@@ -1,4 +1,4 @@
-package metemapaUsuarios;
+package Usuarios;
 
 import java.util.Collections;
 import org.springframework.boot.SpringApplication;

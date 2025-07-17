@@ -1,4 +1,4 @@
-package metemapaUsuarios.persistencia;
+package Usuarios.persistencia;
 import domain.business.Usuarios.Usuario;
 import java.util.*;
 import java.util.stream.Collectors;

@@ -1,4 +1,4 @@
-package metemapaUsuarios.web;
+package Usuarios.web;
 import DTO.SolicitudEliminacionDTO;
 import domain.business.Usuarios.Perfil;
 import domain.business.Usuarios.Rol;
@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import DTO.UsuarioDTO;
-import metemapaUsuarios.persistencia.RepositorioUsuarios;
+import Usuarios.persistencia.RepositorioUsuarios;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

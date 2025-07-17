@@ -10,7 +10,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>Metamapa</groupId>
-    <artifactId>metamapa-service-d</artifactId>
+    <artifactId>Metamapa-Service</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
@@ -48,7 +48,7 @@
         </dependency>
         <dependency>
             <groupId>Metamapa</groupId>
-            <artifactId>domain-model</artifactId>
+            <artifactId>Domain-Model</artifactId>
             <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>

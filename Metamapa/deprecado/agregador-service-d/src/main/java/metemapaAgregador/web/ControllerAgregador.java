@@ -1,12 +1,12 @@
-package metemapaAgregador.web;
+package Agregador.web;
 
 
 import domain.business.Agregador.Agregador;
 import domain.business.incidencias.Hecho;
 import java.util.ArrayList;
 
-import metemapaAgregador.Service.ServiceFuenteDeDatos;
-import metemapaAgregador.persistencia.RepositorioAgregador;
+import Agregador.Service.ServiceFuenteDeDatos;
+import Agregador.persistencia.RepositorioAgregador;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

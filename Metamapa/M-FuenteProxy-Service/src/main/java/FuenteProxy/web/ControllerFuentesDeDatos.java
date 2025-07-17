@@ -1,4 +1,4 @@
-package metemapaFuentes.web;
+package FuenteProxy.web;
 import DTO.HechoDTO;
 import domain.business.FuentesDeDatos.*;
 import domain.business.Usuarios.Perfil;
@@ -11,8 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import metemapaFuentes.persistencia.RepositorioFuentes;
-import metemapaFuentes.service.ServiceIncidencias;
+import FuenteProxy.persistencia.RepositorioFuentes;
+import FuenteProxy.service.ServiceIncidencias;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

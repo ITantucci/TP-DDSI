@@ -38,7 +38,7 @@
         </dependency>
         <dependency>
             <groupId>Metamapa</groupId>
-            <artifactId>domain-model</artifactId>
+            <artifactId>Domain-Model</artifactId>
             <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>

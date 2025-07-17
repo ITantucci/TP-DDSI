@@ -16,9 +16,9 @@
     <name>Metamapa</name>
     <description>Metamapa</description>
     <modules>
-        <module>Domain-model</module>
+        <module>Domain-Model</module>
         <module>M-Agregador-Service</module>
-        <module>Metamapa-service</module>
+        <module>Metamapa-Service</module>
         <module>M-Usuarios-Service</module>
         <module>M-FuenteDinamica-Service</module>
         <module>M-FuenteEstatica-Service</module>

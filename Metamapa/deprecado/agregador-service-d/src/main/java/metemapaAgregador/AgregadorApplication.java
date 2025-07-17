@@ -1,7 +1,7 @@
-package metemapaAgregador;
+package Agregador;
 import java.util.Collections;
-import metemapaAgregador.Service.ServiceFuenteDeDatos;
-import metemapaAgregador.web.ControllerAgregador;
+import Agregador.Service.ServiceFuenteDeDatos;
+import Agregador.web.ControllerAgregador;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;

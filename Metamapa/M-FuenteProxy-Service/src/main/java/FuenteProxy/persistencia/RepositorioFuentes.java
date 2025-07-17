@@ -1,4 +1,4 @@
-package metemapaFuentes.persistencia;
+package FuenteProxy.persistencia;
 
 import DTO.FuenteDeDatosDTO;
 import DTO.FuenteDemoDTO;
