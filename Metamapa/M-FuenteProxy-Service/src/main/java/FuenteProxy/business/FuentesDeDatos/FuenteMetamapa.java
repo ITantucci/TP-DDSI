@@ -1,7 +1,6 @@
 package FuenteProxy.business.FuentesDeDatos;
 import FuenteProxy.DTO.SolicitudEliminacionDTO;
 import FuenteProxy.business.Hechos.Hecho;
-//import FuenteProxy.business.tiposSolicitudes.SolicitudEliminacion;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;

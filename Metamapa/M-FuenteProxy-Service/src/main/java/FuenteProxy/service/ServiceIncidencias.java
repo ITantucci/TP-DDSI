@@ -1,8 +1,5 @@
-package FuenteProxy.service;
-
-import DTO.HechoDTO;
-
-import domain.business.incidencias.Hecho;
+/*package FuenteProxy.service;
+import FuenteProxy.business.Hechos.Hecho;
 import java.util.ArrayList;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,4 +28,4 @@ public class ServiceIncidencias {
 
 
 
-}
+}*/

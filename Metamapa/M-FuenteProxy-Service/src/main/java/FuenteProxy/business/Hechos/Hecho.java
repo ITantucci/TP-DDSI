@@ -58,14 +58,13 @@ public class Hecho {
     //this.multimedia = tuplaMultimedia.stream().map(p -> new Multimedia(p.getValue0(),p.getValue1())).collect(Collectors.toCollection(ArrayList::new));
     //this.metadata = new HashMap<>();
     this.id = contadorID++;
-
   }
 
   /*public Boolean tieneEtiqueta(String key,String value) {
     return getMetadata().get(key).equals(value);
   }*/
 
-  public void editarHecho(String titulo, String descripcion, String categoria, Float latitud, Float longitud, LocalDate fechaHecho, Boolean anonimidad) {
+  public void editarHecho(String titulo, String descripcion, String categoria, Float latitud, Float longitud, LocalDate fechaHecho) {
     if (titulo != null) {
       this.titulo = titulo;
     }
@@ -76,8 +75,7 @@ public class Hecho {
       this.categoria = categoria;
     }
     if (latitud != null & longitud != null) {
-      Ubicacion ubicacionMod = new Ubicacion(latitud,longitud);
-      this.ubicacion = ubicacionMod;
+      this.ubicacion = new Ubicacion(latitud,longitud);
     }
     if (fechaHecho != null) {
       this.fechaHecho = fechaHecho;

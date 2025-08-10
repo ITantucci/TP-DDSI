@@ -17,7 +17,7 @@ public class FuenteDemo extends FuenteProxy {
   private LocalDateTime fechaUltimaConsulta;
   @Getter
   @JsonIgnore
-  private Conexion conexion;
+  final private Conexion conexion;
   static private Integer contadorID = 5000000;
 
   public FuenteDemo(String nombreFuente, String endpointBase) {

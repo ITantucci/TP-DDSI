@@ -1,7 +1,6 @@
 package FuenteProxy.business.FuentesDeDatos;
 import FuenteProxy.business.Parsers.HechoParser;
 import FuenteProxy.business.Hechos.Hecho;
-//import FuenteProxy.business.incidencias.TipoMultimedia;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.util.ArrayList;
 import lombok.Getter;
@@ -36,4 +35,3 @@ public abstract class FuenteProxy {
     }
     }
 }
-
