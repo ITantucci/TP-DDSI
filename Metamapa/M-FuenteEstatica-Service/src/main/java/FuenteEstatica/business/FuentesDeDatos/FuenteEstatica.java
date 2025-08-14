@@ -26,7 +26,6 @@ public class FuenteEstatica {
     } else {
       this.nombre = nombre;
       this.id = contadorID++;
-
       this.hechos = new ArrayList<>();
     }
   }
@@ -39,7 +38,7 @@ public class FuenteEstatica {
     Optional<Hecho> duplicado = hechos.stream().filter(hd -> Objects.equals(hd.getTitulo(), h.getTitulo())).findFirst();
     if (duplicado.isEmpty()) this.hechos.add(h);
     else
-      duplicado.get().editarHecho(h.getDescripcion(), h.getCategoria(), h.getUbicacion().getLatitud(), h.getUbicacion().getLongitud(), h.getFechaHecho());
+      duplicado.get().editarHecho(h.getDescripcion(), h.getCategoria(), h.getLatitud(), h.getLongitud(), h.getFechaHecho());
   }
 
 

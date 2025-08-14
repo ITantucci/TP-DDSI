@@ -1,4 +1,4 @@
-package Agregador.business.deprecado.Consenso;
+package Agregador.business.Consenso;
 
 public enum ModosDeNavegacion {
   IRRESTRICTA,

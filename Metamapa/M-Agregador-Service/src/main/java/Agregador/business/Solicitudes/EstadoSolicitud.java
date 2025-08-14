@@ -1,4 +1,4 @@
-package Agregador.business.deprecado.tiposSolicitudes;
+package Agregador.business.Solicitudes;
 
 public enum EstadoSolicitud {
   PENDIENTE,  // La solicitud está pendiente de revisión

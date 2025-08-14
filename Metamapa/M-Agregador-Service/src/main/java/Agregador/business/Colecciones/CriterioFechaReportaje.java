@@ -1,4 +1,4 @@
-package Agregador.business.deprecado.criterio;
+package Agregador.business.Colecciones;
 
 import java.time.LocalDate;
 import lombok.Getter;

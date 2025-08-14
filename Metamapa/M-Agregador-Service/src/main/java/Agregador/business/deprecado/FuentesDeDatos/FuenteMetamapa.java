@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import Agregador.business.deprecado.incidencias.Hecho;
-import Agregador.business.deprecado.tiposSolicitudes.SolicitudEliminacion;
+import Agregador.business.Solicitudes.SolicitudEliminacion;
 import org.springframework.web.client.RestTemplate;
 
 @JsonTypeName("FUENTEMETAMAPA")

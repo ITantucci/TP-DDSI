@@ -1,6 +1,6 @@
 package Agregador.business.Hechos;
 
-import Agregador.business.Usuarios.Perfil;
+import Agregador.business.deprecado.Usuarios.Perfil;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -17,7 +17,9 @@ public class Hecho {
   @Getter
   private String categoria;
   @Getter
-  private Ubicacion ubicacion;
+  private Float latitud;
+  @Getter
+  private Float longitud;
   @Getter
   private LocalDate fechaHecho;
   @Getter
@@ -35,28 +37,29 @@ public class Hecho {
   @Getter @Setter
   private ArrayList<Multimedia> multimedia;
   @Getter @Setter
-  private HashMap<String,String> metadata;
+  private HashMap<String, String> metadata;
 
 
   //TODO: Chequear si Categoria lo modelamos como string o un enum
   public Hecho(){}
   public Hecho(
-      String titulo,
-      String descripcion,
-      String categoria,
-      Float latitud,
-      Float longitud,
-      LocalDate fechaHecho,
-      Perfil perfil,
-      Integer fuenteId,
-      Integer hechoId,
-      Boolean anonimo,
-      ArrayList<Multimedia>multimedia) {
+          String titulo,
+          String descripcion,
+          String categoria,
+          Float latitud,
+          Float longitud,
+          LocalDate fechaHecho,
+          Perfil perfil,
+          Integer fuenteId,
+          Integer hechoId,
+          Boolean anonimo,
+          ArrayList<Multimedia> multimedia) {
 
     this.titulo = titulo;
     this.descripcion = descripcion;
     this.categoria = categoria;
-    this.ubicacion = new Ubicacion(latitud,longitud);
+    this.latitud = latitud;
+    this.longitud = longitud;
     this.fechaHecho = fechaHecho;
     this.fechaCarga = LocalDate.now();
     this.fechaModificacion = LocalDate.now();
@@ -69,7 +72,7 @@ public class Hecho {
 
   }
 
-  public Boolean tieneEtiqueta(String key,String value) {
+  public Boolean tieneEtiqueta(String key, String value) {
     return getMetadata().get(key).equals(value);
   }
 
@@ -84,8 +87,8 @@ public class Hecho {
       this.categoria = categoria;
     }
     if (latitud != null & longitud != null) {
-      Ubicacion ubicacionMod = new Ubicacion(latitud,longitud);
-      this.ubicacion = ubicacionMod;
+      this.latitud = latitud;
+      this.longitud = longitud;
     }
     if (fechaHecho != null) {
       this.fechaHecho = fechaHecho;
@@ -100,8 +103,8 @@ public class Hecho {
   }
 
   public void aniadirEtiqueta(String key, String value) {
-    if (this.tieneEtiqueta(key,value)) {
+    if (this.tieneEtiqueta(key, value)) {
       throw new RuntimeException("Esa etiqueta ya existe");
-    }else this.metadata.put(key,value);
+    } else this.metadata.put(key, value);
   }
 }

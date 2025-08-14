@@ -7,9 +7,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
-public class FuenteProxy {
+public class FuenteProxyApplication {
   public static void main(String[] args) {
-    SpringApplication app = new SpringApplication(FuenteProxy.class);
+    SpringApplication app = new SpringApplication(FuenteProxyApplication.class);
     app.setDefaultProperties(Collections.singletonMap("server.port", "server.port"));
     var context = app.run(args);
     // para cerrar la app, comentar cuando se prueben cosas

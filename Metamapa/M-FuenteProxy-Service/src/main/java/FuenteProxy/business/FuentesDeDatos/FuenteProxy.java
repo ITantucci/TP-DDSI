@@ -24,14 +24,13 @@ public abstract class FuenteProxy {
     @Getter
     public TipoFuente tipoFuente;
 
-    public FuenteProxy(String nombre,String endpointBase) {
+    public FuenteProxy(String nombre, String endpointBase) {
         if (contadorID > 3999999) {
-            throw new RuntimeException("No hay mas espacio para nuevas Fuentes Proxy:(" );
-        }else {
-        this.nombre = nombre;
-        this.endpointBase = endpointBase;
-        this.id = contadorID++;
-        //this.tipoFuente = TipoFuente.FUENTEPROXY;
-    }
+            throw new RuntimeException("No hay mas espacio para nuevas Fuentes Proxy:(");
+        } else {
+            this.nombre = nombre;
+            this.endpointBase = endpointBase;
+            this.id = contadorID++;
+        }
     }
 }

@@ -2,8 +2,8 @@ package Agregador.business.deprecado.Usuarios;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
-import Agregador.business.deprecado.tiposSolicitudes.SolicitudEdicion;
-import Agregador.business.deprecado.tiposSolicitudes.SolicitudEliminacion;
+import Agregador.business.Solicitudes.SolicitudEdicion;
+import Agregador.business.Solicitudes.SolicitudEliminacion;
 
 public class Perfil {
   @Getter

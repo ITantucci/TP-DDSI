@@ -7,8 +7,10 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api-fuentesDeDatos")
@@ -51,21 +53,11 @@ public class ControllerFuenteEstatica {
   }
 
 //  @PostMapping (value = "/{idFuenteDeDatos}/cargarCSV", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = "application/json")
-//  public ResponseEntity cargarCSV(
-//      @PathVariable(value = "idFuenteDeDatos") Integer idFuenteDeDatos,
-//      @RequestParam("file") MultipartFile file) {
+//  public ResponseEntity<?> cargarCSV(@PathVariable(value = "idFuenteDeDatos") Integer idFuenteDeDatos, @RequestParam("file") MultipartFile file) {
 //    try{
-//      if (!repositorioFuentes.buscarFuente(idFuenteDeDatos).getTipoFuente().equals(TipoFuente.FUENTEESTATICA)) {
-//        return ResponseEntity
-//            .badRequest()
-//            .body("Sólo se puede cargar CSV en fuentes estáticas");
-//      }
 //      //TODO repositorioFuentes.getParserCSV().parsearHechos(file.getInputStream()).forEach(h -> repositorioHechos.agregar(h)); para tratar directamente con el repositorio de hechos en vez de con las fuentes
 //      repositorioFuentes.buscarFuente(idFuenteDeDatos).agregarHecho(repositorioFuentes.getParserCSV().parsearHechos(file.getInputStream(),idFuenteDeDatos));
 //      return ResponseEntity.ok(repositorioFuentes.getParserCSV().parsearHechos(file.getInputStream(),idFuenteDeDatos));
-//
-//
-//
 //    }catch (Exception e) {
 //      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno " + e.getMessage());
 //    }

@@ -1,4 +1,4 @@
-package Agregador.business.deprecado.criterio;
+package Agregador.business.Colecciones;
 
 import Agregador.business.deprecado.incidencias.Hecho;
 

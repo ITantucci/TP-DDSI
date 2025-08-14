@@ -1,8 +1,8 @@
 package Agregador.web;
 
 
-import domain.business.Agregador.Agregador;
-import domain.business.incidencias.Hecho;
+import Agregador.business.Agregador.Agregador;
+import Agregador.business.Hechos.Hecho;
 import java.util.ArrayList;
 
 import Agregador.Service.ServiceFuenteDeDatos;

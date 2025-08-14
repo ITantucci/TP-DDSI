@@ -12,7 +12,9 @@ public class Hecho {
   @Getter
   private String categoria;
   @Getter
-  private Ubicacion ubicacion;
+  private Float latitud;
+  @Getter
+  private Float longitud;
   @Getter
   private LocalDate fechaHecho;
   @Getter
@@ -47,7 +49,8 @@ public class Hecho {
     this.titulo = titulo;
     this.descripcion = descripcion;
     this.categoria = categoria;
-    this.ubicacion = new Ubicacion(latitud, longitud);
+    this.latitud = latitud;
+    this.longitud = longitud;
     this.fechaHecho = fechaHecho;
     this.fechaCarga = LocalDate.now();
     this.fechaModificacion = LocalDate.now();
@@ -73,7 +76,8 @@ public class Hecho {
       this.categoria = categoria;
     }
     if (latitud != null & longitud != null) {
-      this.ubicacion = new Ubicacion(latitud, longitud);
+      this.latitud = latitud;
+      this.longitud = longitud;
     }
     if (fechaHecho != null) {
       this.fechaHecho = fechaHecho;

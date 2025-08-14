@@ -1,5 +1,5 @@
 package Agregador.persistencia;
-import domain.business.Agregador.Agregador;
+import Agregador.business.Agregador.Agregador;
 import lombok.Getter;
 
 

@@ -1,7 +1,7 @@
 package Agregador.Service;
 
 
-import domain.business.FuentesDeDatos.FuenteDeDatos;
+import Agregador.business.deprecado.FuentesDeDatos.FuenteDeDatos;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;

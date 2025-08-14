@@ -1,4 +1,4 @@
-package Agregador.business.deprecado.criterio;
+package Agregador.business.Colecciones;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 import Agregador.business.Agregador.Agregador;
-import Agregador.business.deprecado.Consenso.Consenso;
-import Agregador.business.deprecado.Consenso.ModosDeNavegacion;
+import Agregador.business.Consenso.Consenso;
+import Agregador.business.Consenso.ModosDeNavegacion;
 import Agregador.business.deprecado.incidencias.Hecho;
 
 public class Coleccion {

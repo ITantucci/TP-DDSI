@@ -12,7 +12,9 @@ public class Hecho {
   @Getter
   private String categoria;
   @Getter
-  private Ubicacion ubicacion;
+  private Float latitud;
+  @Getter
+  private Float longitud;
   @Getter
   private LocalDate fechaHecho;
   @Getter
@@ -24,20 +26,21 @@ public class Hecho {
   static public Integer contadorID = 1;
 
   //TODO: Chequear si Categoria lo modelamos como string o un enum
-  public Hecho(){}
-  public Hecho(
-      String titulo,
-      String descripcion,
-      String categoria,
-      Float latitud,
-      Float longitud,
-      LocalDate fechaHecho,
-      int fuenteId) {
+  public Hecho() {}
 
+  public Hecho(
+          String titulo,
+          String descripcion,
+          String categoria,
+          Float latitud,
+          Float longitud,
+          LocalDate fechaHecho,
+          int fuenteId) {
     this.titulo = titulo;
     this.descripcion = descripcion;
     this.categoria = categoria;
-    this.ubicacion = new Ubicacion(latitud,longitud);
+    this.latitud = latitud;
+    this.longitud = longitud;
     this.fechaHecho = fechaHecho;
     this.fechaCarga = LocalDate.now();
     this.id = contadorID++;
@@ -52,7 +55,8 @@ public class Hecho {
       this.categoria = categoria;
     }
     if (latitud != null & longitud != null) {
-      this.ubicacion = new Ubicacion(latitud,longitud);
+      this.latitud = latitud;
+      this.longitud = longitud;
     }
     if (fechaHecho != null) {
       this.fechaHecho = fechaHecho;

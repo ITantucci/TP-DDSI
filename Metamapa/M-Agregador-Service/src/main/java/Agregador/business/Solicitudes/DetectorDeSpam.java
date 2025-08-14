@@ -1,4 +1,4 @@
-package Agregador.business.deprecado.tiposSolicitudes;
+package Agregador.business.Solicitudes;
 
 public interface DetectorDeSpam {
     static boolean esSpam(String texto) {

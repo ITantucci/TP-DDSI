@@ -1,4 +1,4 @@
-package Agregador.business.deprecado.tiposSolicitudes;
+package Agregador.business.Solicitudes;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,4 +1,4 @@
-package Agregador.business.deprecado.Consenso;
+package Agregador.business.Consenso;
 
 import java.util.List;
 import Agregador.business.deprecado.FuentesDeDatos.FuenteDeDatos;
