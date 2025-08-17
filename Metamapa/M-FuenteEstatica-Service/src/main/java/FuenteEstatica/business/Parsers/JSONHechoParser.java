@@ -9,12 +9,14 @@ import java.io.File;
 import java.util.ArrayList;
 
 public abstract class JSONHechoParser implements HechoParser {
+ /*
   @Override
- /* public List<Hecho> parsearHecho(String path){
+    public List<Hecho> parsearHecho(String path){
     ArrayList<Hecho> listaHecho = new ArrayList<Hecho>();
 
     return listaHecho;
   }*/
+  @Override
   public ArrayList<Hecho> parsearHechos(String path, Integer fuenteID) {
     ObjectMapper mapper = new ObjectMapper();
     mapper.registerModule(new JavaTimeModule()); // Para LocalDate

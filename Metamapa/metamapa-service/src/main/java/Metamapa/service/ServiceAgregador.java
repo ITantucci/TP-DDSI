@@ -1,4 +1,4 @@
-package Metamapa.service;
+package Metamapa.Service;
 import Metamapa.business.Agregador.Agregador;
 import Metamapa.business.incidencias.Hecho;
 import java.util.ArrayList;

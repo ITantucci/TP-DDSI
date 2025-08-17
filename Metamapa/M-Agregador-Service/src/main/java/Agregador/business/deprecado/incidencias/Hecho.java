@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
-import Agregador.business.deprecado.Usuarios.Perfil;
+import Agregador.business.deprecado.Usuarios.Usuario;
 
 
 public class Hecho {
@@ -25,7 +25,7 @@ public class Hecho {
   @Getter
   private LocalDate fechaModificacion;
   @Getter @Setter
-  private Perfil perfil;
+  private Usuario perfil;
   @Getter @Setter
   private int fuenteId;
   @Getter @Setter
@@ -49,7 +49,7 @@ public class Hecho {
       Float latitud,
       Float longitud,
       LocalDate fechaHecho,
-      Perfil perfil,
+      Usuario perfil,
       Integer fuenteId,
       Boolean anonimo,
       List<Multimedia>multimedia) {

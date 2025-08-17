@@ -1,6 +1,6 @@
 package Agregador.business.Colecciones;
 
-import Agregador.business.deprecado.incidencias.Hecho;
+import Agregador.business.Hechos.Hecho;
 
 public interface Criterio {
   /**

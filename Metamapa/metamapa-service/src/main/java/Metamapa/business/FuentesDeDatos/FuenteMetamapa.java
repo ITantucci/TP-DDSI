@@ -12,19 +12,26 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.web.client.RestTemplate;
 
+
 @JsonTypeName("FUENTEMETAMAPA")
 public class FuenteMetamapa extends FuenteProxy {
   final private RestTemplate restTemplate;
-  static private Integer contadorID = 1;
-//TODO agregar el id al hecho
+  static private Integer contadorID = 4000000;
+
+  //TODO agregar el id al hecho
   public FuenteMetamapa(String nombre, String endpointBase) {
-    super(nombre,endpointBase);
-    this.id = contadorID++;
-    this.nombre = nombre;
-    this.hechos = new ArrayList<>();
-    this.restTemplate = new RestTemplate();
-    this.tipoFuente = tipoFuente.FUENTEMETAMAPA;
+    super(nombre, endpointBase);
+    if (contadorID > 4999999) {
+      throw new RuntimeException("No hay mas espacio para nuevas Fuentes Metamapa :(");
+    } else {
+      this.id = contadorID++;
+      this.nombre = nombre;
+      this.hechos = new ArrayList<>();
+      this.restTemplate = new RestTemplate();
+      this.tipoFuente = TipoFuente.FUENTEMETAMAPA;
+    }
   }
+
   public void actualizarHechos(Map<String, String> filtros) {
     try {
       String url = getEndpointBase() + "/hechos" + construirQuery(filtros);
@@ -48,8 +55,8 @@ public class FuenteMetamapa extends FuenteProxy {
   private String construirQuery(Map<String, String> filtros) {
     if (filtros == null || filtros.isEmpty()) return "";
     return "?" + filtros.entrySet().stream()
-            .map(e -> e.getKey() + "=" + URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8))
-            .collect(Collectors.joining("&"));
+        .map(e -> e.getKey() + "=" + URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8))
+        .collect(Collectors.joining("&"));
   }
 
   private List<Hecho> obtenerHechosDesdeURL(String url) {
@@ -65,7 +72,7 @@ public class FuenteMetamapa extends FuenteProxy {
   private void actualizarLista(List<Hecho> nuevosHechos) {
     for (Hecho h : nuevosHechos) {
       boolean yaExiste = this.hechos.stream()
-              .anyMatch(e -> e.getTitulo().equalsIgnoreCase(h.getTitulo()));
+          .anyMatch(e -> e.getTitulo().equalsIgnoreCase(h.getTitulo()));
       if (!yaExiste) {
         this.hechos.add(h);
       }

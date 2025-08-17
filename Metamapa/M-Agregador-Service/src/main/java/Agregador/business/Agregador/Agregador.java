@@ -1,25 +1,25 @@
 package Agregador.business.Agregador;
 
+import Agregador.business.Solicitudes.SolicitudEdicion;
+import Agregador.business.Solicitudes.SolicitudEliminacion;
 import java.util.ArrayList;
 import lombok.Getter;
-import Agregador.business.deprecado.FuentesDeDatos.FuenteDeDatos;
-import Agregador.business.deprecado.incidencias.Hecho;
+import Agregador.business.Hechos.*;
 
 public class Agregador {
     private static Agregador agregador = null;
     @Getter
-    public ArrayList<Hecho> listaDeHechos;
+    public ArrayList<Hecho> listaHechos;
+    @Getter
+    public ArrayList<SolicitudEliminacion> listaSolicitudesEliminacion;
+    @Getter
+    public ArrayList<SolicitudEdicion> listaSolicitudesEdicion;
 
-    public void actualizarHechos() {
-        ArrayList<Hecho> hechos = new ArrayList<>();
-        fuentesDeDatos.forEach(f -> hechos.addAll(f.getHechos()));
-        listaDeHechos = hechos;
-    }
 
     private Agregador() {
-        this.fuentesDeDatos= new ArrayList<>();
-        this.listaDeHechos= new ArrayList<>();
-
+        this.listaHechos= new ArrayList<>();
+        this.listaSolicitudesEliminacion = new ArrayList<>();
+        this.listaSolicitudesEdicion = new ArrayList<>();
 
 //        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 //
@@ -33,21 +33,5 @@ public class Agregador {
             agregador = new Agregador();
         return agregador;
         }
-
-    public void agregarFuenteDeDatos(FuenteDeDatos fuente){
-        if (!fuentesDeDatos.contains(fuente)){
-            fuentesDeDatos.add(fuente);
-            this.actualizarHechos();
-        }
-    }
-
-    public void actualizarFuentesDeDatos(ArrayList<FuenteDeDatos> fuentesDeDatos){
-        this.fuentesDeDatos = fuentesDeDatos;
-    }
-
-    public void removerFuenteDeDatos(Integer idFuente){
-        this.fuentesDeDatos.removeIf(f -> f.getId() == idFuente);
-        this.actualizarHechos();
-    }
 
 }

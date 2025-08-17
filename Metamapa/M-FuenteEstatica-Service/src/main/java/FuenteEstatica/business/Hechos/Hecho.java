@@ -21,13 +21,11 @@ public class Hecho {
   private LocalDate fechaCarga;
   @Getter
   private int fuenteId;
+  /*
   @Getter @Setter
   private Integer id;
   static public Integer contadorID = 1;
-
-  //TODO: Chequear si Categoria lo modelamos como string o un enum
-  public Hecho() {}
-
+*/
   public Hecho(
           String titulo,
           String descripcion,
@@ -43,23 +41,7 @@ public class Hecho {
     this.longitud = longitud;
     this.fechaHecho = fechaHecho;
     this.fechaCarga = LocalDate.now();
-    this.id = contadorID++;
+    //this.id = contadorID++;
     this.fuenteId = fuenteId;
-  }
-
-  public void editarHecho(String descripcion, String categoria, Float latitud, Float longitud, LocalDate fechaHecho) {
-    if (descripcion != null) {
-      this.descripcion = descripcion;
-    }
-    if (categoria != null) {
-      this.categoria = categoria;
-    }
-    if (latitud != null & longitud != null) {
-      this.latitud = latitud;
-      this.longitud = longitud;
-    }
-    if (fechaHecho != null) {
-      this.fechaHecho = fechaHecho;
-    }
   }
 }

@@ -1,13 +1,12 @@
 package Agregador.business.Hechos;
 
-import Agregador.business.deprecado.Usuarios.Perfil;
+import Agregador.business.deprecado.Usuarios.Usuario;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import lombok.Getter;
 import lombok.Setter;
-
 
 public class Hecho {
   @Getter
@@ -27,7 +26,7 @@ public class Hecho {
   @Getter
   private LocalDate fechaModificacion;
   @Getter @Setter
-  private Perfil perfil;
+  private Usuario perfil;
   @Getter
   private BigInteger id;
   @Getter @Setter
@@ -49,7 +48,7 @@ public class Hecho {
           Float latitud,
           Float longitud,
           LocalDate fechaHecho,
-          Perfil perfil,
+          Usuario perfil,
           Integer fuenteId,
           Integer hechoId,
           Boolean anonimo,
@@ -68,7 +67,8 @@ public class Hecho {
     this.eliminado = false;
     this.multimedia = multimedia;
     this.metadata = new HashMap<>();
-    this.id = BigInteger.valueOf(fuenteId).multiply(BigInteger.TEN.pow(12)).add(BigInteger.valueOf(hechoId)); //TODO FuenteId tiene que venir de la siguiente froma xyyyyyy siendo x el tipo de fuente 1 para dinamica, 2 para estaica, 3 para proxy. y despues yyyyyy es el id de la fuente. esto se logra para sumandole 1000000 a un id de fuente dinamica, 2000000 para estatica y 3000000 para proxu
+    this.id = BigInteger.valueOf(fuenteId).multiply(BigInteger.TEN.pow(12)).add(BigInteger.valueOf(hechoId));
+    //TODO FuenteId tiene que venir de la siguiente froma xyyyyyy siendo x el tipo de fuente 1 para dinamica, 2 para estaica, 3 para proxy. y despues yyyyyy es el id de la fuente. esto se logra para sumandole 1000000 a un id de fuente dinamica, 2000000 para estatica y 3000000 para proxu
 
   }
 

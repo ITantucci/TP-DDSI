@@ -1,7 +1,7 @@
 package Agregador.business.Colecciones;
+import java.util.Objects;
 import lombok.Getter;
-import Agregador.business.deprecado.incidencias.Hecho;
-import Agregador.business.deprecado.incidencias.Ubicacion;
+import Agregador.business.Hechos.Hecho;
 
 public class CriterioUbicacion implements Criterio {
   @Getter
@@ -16,7 +16,9 @@ public class CriterioUbicacion implements Criterio {
 
   @Override
   public boolean cumple(Hecho hechoAValidar) {
-    Ubicacion ubicacionAValidar = hechoAValidar.getUbicacion();
-    return ubicacionAValidar.esIgual(this.getLatitud(), this.getLongitud());
+    /*Ubicacion ubicacionAValidar = hechoAValidar.getUbicacion();
+    return ubicacionAValidar.esIgual(this.getLatitud(), this.getLongitud());*/
+    //TODO: APROXIMAR UN RANGO
+    return Objects.equals(hechoAValidar.getLatitud(), latitud) && Objects.equals(hechoAValidar.getLongitud(), longitud);
   }
 }

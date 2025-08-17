@@ -1,4 +1,4 @@
-package Metamapa.service;
+package Metamapa.Service;
 
 import Metamapa.business.FuentesDeDatos.FuenteDeDatos;
 import Metamapa.business.criterio.Coleccion;

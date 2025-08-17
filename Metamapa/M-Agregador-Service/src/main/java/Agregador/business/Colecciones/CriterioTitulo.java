@@ -1,6 +1,6 @@
 package Agregador.business.Colecciones;
 import lombok.Getter;
-import Agregador.business.deprecado.incidencias.Hecho;
+import Agregador.business.Hechos.Hecho;
 
 public class CriterioTitulo implements Criterio {
   @Getter

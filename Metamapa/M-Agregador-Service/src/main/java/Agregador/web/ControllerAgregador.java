@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
 
 @RestController
 @RequestMapping("/api-agregador")
@@ -33,17 +35,29 @@ public class ControllerAgregador {
     hechos.forEach(h -> repositorioAgregador.persistirHechos(h));
   }
 */
+
+  private ArrayList<String> obtenerFuentes() {
+    ArrayList<String> URLsFuentes = new ArrayList<String>();
+    URLsFuentes.add("${M.FuenteDinamica.service.url}");
+    URLsFuentes.add("${M.FuenteEstatica.service.url}");
+    URLsFuentes.add("${M.FuenteProxy.service.url}");
+
+    return URLsFuentes;
+  }
   public void actualizarHechos()
   {
-    /*
-    ArrayList<Integer> fuentes = repositorioAgregador.getFuentes();
+    ArrayList<String> URLsFuentes = obtenerFuentes();
+    ArrayList<Hecho> hechos = new ArrayList<>();
 
-    fuentes.forEach(f -> guardarHechos(f));
-    */
-    //TODO este metodo ya lo tiene el agregador
-    repositorioAgregador.getAgregador().actualizarHechos();
+    URLsFuentes.forEach(url-> {hechos.addAll(new ServiceFuenteDeDatos(new RestTemplate(),url).getHechos());});
+
+    repositorioAgregador.getAgregador().actualizarHechos(hechos);
   }
 
+  public void consensuarHechos()
+  {
+
+  }
   @GetMapping("/")
   public ResponseEntity<Agregador> getAgregador() {
     Agregador agregador = repositorioAgregador.getAgregador();

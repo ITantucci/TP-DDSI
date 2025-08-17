@@ -1,5 +1,4 @@
 package Agregador.business.Colecciones;
-
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -8,7 +7,7 @@ import lombok.Setter;
 import Agregador.business.Agregador.Agregador;
 import Agregador.business.Consenso.Consenso;
 import Agregador.business.Consenso.ModosDeNavegacion;
-import Agregador.business.deprecado.incidencias.Hecho;
+import Agregador.business.Hechos.Hecho;
 
 public class Coleccion {
     @Getter @Setter
@@ -78,6 +77,6 @@ public class Coleccion {
     }
 
     public ArrayList<Hecho> curarHechos(ArrayList<Hecho> hechos){
-        return hechos.stream().filter(h -> consenso.esConsensuado(h, agregador.getFuentesDeDatos())).collect(Collectors.toCollection(ArrayList::new));
+        return hechos.stream().filter(h -> consenso.esConsensuado(h)).collect(Collectors.toCollection(ArrayList::new));
     }
 }

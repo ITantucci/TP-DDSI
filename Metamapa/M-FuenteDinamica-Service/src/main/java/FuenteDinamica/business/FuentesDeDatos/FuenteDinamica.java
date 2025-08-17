@@ -26,12 +26,29 @@ public class FuenteDinamica {
     }
   }
 
-  public void agregarHecho(Hecho hecho) {
-    hechos.add(hecho);
-  }
-  //TODO: revisar Integer idAutor
-  public void agregarHecho(String titulo, String desc, String categoria, Float latitud, Float longitud, LocalDate fechaHecho,
-                           Integer idAutor, Boolean anonimidad, ArrayList<Multimedia> multimedia) {
-    this.hechos.add(new Hecho(titulo, desc, categoria, latitud, longitud, fechaHecho, idAutor, this.fuenteId, anonimidad, multimedia));
+  public void agregarHecho(
+      String titulo,
+      String desc,
+      String categoria,
+      Float latitud,
+      Float longitud,
+      LocalDate fechaHecho,
+      Integer idAutor,
+      Boolean anonimidad,
+      ArrayList<Multimedia> multimedia) {
+
+    this.hechos.add(new Hecho(
+                              titulo,
+                              desc,
+                              categoria,
+                              latitud,
+                              longitud,
+                              fechaHecho,
+                              idAutor,
+                              this.fuenteId,
+                              anonimidad,
+                              multimedia
+                              )
+    );
   }
 }

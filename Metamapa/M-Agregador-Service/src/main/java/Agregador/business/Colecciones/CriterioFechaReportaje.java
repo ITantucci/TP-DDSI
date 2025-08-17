@@ -3,8 +3,7 @@ package Agregador.business.Colecciones;
 import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
-import Agregador.business.deprecado.incidencias.Hecho;
-
+import Agregador.business.Hechos.Hecho;
 @Getter @Setter
 public class CriterioFechaReportaje implements Criterio {
   private final LocalDate desde;

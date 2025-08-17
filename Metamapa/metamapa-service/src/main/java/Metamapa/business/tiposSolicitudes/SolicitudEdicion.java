@@ -1,7 +1,6 @@
 package Metamapa.business.tiposSolicitudes;
 
 import Metamapa.business.incidencias.Multimedia;
-import Metamapa.business.incidencias.Ubicacion;
 import java.util.Date;
 import java.util.List;
 import lombok.Getter;
@@ -14,7 +13,9 @@ public class SolicitudEdicion extends Solicitud {
   @Getter
   private String categoriaMod;
   @Getter
-  private Ubicacion ubicacionMod;
+  private Float latitudMod;
+  @Getter
+  private Float longitudMod;
   @Getter
   private Date fechaHechoMod;
   @Getter
@@ -27,7 +28,8 @@ public class SolicitudEdicion extends Solicitud {
   public SolicitudEdicion(String tituloMod,
                           String descMod,
                           String categoriaMod,
-                          Ubicacion ubicacionMod,
+                          Float latitudMod,
+                          Float longitudMod,
                           Date fechaHechoMod,
                           List<Multimedia> multimediaMod,
                           Boolean anonimidadMod,
@@ -42,7 +44,8 @@ public class SolicitudEdicion extends Solicitud {
     this.tituloMod = tituloMod;
     this.descMod = descMod;
     this.categoriaMod = categoriaMod;
-    this.ubicacionMod = ubicacionMod;
+    this.latitudMod = latitudMod;
+    this.longitudMod = longitudMod;
     this.fechaHechoMod = fechaHechoMod;
     this.multimediaMod = multimediaMod;
     this.anonimidadMod = anonimidadMod;

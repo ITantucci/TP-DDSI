@@ -1,18 +1,16 @@
 package Metamapa.business.FuentesDeDatos;
 
-import Metamapa.business.Usuarios.Perfil;
 import Metamapa.business.externo.demo.Conexion;
 import Metamapa.business.incidencias.Hecho;
-import Metamapa.business.incidencias.Multimedia;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import lombok.Getter;
+
 
 @JsonTypeName("FUENTEDEMO")
 public class FuenteDemo extends FuenteProxy {
@@ -20,22 +18,26 @@ public class FuenteDemo extends FuenteProxy {
   private LocalDateTime fechaUltimaConsulta;
   @Getter
   @JsonIgnore
-  private Conexion conexion;
-  static private Integer contadorID = 1;
-  public FuenteDemo(){}
+  final private Conexion conexion;
+  static private Integer contadorID = 5000000;
+
   public FuenteDemo(String nombreFuente, String endpointBase) {
     super(nombreFuente, endpointBase);
-    this.nombre = nombreFuente;
-    this.hechos = new ArrayList<>();
-    this.fechaUltimaConsulta = LocalDateTime.now(ZoneId.of("UTC")).minusHours(1);
-    this.conexion = new Conexion(){
-      @Override
-      public Map<String, Object> siguienteHecho(String url, LocalDateTime fechaUltimaConsulta) {
-        return null;
-      }
-     };
-    this.id = contadorID++;
-    this.tipoFuente = TipoFuente.FUENTEDEMO;
+    if (contadorID > 5999999) {
+      throw new RuntimeException("No hay mas espacio para nuevas Fuentes Demo :(");
+    } else {
+      this.nombre = nombreFuente;
+      this.hechos = new ArrayList<>();
+      this.fechaUltimaConsulta = LocalDateTime.now(ZoneId.of("UTC")).minusHours(1);
+      this.conexion = new Conexion() {
+        @Override
+        public Map<String, Object> siguienteHecho(String url, LocalDateTime fechaUltimaConsulta) {
+          return null;
+        }
+      };
+      this.id = contadorID++;
+      this.tipoFuente = TipoFuente.FUENTEDEMO;
+    }
   }
 
   public void actualizarHechos() {
@@ -48,18 +50,15 @@ public class FuenteDemo extends FuenteProxy {
           (Float) datos.get("latitud"),
           (Float) datos.get("longitud"),
           (LocalDate) datos.get("fechaHecho"),
-          (Perfil) datos.get("perfil"),
-          this.id,
-          (Boolean) datos.get("anonimo"),
-          (List<Multimedia>) datos.get("multimedia")
+          this.id
           //Metamapa?
       );
       // Asignar perfil y anonimato según convenga
-      nuevoHecho.setPerfil(null);
-      nuevoHecho.setAnonimo(false);
+      //nuevoHecho.setPerfil(null);
+      //nuevoHecho.setAnonimo(false);
       //verifica si ya existe
       boolean yaExiste = hechos.stream()
-              .anyMatch(e -> e.getTitulo().equalsIgnoreCase(nuevoHecho.getTitulo()));
+          .anyMatch(e -> e.getTitulo().equalsIgnoreCase(nuevoHecho.getTitulo()));
       // Agrego el hecho a la lista
       if (!yaExiste)
         hechos.add(nuevoHecho);
@@ -74,7 +73,6 @@ public class FuenteDemo extends FuenteProxy {
       }
       // pido el siguiente hecho
       datos = conexion.siguienteHecho(this.getEndpointBase(), fechaUltimaConsulta);
-
     }
   }
 }

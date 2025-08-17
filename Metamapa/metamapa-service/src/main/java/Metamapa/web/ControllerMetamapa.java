@@ -1,8 +1,8 @@
 package Metamapa.web;
-import Metamapa.service.ServiceColecciones;
-import Metamapa.service.ServiceFuenteDeDatos;
-import Metamapa.service.ServiceAgregador;
-import Metamapa.service.ServiceIncidencias;
+import Metamapa.Service.ServiceColecciones;
+import Metamapa.Service.ServiceFuenteDeDatos;
+import Metamapa.Service.ServiceAgregador;
+import Metamapa.Service.ServiceIncidencias;
 import Metamapa.business.FuentesDeDatos.FuenteDemo;
 import Metamapa.business.FuentesDeDatos.FuenteEstatica;
 import Metamapa.business.FuentesDeDatos.FuenteMetamapa;

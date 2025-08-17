@@ -2,7 +2,7 @@ package Agregador.business.deprecado.FuentesDeDatos;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import Agregador.business.deprecado.Usuarios.Perfil;
+import Agregador.business.deprecado.Usuarios.Usuario;
 import Agregador.business.deprecado.incidencias.Hecho;
 import Agregador.business.deprecado.incidencias.Multimedia;
 

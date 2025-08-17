@@ -1,6 +1,6 @@
 package Metamapa.business.FuentesDeDatos;
 
-import Metamapa.business.Usuarios.Perfil;
+import Metamapa.business.Usuarios.Usuario;
 import Metamapa.business.incidencias.Hecho;
 import Metamapa.business.incidencias.TipoMultimedia;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -37,7 +37,7 @@ public abstract class FuenteDeDatos {
   @Getter
   public TipoFuente tipoFuente;
 
-  public void agregarHecho(String titulo, String descripcion, String categoria, Float latitud, Float longitud, LocalDate fechaHecho , Perfil autor, Boolean anonimo, Boolean eliminado, ArrayList<Pair<TipoMultimedia,String>> multimedia)
+  public void agregarHecho(String titulo, String descripcion, String categoria, Float latitud, Float longitud, LocalDate fechaHecho , Usuario autor, Boolean anonimo, Boolean eliminado, ArrayList<Pair<TipoMultimedia,String>> multimedia)
    {
    }
 

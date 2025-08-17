@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import lombok.Getter;
-import Agregador.business.deprecado.Usuarios.Perfil;
+import Agregador.business.deprecado.Usuarios.Usuario;
 import Agregador.business.deprecado.incidencias.Hecho;
 import Agregador.business.deprecado.incidencias.TipoMultimedia;
 import org.javatuples.Pair;

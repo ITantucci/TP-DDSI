@@ -1,6 +1,6 @@
 package Metamapa.business.criterio;
 import Metamapa.business.incidencias.Hecho;
-import Metamapa.business.incidencias.Ubicacion;
+import java.util.Objects;
 import lombok.Getter;
 
 public class CriterioUbicacion implements Criterio {
@@ -16,7 +16,9 @@ public class CriterioUbicacion implements Criterio {
 
   @Override
   public boolean cumple(Hecho hechoAValidar) {
-    Ubicacion ubicacionAValidar = hechoAValidar.getUbicacion();
-    return ubicacionAValidar.esIgual(this.getLatitud(), this.getLongitud());
+    /*Ubicacion ubicacionAValidar = hechoAValidar.getUbicacion();
+    return ubicacionAValidar.esIgual(this.getLatitud(), this.getLongitud());*/
+    //TODO: APROXIMAR UN RANGO
+    return Objects.equals(hechoAValidar.getLatitud(), latitud) && Objects.equals(hechoAValidar.getLongitud(), longitud);
   }
 }

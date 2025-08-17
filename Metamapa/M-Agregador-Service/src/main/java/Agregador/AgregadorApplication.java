@@ -7,6 +7,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 import java.util.concurrent.*;
+//import io.micrometer.core.instrument.MeterRegistry;
+
 
 @SpringBootApplication
 public class AgregadorApplication {
@@ -18,7 +20,22 @@ public class AgregadorApplication {
   {
     ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-    scheduler.scheduleAtFixedRate(() -> controllerAgregador.actualizarHechos(), 0, 2, TimeUnit.HOURS);
+    scheduler.scheduleAtFixedRate(() -> controllerAgregador.actualizarHechos(), 0, 1, TimeUnit.HOURS);
+  }
+
+//  private static final MeterRegistry registry;
+
+  private static void scheduleConsensuar()
+  {
+//    ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+//
+//    Double requests = registry.find("http.server.requests.count").counter() != null
+//        ? registry.find("http.server.requests.count").counter().count()
+//        : 0.0;
+//
+//    if (requests < 100) { // umbral de bajo tráfico en el último minuto
+//      scheduler.scheduleAtFixedRate(() -> controllerAgregador.consensuarHechos(), 0, 30, TimeUnit.MINUTES);
+//    }
   }
   public static void main(String[] args) {
     SpringApplication app = new SpringApplication(AgregadorApplication.class);
@@ -28,6 +45,7 @@ public class AgregadorApplication {
 
 
     scheduleActualizacion();
+    scheduleConsensuar();
     // para cerrar la app, comentar cuando se prueben cosas
     //context.close();
 

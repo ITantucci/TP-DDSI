@@ -10,16 +10,12 @@ import FuenteDinamica.persistencia.RepositorioFuentes;
 import FuenteDinamica.business.Hechos.Hecho;
 import FuenteDinamica.business.FuentesDeDatos.FuenteDinamica;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api-fuentesDeDatos")
-
 public class ControllerFuenteDinamica {
-  //private final ServiceIncidencias serviceIncidencias;
   public RepositorioFuentes repositorioFuentes = new RepositorioFuentes();
 
   /*public ControllerFuenteDinamica(ServiceIncidencias serviceIncidencias){
@@ -42,6 +38,18 @@ public class ControllerFuenteDinamica {
   @GetMapping("/{idFuenteDeDatos}/hechos")
   public ArrayList<Hecho> getHechosFuenteDeDatos(@PathVariable(value = "idFuenteDeDatos") Integer idfuenteDeDatos) {
     return repositorioFuentes.buscarFuente(idfuenteDeDatos).getHechos();
+  }
+
+  @PostMapping(value = "/", consumes = "application/json", produces = "application/json")
+  public ResponseEntity<?> crearFuenteDeDatos(@RequestBody Map<String, Object> requestBody) {
+    try {
+      //String nombreFE = (String) requestBody.get("nombre");
+      FuenteDinamica fuenteDinamica = new FuenteDinamica();
+      repositorioFuentes.agregarFuente(fuenteDinamica);
+      return ResponseEntity.ok(fuenteDinamica);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno " + e.getMessage());
+    }
   }
 
   @PostMapping (value = "/{idFuenteDeDatos}/cargarHecho", consumes = "application/json", produces = "application/json")
@@ -72,7 +80,6 @@ public class ControllerFuenteDinamica {
       //Boolean anonimo = (Boolean) requestBody.get("anonimo");
       //ArrayList<Multimedia> multimedia = null;
       //ArrayList<Multimedia> multimedia = (ArrayList<Multimedia>) requestBody.get("multimedia");
-
       Boolean anonimo = false;
       if (requestBody.get("anonimo") instanceof Boolean) {
         anonimo = (Boolean) requestBody.get("anonimo");
@@ -89,7 +96,6 @@ public class ControllerFuenteDinamica {
         return new Multimedia(tipo, path);
       }).collect(Collectors.toList())
           : new ArrayList<>();
-
       Hecho hecho = new Hecho(
               titulo,
               descripcion,
@@ -102,26 +108,11 @@ public class ControllerFuenteDinamica {
               anonimo,
               multimedia);
       repositorioFuentes.buscarFuente(idFuenteDeDatos).getHechos().add(hecho);
-      return ResponseEntity.ok(Map.of(
-          "id", hecho.getId(),
-          "message", "Hecho cargado correctamente con id" + hecho.getId()
-      ));
+      return ResponseEntity.ok(hecho);
     } catch (Exception e) {
       return ResponseEntity
           .status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(Map.of("error", "Error interno: " + e.getMessage()));
-    }
-  }
-
-  @PostMapping(value = "/", consumes = "application/json", produces = "application/json")
-  public ResponseEntity<?> crearFuenteDeDatos(@RequestBody Map<String, Object> requestBody) {
-    try {
-        //String nombreFE = (String) requestBody.get("nombre");
-        FuenteDinamica fuenteDinamica = new FuenteDinamica();
-        repositorioFuentes.agregarFuente(fuenteDinamica);
-        return ResponseEntity.ok(fuenteDinamica);
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno " + e.getMessage());
     }
   }
 }

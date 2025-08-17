@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import lombok.Getter;
-import Agregador.business.deprecado.Usuarios.Perfil;
+import Agregador.business.deprecado.Usuarios.Usuario;
 import Agregador.business.deprecado.demo.Conexion;
 import Agregador.business.deprecado.incidencias.Hecho;
 import Agregador.business.deprecado.incidencias.Multimedia;
@@ -48,7 +48,7 @@ public class FuenteDemo extends FuenteProxy {
           (Float) datos.get("latitud"),
           (Float) datos.get("longitud"),
           (LocalDate) datos.get("fechaHecho"),
-          (Perfil) datos.get("perfil"),
+          (Usuario) datos.get("perfil"),
           this.id,
           (Boolean) datos.get("anonimo"),
           (List<Multimedia>) datos.get("multimedia")

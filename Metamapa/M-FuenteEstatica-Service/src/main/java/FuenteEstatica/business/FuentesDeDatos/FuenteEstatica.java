@@ -1,6 +1,7 @@
 package FuenteEstatica.business.FuentesDeDatos;
 import FuenteEstatica.business.Parsers.CSVHechoParser;
 import FuenteEstatica.business.Hechos.Hecho;
+import FuenteEstatica.business.Parsers.HechoParser;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -18,6 +19,8 @@ public class FuenteEstatica {
   public String nombre;
   @Getter
   public ArrayList<Hecho> hechos;
+  /*@Getter
+  public HechoParser hechoParser;*/
 
   public FuenteEstatica() {} // va a haber que usar dtos para no modificar la capa de negocio
   public FuenteEstatica(String nombre) {
@@ -30,20 +33,19 @@ public class FuenteEstatica {
     }
   }
 
-  //public void agregarHecho(){throw new UnsupportedOperationException("Not supported yet.");};
-
-  //TODO Agregar un metodo que actualice un hecho. y luego implementar en el metodo cargarCSV asi si matchea el titulo actualice el hecho con los datos nuevos.
-
-  public void agregarHecho(Hecho h) {
-    Optional<Hecho> duplicado = hechos.stream().filter(hd -> Objects.equals(hd.getTitulo(), h.getTitulo())).findFirst();
-    if (duplicado.isEmpty()) this.hechos.add(h);
-    else
-      duplicado.get().editarHecho(h.getDescripcion(), h.getCategoria(), h.getLatitud(), h.getLongitud(), h.getFechaHecho());
+  public void cargar(String tipo,String path) {
+    switch (tipo) {
+      case "CSV": new CSVHechoParser().parsearHechos(path, id).forEach(hecho -> this.hechos.add(hecho));
+      break;
+      //case "JSON": new JSONHechoParser().parsearHechos(path, id).forEach((this::agregarHecho)); TODO arreglar el codigo para que tome un JSON?
+      //break;
+      default: new CSVHechoParser().parsearHechos(path, id).forEach(hecho -> this.hechos.add(hecho));
+      break;
+    }
   }
-
-
-  public void cargarCSV(String path) {
-    new CSVHechoParser().parsearHechos(path, id).forEach((this::agregarHecho));
+/*
+  public void cargarJSON(String path) {
+    new JSONHechoParser().parsearHechos(path, id).forEach((this::agregarHecho));
   }
-
+*/
 }
