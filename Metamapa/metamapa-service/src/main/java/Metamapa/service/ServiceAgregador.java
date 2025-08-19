@@ -2,9 +2,16 @@ package Metamapa.service;
 import Metamapa.business.Agregador.Agregador;
 import Metamapa.business.Hechos.Hecho;
 import java.util.ArrayList;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+
+import javax.xml.transform.Result;
 
 @Service
 public class ServiceAgregador {
@@ -39,5 +46,22 @@ public class ServiceAgregador {
   public void removerFuente(Integer idFuente){
     String url = String.format("%s/api-agregador/fuentesDeDatos/remover/%d", baseUrl, idFuente);
     restTemplate.postForObject(url, null, Void.class);
+  }
+  //TODO: CHEQUEAR
+  public enum Result { OK, NOT_FOUND, CONFLICT, INVALID }
+  public Result aprobarSolicitudEliminacion(UUID id) {
+    return resolverRemoto(id, "APROBAR");
+  }
+  public Result rechazarSolicitudEliminacion(UUID id) {
+    return resolverRemoto(id, "RECHAZAR");
+  }
+  private Result resolverRemoto(UUID id, String accion) {
+    String url = String.format("%s/api-agregador/solicitudesEliminacion/%s?accion=%s", baseUrl, id, accion);
+    try {
+      var resp = restTemplate.exchange(url, HttpMethod.PATCH, HttpEntity.EMPTY, Void.class);
+      return resp.getStatusCode().is2xxSuccessful() ? Result.OK : Result.INVALID;
+    } catch (HttpClientErrorException.NotFound e) { return Result.NOT_FOUND;
+    } catch (HttpClientErrorException.Conflict e) { return Result.CONFLICT;
+    } catch (HttpClientErrorException.UnprocessableEntity e) { return Result.INVALID; }
   }
 }

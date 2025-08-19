@@ -1,8 +1,11 @@
 package Agregador.business.Agregador;
 
+import Agregador.business.Solicitudes.Solicitud;
 import Agregador.business.Solicitudes.SolicitudEdicion;
 import Agregador.business.Solicitudes.SolicitudEliminacion;
 import java.util.ArrayList;
+import java.util.UUID;
+
 import lombok.Getter;
 import Agregador.business.Hechos.*;
 
@@ -32,6 +35,9 @@ public class Agregador {
         if (agregador == null)
             agregador = new Agregador();
         return agregador;
+        }
+        public SolicitudEliminacion findSolicitudById(Integer id){
+            return listaSolicitudesEliminacion.get(id);
         }
 
 }

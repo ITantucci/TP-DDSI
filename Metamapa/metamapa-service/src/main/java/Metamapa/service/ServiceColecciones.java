@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import Metamapa.business.Consenso.Consenso;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -30,7 +30,7 @@ public class ServiceColecciones {
   }
 
   public Coleccion getColeccion(UUID uuid) {
-    String url = String.format("%s/api-colecciones/%d", baseUrl, uuid);
+    String url = String.format("%s/api-colecciones/%s", baseUrl, uuid);
     return restTemplate.getForObject(url, Coleccion.class);
   }
 /*
@@ -56,11 +56,18 @@ public class ServiceColecciones {
 
     @SuppressWarnings("unchecked")
     Map<String,Object> response = restTemplate.postForObject(
-        baseUrl + "/api-fuentesDeDatos/",
+        baseUrl + "/api-colecciones/",
         request,
         Map.class
     );
     UUID handle = (UUID) response.get("handle");
     return handle;
   }
+
+  public boolean actualizarAlgoritmoConsenso(UUID idColeccion, String algoritmo) {
+    String url = String.format("%s/api-colecciones/%s/consenso/%s", baseUrl, idColeccion, algoritmo);
+    ResponseEntity<Void> resp = restTemplate.exchange(url, HttpMethod.PATCH, HttpEntity.EMPTY, Void.class);
+    return resp.getStatusCode().is2xxSuccessful();
+  }
+
 }

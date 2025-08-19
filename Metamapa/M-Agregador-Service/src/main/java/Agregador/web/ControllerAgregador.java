@@ -8,11 +8,7 @@ import java.util.ArrayList;
 import Agregador.Service.ServiceFuenteDeDatos;
 import Agregador.persistencia.RepositorioAgregador;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 
@@ -121,16 +117,3 @@ public class ControllerAgregador {
     }
   }
 }
-
-/*
-
-@PatchMapping(value = "/solicitudesElimincacion/{id}", consumes = "application/json", produces = "application/json")
-  @ResponseBody
-  public ResponseEntity actualizarEstadoSolicitud(@PathVariable("id") String id, @RequestBody Map<String, Object> requestBody) {
-    try {
-      Optional<SolicitudEliminacion> solicitudOpt = solicitudRepository.findById(id);
-      if (solicitudOpt.isEmpty()) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-      }
-
-*/

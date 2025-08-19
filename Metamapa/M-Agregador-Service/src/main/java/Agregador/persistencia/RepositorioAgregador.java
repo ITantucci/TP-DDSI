@@ -1,6 +1,9 @@
 package Agregador.persistencia;
 import Agregador.business.Agregador.Agregador;
+import Agregador.business.Solicitudes.SolicitudEliminacion;
 import lombok.Getter;
+
+import java.util.UUID;
 
 
 public class RepositorioAgregador {
@@ -10,6 +13,15 @@ public class RepositorioAgregador {
   public RepositorioAgregador() {
     this.agregador = Agregador.getInstance();
   }
+
+  // ==== Solicitudes ====
+  public SolicitudEliminacion findSolicitudById(Integer id) {
+    return agregador.findSolicitudById(id);
+  }
+  //public void saveSolicitud(SolicitudEliminacion s) {
+  //  agregador.saveSolicitud(s);
+  //}
+
 /*
   public AgregadorDTO getAgregadorDTO(){
     AgregadorDTO agregadorDTO = AgregadorDTO.getInstance();

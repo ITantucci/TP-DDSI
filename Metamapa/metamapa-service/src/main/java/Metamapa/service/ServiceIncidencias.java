@@ -14,4 +14,6 @@ public ServiceIncidencias(RestTemplate restTemplate,
   this.restTemplate = restTemplate;
   this.baseUrl = baseUrl;
 }
+
+
 }

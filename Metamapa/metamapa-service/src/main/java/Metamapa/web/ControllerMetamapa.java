@@ -1,4 +1,5 @@
 package Metamapa.web;
+import Metamapa.business.Solicitudes.EstadoSolicitud;
 import Metamapa.service.*;
 import Metamapa.business.Hechos.*;
 import java.io.IOException;
@@ -39,21 +40,47 @@ public class ControllerMetamapa {
   //● Operaciones CRUD sobre las colecciones.
   @GetMapping("/metamapa/colecciones/")
   public String obtenerColecciones(Model model) {
-    model.addAttribute("colcecciones", serviceColecciones.getColecciones());
+    model.addAttribute("colecciones", serviceColecciones.getColecciones());
     return "colecciones";
   }
 
   @GetMapping("/metamapa/colecciones/{uuid}")
   public String obtenerColeccion(@PathVariable("uuid") UUID uuid, Model model) {
-    model.addAttribute("colceccion", serviceColecciones.getColeccion(uuid));
+    model.addAttribute("coleccion", serviceColecciones.getColeccion(uuid));
     return "coleccion";
   }
 
   //● Modificación del algoritmo de consenso.
+  @PatchMapping("/metamapa/colecciones/{uuid}/consenso/{algoritmo:Absoluto|MultiplesMenciones|MayoriaSimple}")
+  @ResponseBody
+  public ResponseEntity<Void> modificarConsenso(@PathVariable UUID uuid,
+                                                @PathVariable String algoritmo) {
+    boolean ok = serviceColecciones.actualizarAlgoritmoConsenso(uuid, algoritmo);
+    return ok ? ResponseEntity.noContent().build()   // 204
+            : ResponseEntity.notFound().build();   // 404 si la colección no existe en el backend
+  }
 
   //● Agregar o quitar fuentes de hechos de una colección.
 
-  //● Aprobar o denegar una solicitud de eliminación de un hecho.
+  // ● Aprobar o denegar una solicitud de eliminación (endpoint único)
+  //TODO: CHEQUEAR
+  enum Accion { APROBAR, RECHAZAR }
+
+  @PatchMapping("/metamapa/solicitudes/{id}")
+  @ResponseBody
+  public ResponseEntity<Void> resolverSolicitud(@PathVariable UUID id,
+                                                @RequestParam Accion accion) {
+    var r = (accion == Accion.APROBAR)
+            ? serviceAgregador.aprobarSolicitudEliminacion(id)
+            : serviceAgregador.rechazarSolicitudEliminacion(id);
+
+    return switch (r) {
+      case OK        -> ResponseEntity.noContent().build();
+      case NOT_FOUND -> ResponseEntity.notFound().build();
+      case CONFLICT  -> ResponseEntity.status(409).build();
+      default        -> ResponseEntity.unprocessableEntity().build();
+    };
+  }
 
   // API Pública para otras instancias de MetaMapa
   //● Consulta de hechos dentro de una colección.
