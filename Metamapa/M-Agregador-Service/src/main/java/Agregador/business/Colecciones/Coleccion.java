@@ -5,8 +5,7 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 import Agregador.business.Agregador.Agregador;
-import Agregador.business.Consenso.Consenso;
-import Agregador.business.Consenso.ModosDeNavegacion;
+import Agregador.business.Consenso.*;
 import Agregador.business.Hechos.Hecho;
 
 public class Coleccion {

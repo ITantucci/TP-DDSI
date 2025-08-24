@@ -1,11 +1,7 @@
 package Agregador.business.Agregador;
 
-import Agregador.business.Solicitudes.Solicitud;
-import Agregador.business.Solicitudes.SolicitudEdicion;
-import Agregador.business.Solicitudes.SolicitudEliminacion;
+import Agregador.business.Solicitudes.*;
 import java.util.ArrayList;
-import java.util.UUID;
-
 import lombok.Getter;
 import Agregador.business.Hechos.*;
 
@@ -18,17 +14,12 @@ public class Agregador {
     @Getter
     public ArrayList<SolicitudEdicion> listaSolicitudesEdicion;
 
-
     private Agregador() {
         this.listaHechos= new ArrayList<>();
         this.listaSolicitudesEliminacion = new ArrayList<>();
         this.listaSolicitudesEdicion = new ArrayList<>();
-//        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-//
-//        Runnable tarea = () -> this.actualizarHechos();
-//
-//        scheduler.scheduleAtFixedRate(tarea, 0, 2, TimeUnit.HOURS);
         }
+
         //Instancio el agregador como singleton
         public static Agregador getInstance() {
         if (agregador == null)
@@ -39,4 +30,8 @@ public class Agregador {
             return listaSolicitudesEliminacion.get(id);
         }
 
+        public void actualizarHechos(ArrayList<Hecho> hechos)
+        {
+            //TODO implementar la actualizacion de hechos
+        }
 }

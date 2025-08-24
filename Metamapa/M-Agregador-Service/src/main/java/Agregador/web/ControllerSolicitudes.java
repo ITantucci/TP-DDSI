@@ -2,8 +2,7 @@ package Agregador.web;
 
 import Agregador.DTO.SolicitudEliminacionDTO;
 import Agregador.Service.ServiceSolicitudes;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

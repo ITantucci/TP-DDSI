@@ -3,7 +3,6 @@ import Agregador.business.Agregador.Agregador;
 import Agregador.business.Solicitudes.SolicitudEliminacion;
 import lombok.Getter;
 import org.springframework.stereotype.Repository;
-
 import java.util.UUID;
 
 @Repository
@@ -32,27 +31,19 @@ public class RepositorioAgregador {
   }
   */
 
-  //TODO el agregador ya tiene una lista de fuentesDTO y HechosDTO,
-  //TODO no hace falta lo demas. y desde aca no se persiste nada, se llama al
-  //TODO servicio de fuentes de datos para una fuente de datos y al de hechos para un hecho.
-
 
   /*
-public
+  public
   ArrayList<FuenteDeDatosDTO> fuentes = new ArrayList<FuenteDeDatosDTO>();
   ArrayList<Map<String,Object>> hechos = new ArrayList<Map<String,Object>>();
 
-  public ArrayList<FuenteDeDatosDTO> getFuentes()
-  {
+  public ArrayList<FuenteDeDatosDTO> getFuentes(){
       return fuentes;
   }
 
-  public void persistirHechos(Map<String,Object> hecho)
-  {
+  public void persistirHechos(Map<String,Object> hecho){
       hechos.add(hecho);
   }
-
-
 
     // Fuente Dinamica Con 1 Hecho
     FuenteDinamica fuenteDinamicaID1 = new FuenteDinamica();

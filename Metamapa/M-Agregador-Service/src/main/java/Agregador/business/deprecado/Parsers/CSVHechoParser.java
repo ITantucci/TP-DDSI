@@ -1,6 +1,8 @@
 package Agregador.business.deprecado.Parsers;
 //import infrastructure.dto.HechoDTO;
 
+import Agregador.business.deprecado.Usuarios.Usuario;
+import Agregador.business.deprecado.incidencias.Multimedia;
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import java.io.BufferedReader;
@@ -47,8 +49,19 @@ public class CSVHechoParser implements HechoParser {
                 Float latitud = Float.parseFloat(campos[3].trim());
                 Float longitud = Float.parseFloat(campos[4].trim());
                 LocalDate fechaHecho = LocalDate.parse(campos[5].trim(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-
-                Hecho hecho = new Hecho(titulo,descripcion, categoria, latitud, longitud, fechaHecho,null,fuenteID,null,null, new ArrayList<>());
+  /*public Hecho(
+                        String titulo,
+                        String descripcion,
+                        String categoria,
+                        Float latitud,
+                        Float longitud,
+                        LocalDate fechaHecho,
+                        Usuario perfil,
+                        Integer fuenteId,
+                        Integer hechoId,
+                        Boolean anonimo,
+                        ArrayList< Agregador.business.Hechos.Multimedia > multimedia)*/
+                Hecho hecho = new Hecho(titulo,descripcion, categoria, latitud, longitud, fechaHecho,null,fuenteID,null, new ArrayList<Multimedia>());
                 // TODO: revisar Deberiamos inicializar en NULL el resto de los campos del contructor del hecho???
                 listaHecho.add(hecho);
             }
@@ -79,7 +92,7 @@ public class CSVHechoParser implements HechoParser {
                 Float longitud = Float.parseFloat(campos[4].trim());
                 LocalDate fechaHecho = LocalDate.parse(campos[5].trim(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
-                Hecho hecho = new Hecho(titulo,descripcion, categoria, latitud, longitud, fechaHecho,null,fuenteID,null, null,new ArrayList<>());
+                Hecho hecho = new Hecho(titulo,descripcion, categoria, latitud, longitud, fechaHecho,null,fuenteID,null,new ArrayList<>());
                 // TODO: revisar Deberiamos inicializar en NULL el resto de los campos del contructor del hecho???
                 listaHecho.add(hecho);
             }

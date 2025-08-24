@@ -1,12 +1,9 @@
 package Agregador.persistencia;
 
-import Agregador.business.Colecciones.Coleccion;
-import Agregador.business.Colecciones.Criterio;
-import Agregador.business.Colecciones.CriterioFuenteDeDatos;
+import Agregador.business.Colecciones.*;
 import lombok.Getter;
 import org.springframework.stereotype.Repository;
-import java.util.ArrayList;
-import java.util.UUID;
+import java.util.*;
 
 @Repository
 public class RepositorioColecciones {
@@ -17,24 +14,10 @@ public class RepositorioColecciones {
     return this.getColecciones().stream().filter(c -> c.getHandle().equals(uuid)).toList().get(0);
   }
 
-/*
-  public Coleccion findById(UUID id) {
-    return getColecciones().stream().filter(x -> x.getHandle().equals(id)).findFirst().orElse(null);
-  }
-
   public void update(Coleccion coleccion) {
-     getColecciones().replace(coleccion.getHandle(), coleccion);
+     getColecciones().removeIf(c -> c.getHandle().equals(coleccion.getHandle()));
+      getColecciones().add(coleccion);
   }
-*/
-  /*
-  public void update(Coleccion coleccionActualizada) {
-    for (int i = 0; i < colecciones.size(); i++) {
-      if (colecciones.get(i).getHandle().equals(coleccionActualizada.getHandle())) {
-        colecciones.set(i, coleccionActualizada);
-        return;
-      }
-    }
-    */
 
   public boolean eliminar(UUID id) {
     return colecciones.removeIf(c -> c.getHandle().equals(id));

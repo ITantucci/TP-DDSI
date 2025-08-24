@@ -3,6 +3,7 @@ import Agregador.business.Colecciones.*;
 import Agregador.business.Consenso.*;
 import Agregador.business.Hechos.*;
 import Agregador.persistencia.RepositorioColecciones;
+import Agregador.persistencia.RepositorioHechos;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
@@ -12,8 +13,10 @@ import java.util.stream.Collectors;
 @Service
 public class ServiceColecciones {
   public final RepositorioColecciones repositorioColecciones;
+  public final RepositorioHechos repositorioHechos;
 
-  public ServiceColecciones(RepositorioColecciones repositorioColecciones) {
+  public ServiceColecciones(RepositorioColecciones repositorioColecciones, RepositorioHechos repositorioHechos) {
+    this.repositorioHechos = repositorioHechos;
     this.repositorioColecciones = repositorioColecciones;
   }
 
@@ -48,14 +51,10 @@ public class ServiceColecciones {
                     paramsNP.get("tipoMultimedia")
             )
     );
-    // TODO: implementar la obtención de hechos
-    // return coleccion.filtrarPorCriterios(serviceAgregador.getAgregadorHechos(), criteriosP, criteriosNP, modo);
-    return new ArrayList<>();
+     return coleccion.filtrarPorCriterios((ArrayList<Hecho>) repositorioHechos.getHechos(), criteriosP, criteriosNP, modo);
   }
 
-  public ArrayList<Coleccion> obtenerTodasLasColecciones() {
-    return repositorioColecciones.getColecciones();
-  }
+  public ArrayList<Coleccion> obtenerTodasLasColecciones() {return repositorioColecciones.getColecciones();}
 
   public Coleccion obtenerColeccionPorId(UUID id) {
     return repositorioColecciones.buscarXUUID(id);

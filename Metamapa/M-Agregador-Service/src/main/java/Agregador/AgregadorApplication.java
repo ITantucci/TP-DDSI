@@ -1,57 +1,48 @@
 package Agregador;
 import java.util.Collections;
 import Agregador.Service.ServiceFuenteDeDatos;
+import Agregador.persistencia.RepositorioColecciones;
 import Agregador.web.ControllerAgregador;
+import io.micrometer.core.instrument.*;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 import java.util.concurrent.*;
-//import io.micrometer.core.instrument.MeterRegistry;
-
 
 @SpringBootApplication
 public class AgregadorApplication {
-
   static ServiceFuenteDeDatos serviceFuenteDeDatos = new ServiceFuenteDeDatos(new RestTemplate(),"${fuentes.service.url}");
-  static ControllerAgregador controllerAgregador = new ControllerAgregador(serviceFuenteDeDatos);
+  static ControllerAgregador controllerAgregador = new ControllerAgregador(serviceFuenteDeDatos, new RepositorioColecciones());
 
-  private static void scheduleActualizacion()
-  {
+  private static void scheduleActualizacion() {
     ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-
     scheduler.scheduleAtFixedRate(() -> controllerAgregador.actualizarHechos(), 0, 1, TimeUnit.HOURS);
   }
 
-//  private static final MeterRegistry registry;
+  private static final MeterRegistry registry = new SimpleMeterRegistry();
 
-  private static void scheduleConsensuar()
-  {
-//    ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-//
-//    Double requests = registry.find("http.server.requests.count").counter() != null
-//        ? registry.find("http.server.requests.count").counter().count()
-//        : 0.0;
-//
-//    if (requests < 100) { // umbral de bajo tráfico en el último minuto
-//      scheduler.scheduleAtFixedRate(() -> controllerAgregador.consensuarHechos(), 0, 30, TimeUnit.MINUTES);
-//    }
+  private static void scheduleConsensuar() {
+    ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    Double requests = registry.find("http.server.requests.count").counter() != null
+        ? registry.find("http.server.requests.count").counter().count()
+        : 0.0;
+    if (requests < 100) { // umbral de bajo tráfico en el último minuto
+      scheduler.scheduleAtFixedRate(() -> controllerAgregador.consensuarHechos(), 0, 30, TimeUnit.MINUTES);
+    }
   }
+
   public static void main(String[] args) {
     SpringApplication app = new SpringApplication(AgregadorApplication.class);
     app.setDefaultProperties(Collections.singletonMap("server.port", "server.port"));
     var context = app.run(args);
 
-
-
     scheduleActualizacion();
     scheduleConsensuar();
     // para cerrar la app, comentar cuando se prueben cosas
     //context.close();
-
-
   }
-
 
   @Bean
   public RestTemplate restTemplate() {

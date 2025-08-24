@@ -2,7 +2,6 @@ package Agregador.business.Consenso;
 
 import java.util.ArrayList;
 import Agregador.business.Agregador.*;
-import Agregador.business.Colecciones.*;
 import Agregador.business.Hechos.*;
 
 public class Absoluto implements Consenso {
@@ -11,7 +10,7 @@ public class Absoluto implements Consenso {
   public boolean esConsensuado(Hecho hecho) {
 
     ArrayList<Hecho> hechos = new ArrayList<Hecho>();
-    if (!hechos.stream().allMatch(h -> {h.getTitulo() == hecho.getTitulo();})) return false;
+    if (!hechos.stream().allMatch(h -> h.getTitulo() == hecho.getTitulo())) return false;
     return true;
   }
 }

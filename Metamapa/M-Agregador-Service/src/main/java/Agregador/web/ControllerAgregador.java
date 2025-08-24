@@ -1,59 +1,58 @@
 package Agregador.web;
 
-
 import Agregador.business.Agregador.Agregador;
+import Agregador.business.Colecciones.Coleccion;
+import Agregador.business.Colecciones.CriterioFuenteDeDatos;
 import Agregador.business.Hechos.Hecho;
-import java.util.ArrayList;
-
+import java.util.*;
 import Agregador.Service.ServiceFuenteDeDatos;
 import Agregador.persistencia.RepositorioAgregador;
+import Agregador.persistencia.RepositorioColecciones;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-
 
 @RestController
 @RequestMapping("/api-agregador")
 public class ControllerAgregador {
   private final ServiceFuenteDeDatos servicefuenteDeDatos;
   private final RepositorioAgregador repositorioAgregador = new RepositorioAgregador();
+  private final RepositorioColecciones repositorioColecciones;
 
-  public ControllerAgregador(ServiceFuenteDeDatos servicefuenteDeDatos) {
+  public ControllerAgregador(ServiceFuenteDeDatos servicefuenteDeDatos, RepositorioColecciones repositorioColecciones) {
     this.servicefuenteDeDatos = servicefuenteDeDatos;
+    this.repositorioColecciones = repositorioColecciones;
   }
 
+  /*
+    public void guardarHechos(int idFuente){
+      ArrayList<Map<String,Object>> hechos = servicefuenteDeDatos.getHechosDeFuente(idFuente);
 
-/*
-  public void guardarHechos(int idFuente)
-  {
-    ArrayList<Map<String,Object>> hechos = servicefuenteDeDatos.getHechosDeFuente(idFuente);
-
-    hechos.forEach(h -> repositorioAgregador.persistirHechos(h));
-  }
-*/
+      hechos.forEach(h -> repositorioAgregador.persistirHechos(h));
+    }
+  */
 
   private ArrayList<String> obtenerFuentes() {
     ArrayList<String> URLsFuentes = new ArrayList<String>();
     URLsFuentes.add("${M.FuenteDinamica.service.url}");
     URLsFuentes.add("${M.FuenteEstatica.service.url}");
     URLsFuentes.add("${M.FuenteProxy.service.url}");
-
     return URLsFuentes;
   }
-  public void actualizarHechos()
-  {
+
+  public void actualizarHechos() {
     ArrayList<String> URLsFuentes = obtenerFuentes();
     ArrayList<Hecho> hechos = new ArrayList<>();
-
-    URLsFuentes.forEach(url-> {hechos.addAll(new ServiceFuenteDeDatos(new RestTemplate(),url).getHechos());});
-
+    URLsFuentes.forEach(url -> {
+      hechos.addAll(new ServiceFuenteDeDatos(new RestTemplate(), url).getHechos());
+    });
     repositorioAgregador.getAgregador().actualizarHechos(hechos);
   }
 
-  public void consensuarHechos()
-  {
-
+  public void consensuarHechos() {
+    //TODO implementar que dispare procedures en la BBDD
   }
+
   @GetMapping("/")
   public ResponseEntity<Agregador> getAgregador() {
     Agregador agregador = repositorioAgregador.getAgregador();
@@ -64,56 +63,55 @@ public class ControllerAgregador {
   }
 
 
-  @PostMapping ("/fuentes/actualizar")
-  public ResponseEntity<Void> actualizarAgregador() {
-    try {
-      var fuentes = servicefuenteDeDatos.obtenerFuenteDeDatos();
-      if (fuentes == null || fuentes.isEmpty()) {
-        return ResponseEntity.noContent().build();
-      }
-      repositorioAgregador.getAgregador().actualizarFuentesDeDatos(fuentes);
-      return ResponseEntity.noContent().build();
-    } catch (Exception e) {
-      // Se puede usar un logger para loguear el error
-      return ResponseEntity.status(500).build();
-    }
-  }
-
+//  @PostMapping ("/fuentes/actualizar")
+//  public ResponseEntity<?> actualizarAgregador() {
+//    try {
+//      var fuentes = servicefuenteDeDatos.obtenerFuenteDeDatos();
+//      if (fuentes == null || fuentes.isEmpty()) {
+//        return ResponseEntity.noContent().build();
+//      }
+//      repositorioAgregador.getAgregador().actualizarFuentesDeDatos(fuentes);
+//      return ResponseEntity.noContent().build();
+//    } catch (Exception e) {
+//      return ResponseEntity.status(500).build();
+//    }
+//  }
 
   //TODO esto se va a comunicar con el servicio de colecciones
   //TODO y las colecciones filtran estos hechos
-  @GetMapping("/hechos")
-  public ResponseEntity<ArrayList<Hecho>> getAgregadorHechos() {
-    ArrayList<Hecho> hechos = repositorioAgregador.getAgregador().getListaDeHechos();
+//  @GetMapping("/hechos")
+//  public ResponseEntity<ArrayList<Hecho>> getAgregadorHechos() {
+//    ArrayList<Hecho> hechos = repositorioAgregador.getAgregador().getListaDeHechos();
+//
+//    if (hechos == null || hechos.isEmpty()) {
+//      return ResponseEntity.noContent().build();
+//    }
+//    return ResponseEntity.ok(hechos);
+//  }
 
-    if (hechos == null || hechos.isEmpty()) {
-      return ResponseEntity.noContent().build();
-    }
-    return ResponseEntity.ok(hechos);
-  }
-
-
-  @PostMapping ("/fuentesDeDatos/agregar/{idFuente}")
-  public ResponseEntity<Void> agregarFuente(@PathVariable int idFuente) {
+  @PostMapping("/fuentesDeDatos/{idColeccion}/{idFuente}")
+  public ResponseEntity<Void> agregarFuente(@PathVariable Integer idFuente, @PathVariable String idColeccion) {
     try {
-      var fuente = servicefuenteDeDatos.getFuenteDeDatos(idFuente);
-      if (fuente == null) {
-        return ResponseEntity.notFound().build();
-      }
-      repositorioAgregador.getAgregador().agregarFuenteDeDatos(fuente);
+      Coleccion col = repositorioColecciones.buscarXUUID(UUID.fromString(idColeccion));
+      if (col == null) return ResponseEntity.notFound().build();
+      col.agregarCriterioPertenencia(new CriterioFuenteDeDatos(idFuente));
       return ResponseEntity.noContent().build();
     } catch (Exception e) {
       return ResponseEntity.status(500).build();
     }
   }
 
-  @PostMapping ("/fuentesDeDatos/remover/{idFuente}")
-  public ResponseEntity<Void> eliminarFuente(@PathVariable int idFuente) {
+  @PostMapping("/fuentesDeDatos/{idColeccion}/remover/{idFuente}")
+  public ResponseEntity<Void> eliminarFuente(@PathVariable Integer idFuente,@PathVariable String idColeccion) {
     try {
-      repositorioAgregador.getAgregador().removerFuenteDeDatos(idFuente);
+      Coleccion col = repositorioColecciones.buscarXUUID(UUID.fromString(idColeccion));
+      if (col == null) return ResponseEntity.notFound().build();
+      col.eliminarCriterioPertenencia(new CriterioFuenteDeDatos(idFuente));
       return ResponseEntity.noContent().build();
     } catch (Exception e) {
       return ResponseEntity.status(500).build();
     }
   }
+
+
 }

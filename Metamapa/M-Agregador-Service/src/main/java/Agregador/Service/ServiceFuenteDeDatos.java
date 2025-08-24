@@ -1,39 +1,28 @@
 package Agregador.Service;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import java.util.Map;
-import java.util.ArrayList;
 import Agregador.business.Hechos.*;
-import java.util.HashMap;
-
-
 
 @Service
 public class ServiceFuenteDeDatos {
-
   private final RestTemplate restTemplate;
   private final String baseUrl;
-
-
-
-  public ServiceFuenteDeDatos(RestTemplate restTemplate,
-                              @Value("${fuentes.service.url}") String baseUrl) {
+  //TODO: REVISAR LAS RUTAS DE LOS SERVICIOS DE FUENTES DE DATOS
+  public ServiceFuenteDeDatos(RestTemplate restTemplate, @Value("${M.FuenteDinamica.service.url}") String baseUrl) {
     this.restTemplate = restTemplate;
     this.baseUrl = baseUrl;
   }
 
-  public ArrayList<Map<String,Object>> getHechosDeFuente(int idFuente)
-  {
+  public ArrayList<Map<String,Object>> getHechosDeFuente(int idFuente) {
     String url = String.format("%s/%d/hechos", baseUrl, idFuente);
     return restTemplate.getForObject(url,ArrayList.class);
   }
 
-  private Hecho JSONToHecho(Map<String,Object> json)
-  {
+  private Hecho JSONToHecho(Map<String,Object> json) {
     String titulo =  json.get("titulo").toString();
     String descripcion = json.get("descripcion").toString();
     String categoria = json.get("categoria").toString();
@@ -52,11 +41,10 @@ public class ServiceFuenteDeDatos {
     return new Hecho();
   }
 
-  public ArrayList<Hecho> getHechos()
-  {
+  public ArrayList<Hecho> getHechos() {
     String url = String.format("%s/hechos", baseUrl);
     ArrayList<Map<String,Object>> JSONHechos = restTemplate.getForObject(url,ArrayList.class);
-    ArrayList<Hecho> hechos = JSONHechos.stream().map(json ->{JSONToHecho(json);}).collect(Collectors.toList());
+    ArrayList<Hecho> hechos = (ArrayList<Hecho>) JSONHechos.stream().map(json -> JSONToHecho(json)).collect(Collectors.toList());
     return hechos;
   }
 

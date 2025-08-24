@@ -1,7 +1,6 @@
 package Agregador.Service;
 import Agregador.DTO.SolicitudEliminacionDTO;
-import Agregador.business.Solicitudes.EstadoSolicitud;
-import Agregador.business.Solicitudes.SolicitudEliminacion;
+import Agregador.business.Solicitudes.*;
 import Agregador.persistencia.RepositorioAgregador;
 import org.springframework.stereotype.Service;
 

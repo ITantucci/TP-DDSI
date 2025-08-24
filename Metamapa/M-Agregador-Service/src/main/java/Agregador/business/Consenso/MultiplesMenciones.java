@@ -1,6 +1,6 @@
 package Agregador.business.Consenso;
 
-import java.util.ArrayListList;
+import java.util.ArrayList;
 import Agregador.business.Agregador.*;
 import Agregador.business.Colecciones.*;
 import Agregador.business.Hechos.*;
