@@ -5,8 +5,7 @@ import FuenteDinamica.business.Hechos.Multimedia;
 import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.List;
-import javax.swing.text.html.parser.Parser;
+import java.util.Objects;
 import lombok.Getter;
 import org.springframework.stereotype.Repository;
 
@@ -20,7 +19,7 @@ public class RepositorioFuentes {
   }
 
   public FuenteDinamica buscarFuente(Integer id) {
-    return fuentesDinamicas.stream().filter(f-> f.getFuenteId() == id).findFirst().orElseThrow(()-> new IllegalArgumentException("No se encontro una fuente con ese ID"));
+    return fuentesDinamicas.stream().filter(f-> Objects.equals(f.getFuenteId(), id)).findFirst().orElseThrow(()-> new IllegalArgumentException("No se encontro una fuente con ese ID"));
   }
 
 //  public RepositorioFuentes() {

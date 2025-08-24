@@ -13,5 +13,4 @@ public class Multimedia {
     this.tipoMultimedia = tipoMultimedia;
     this.path = path;
   }
-
 }

@@ -54,7 +54,7 @@ public class Hecho {
     this.fechaHecho = fechaHecho;
     this.fechaCarga = LocalDate.now();
     this.fechaModificacion = LocalDate.now();
-    this.idUsuario = idUsuario;// idUsuario.getPerfil();
+    this.idUsuario = idUsuario;
     this.fuenteId = fuenteId; //AGREGO ESTE CAMPO
     this.anonimo = anonimo;
     this.eliminado = false;

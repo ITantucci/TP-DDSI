@@ -23,7 +23,6 @@ public class Agregador {
         this.listaHechos= new ArrayList<>();
         this.listaSolicitudesEliminacion = new ArrayList<>();
         this.listaSolicitudesEdicion = new ArrayList<>();
-
 //        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 //
 //        Runnable tarea = () -> this.actualizarHechos();
