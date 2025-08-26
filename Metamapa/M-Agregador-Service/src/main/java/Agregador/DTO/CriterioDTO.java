@@ -3,8 +3,7 @@ import Agregador.business.Colecciones.*;
 import Agregador.business.Hechos.TipoMultimedia;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import java.time.LocalDate;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

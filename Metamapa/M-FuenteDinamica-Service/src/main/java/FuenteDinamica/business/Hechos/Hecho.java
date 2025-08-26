@@ -1,39 +1,26 @@
 package FuenteDinamica.business.Hechos;
-
 import java.time.LocalDate;
 import java.util.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
+@Getter @Setter
 public class Hecho {
-  @Getter
   private String titulo;
-  @Getter
   private String descripcion;
-  @Getter
   private String categoria;
-  @Getter
   private Float latitud;
-  @Getter
   private Float longitud;
-  @Getter
   private LocalDate fechaHecho;
-  @Getter
   private LocalDate fechaCarga;
-  @Getter
   private LocalDate fechaModificacion;
-  @Getter @Setter
   private Integer idUsuario;
-  @Getter @Setter
-  private int fuenteId;
-  @Getter @Setter
+  private Integer fuenteId;
   private Boolean anonimo;
-  @Getter @Setter
   private Boolean eliminado;
-  @Getter @Setter
   private List<Multimedia> multimedia;
-  @Getter @Setter
   private HashMap<String,String> metadata;
+
+  public Hecho() {}
 
   public Hecho(
       String titulo,

@@ -2,15 +2,18 @@ package Agregador.Service;
 import Agregador.DTO.SolicitudEliminacionDTO;
 import Agregador.business.Solicitudes.*;
 import Agregador.persistencia.RepositorioAgregador;
+import Agregador.persistencia.RepositorioSolicitudes;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ServiceSolicitudes {
     public enum Result { OK, NOT_FOUND, CONFLICT, INVALID }
     private final RepositorioAgregador repositorioAgregador;
+    private final RepositorioSolicitudes repoSolicitudes;
 
-    public ServiceSolicitudes(RepositorioAgregador ra) {
+    public ServiceSolicitudes(RepositorioAgregador ra, RepositorioSolicitudes rs) {
         this.repositorioAgregador = ra;
+        this.repoSolicitudes = rs;
     }
 
     // @Transactional (opcional si usás BD)
@@ -38,7 +41,7 @@ public class ServiceSolicitudes {
 
     public SolicitudEliminacionDTO crearSolicitud(SolicitudEliminacionDTO dto) {
         SolicitudEliminacion solicitud = new SolicitudEliminacion(dto.getHechoAfectado(), dto.getMotivo());
-        //repositorioAgregador.save(solicitud); TODO: guardar en la base de datos
+        this.repoSolicitudes.save(solicitud);
         return new SolicitudEliminacionDTO(solicitud);
     }
 }
