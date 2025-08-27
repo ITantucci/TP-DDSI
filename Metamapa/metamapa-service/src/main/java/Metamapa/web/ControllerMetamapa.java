@@ -4,6 +4,7 @@ import Metamapa.business.Consenso.ModosDeNavegacion;
 import Metamapa.business.Hechos.*;
 import Metamapa.service.*;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -93,7 +94,33 @@ public class ControllerMetamapa {
             : ResponseEntity.notFound().build();   // 404 si la colección no existe en el backend
   }
 
-  //● Agregar o quitar fuentes de hechos de una colección.
+  //● Agregar fuentes de hechos de una colección.
+  @PostMapping("/colecciones/{uuid}/fuente/{idFuente}")
+  @ResponseBody
+  public ResponseEntity<Void> agregarFuente(@PathVariable UUID uuid, @PathVariable Integer idFuente) {
+      Coleccion coleccion = serviceColecciones.getColeccion(uuid);
+      try {
+          serviceAgregador.agregarFuente(idFuente);
+          serviceAgregador.actualizarAgregador();
+          return ResponseEntity.noContent().build();
+      } catch (Exception e) {
+          return ResponseEntity.status(HttpStatus.BAD_GATEWAY).build();
+      }
+  }
+
+  //Quitar fuentes de hechos de una colección
+  @DeleteMapping("/colecciones/{uuid}/fuente/{idFuente}")
+  @ResponseBody
+  public ResponseEntity<Void> quitarFuente(@PathVariable UUID uuid, @PathVariable Integer idFuente) {
+      Coleccion coleccion = serviceColecciones.getColeccion(uuid);
+      try {
+          serviceAgregador.removerFuente(idFuente);
+          serviceAgregador.actualizarAgregador();
+          return ResponseEntity.noContent().build();
+      } catch (Exception e) {
+          return ResponseEntity.status(HttpStatus.BAD_GATEWAY).build();
+      }
+    }
 
   // ● Aprobar o denegar una solicitud de eliminación (endpoint único)
   //TODO: CHEQUEAR
@@ -129,9 +156,9 @@ public class ControllerMetamapa {
                                             @RequestParam("motivo") String motivo,
                                             @RequestParam(value = "url", required = false) String url,
                                             RedirectAttributes ra ){
-      Integer idSolicitud = serviceAgregador.crearSolicitudYRetornarId(hechoAfectado, motivo, url);
-      ra.addFlashAttribute("success", "Fuente creada correctamente con id: " + idSolicitud);
-      //return "redirect:/metamapa/solicitudesEliminacion/" + idSolicitud; //Te lleva a la pagina de la nueva fuente
+      Integer idSolicitud = serviceAgregador.crearSolicitudEliminacionYRetornarId(hechoAfectado, motivo, url);
+      ra.addFlashAttribute("success", "Solicitud creada correctamente con id: " + idSolicitud);
+      //return "redirect:/metamapa/solicitudesEliminacion/" + idSolicitud; //Te lleva a la pagina de la nueva solicitud
       return "redirect:/metamapa/solicitudesEliminacion/";
   }
 
@@ -189,8 +216,17 @@ public class ControllerMetamapa {
       return coleccion.getHechos(coleccion.getAgregador().getListaDeHechos(), modosDeNavegacion);
   }
 
-  //● TODO: Reportar un hecho.
-
+  //● TODO: Reportar un hecho. Supongo que se refiere a crear una solicitud de edicion
+  @PostMapping("/metamapa/api/solicitudesEdicion/")
+  public String generarSolicitudEdicion(@RequestParam("hechoAfectado") String hechoAfectado,
+                                            @RequestParam("motivo") String motivo,
+                                            @RequestParam(value = "url", required = false) String url,
+                                            RedirectAttributes ra ) {
+      Integer idSolicitud = serviceAgregador.crearSolicitudEdicionYRetornarId(hechoAfectado, motivo, url);
+      ra.addFlashAttribute("success", "Solicitud creada correctamente con id: " + idSolicitud);
+      //return "redirect:/metamapa/solicitudesEliminacion/" + idSolicitud; //Te lleva a la pagina de la nueva solicitud
+      return "redirect:/metamapa/solicitudesEdicion/";
+  }
 
   @GetMapping("/metamapa/fuentesDeDatos/{id}")
   public String obtenerFuente(@PathVariable("id") Integer id, Model model) {
@@ -223,7 +259,6 @@ public class ControllerMetamapa {
     ra.addFlashAttribute("success", "Fuente creada correctamente con id: " + idFuente);
     //return "redirect:/metamapa/fuentesDeDatos/" + idFuente; //Te lleva a la pagina de la nueva fuente
     return "redirect:/metamapa/fuentesDeDatos/";
-
   }
 
   //TODO No necesitamos conectarnos con el agregador

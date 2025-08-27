@@ -44,6 +44,7 @@ public class ServiceAgregador {
     String url = String.format("%s/api-agregador/fuentesDeDatos/remover/%d", baseUrl, idFuente);
     restTemplate.postForObject(url, null, Void.class);
   }
+
   //TODO: CHEQUEAR
   public enum Result { OK, NOT_FOUND, CONFLICT, INVALID }
   public Result aprobarSolicitudEliminacion(UUID id) {
@@ -61,7 +62,7 @@ public class ServiceAgregador {
     } catch (HttpClientErrorException.Conflict e) { return Result.CONFLICT;
     } catch (HttpClientErrorException.UnprocessableEntity e) { return Result.INVALID; }
   }
-    public Integer crearSolicitudYRetornarId(String hechoAfectado, String motivo, String url) {
+    public Integer crearSolicitudEliminacionYRetornarId(String hechoAfectado, String motivo, String url) {
         Map<String, Object> payload = new HashMap<>();
         payload.put("hechoAfectado", hechoAfectado);
         payload.put("motivo", motivo);
@@ -77,6 +78,27 @@ public class ServiceAgregador {
         @SuppressWarnings("unchecked")
         Map<String, Object> response = restTemplate.postForObject(
                 baseUrl + "/api-solcitudEliminacion/",
+                request,
+                Map.class
+        );
+        return (Integer) response.get("id");
+    }
+    public Integer crearSolicitudEdicionYRetornarId(String hechoAfectado, String motivo, String url) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("hechoAfectado", hechoAfectado);
+        payload.put("motivo", motivo);
+        if (url != null && !url.isBlank()) {
+            payload.put("url", url);
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> response = restTemplate.postForObject(
+                baseUrl + "/api-solcitudEdicion/",
                 request,
                 Map.class
         );
