@@ -17,23 +17,19 @@ public class ControllerFuenteDinamica {
     this.serviceIncidencias= serviceIncidencias;
   }*/
 
+  // obtener todas las fuentes
   @GetMapping("/")
   public ArrayList<FuenteDinamica> getFuenteDeDatos(){
     return repositorioFuentes.getFuentesDinamicas();
   }
 
+  // obtener una fuente por id
   @GetMapping("/{idFuenteDeDatos}")
   public FuenteDinamica getFuenteDeDatos(@PathVariable(value = "idFuenteDeDatos") Integer idfuenteDeDatos) {
     return repositorioFuentes.buscarFuente(idfuenteDeDatos);
   }
 
-  //TODO este me parece que no se usa, ya que el agregador se actualiza solo
-  // por ahi esta para otra cosa
-  @GetMapping("/{idFuenteDeDatos}/hechos")
-  public ArrayList<Hecho> getHechosFuenteDeDatos(@PathVariable(value = "idFuenteDeDatos") Integer idfuenteDeDatos) {
-    return repositorioFuentes.buscarFuente(idfuenteDeDatos).getHechos();
-  }
-
+  // crear una fuente
   @PostMapping(value = "/", consumes = "application/json", produces = "application/json")
   public ResponseEntity<?> crearFuenteDeDatos(@RequestBody Map<String, Object> requestBody) {
     try {
@@ -46,6 +42,13 @@ public class ControllerFuenteDinamica {
     }
   }
 
+  // este me parece que no se usa, ya que el agregador se actualiza solo por ahi esta para otra cosa
+  @GetMapping("/{idFuenteDeDatos}/hechos")
+  public ArrayList<Hecho> getHechosFuenteDeDatos(@PathVariable(value = "idFuenteDeDatos") Integer idfuenteDeDatos) {
+    return repositorioFuentes.buscarFuente(idfuenteDeDatos).getHechos();
+  }
+
+  // Cargar un hecho a una fuente
   @PostMapping (value = "/{idFuenteDeDatos}/hechos", consumes = "application/json", produces = "application/json")
   public ResponseEntity<?> cargarHecho(@PathVariable Integer idFuenteDeDatos, @Valid @RequestBody HechoDTO hechoDTO) {
     try {

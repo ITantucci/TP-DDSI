@@ -27,7 +27,8 @@ public interface Consenso {
     return hecho1.getFechaHecho() == hecho2.getFechaHecho() &&
             Math.abs(hecho1.getLatitud() - hecho2.getLatitud()) < 10  &&
             Math.abs(hecho1.getLongitud() - hecho2.getLongitud()) < 10 &&
-            hecho1.getTitulo().equalsIgnoreCase(hecho2.getTitulo());
+            hecho1.getTitulo().equalsIgnoreCase(hecho2.getTitulo()) &&
+            hecho1.getTitulo().equals(hecho2.getTitulo());
   }
 
   //ABSOLUTA

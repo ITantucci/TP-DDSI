@@ -99,7 +99,6 @@ public class ControllerAgregador {
       return ResponseEntity.status(500).build();
     }
   }
-
   @PostMapping("/fuentesDeDatos/{idColeccion}/remover/{idFuente}")
   public ResponseEntity<Void> eliminarFuente(@PathVariable Integer idFuente,@PathVariable String idColeccion) {
     try {

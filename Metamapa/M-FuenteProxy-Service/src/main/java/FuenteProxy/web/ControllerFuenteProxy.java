@@ -15,21 +15,19 @@ public class ControllerFuenteProxy{
     this.fuenteProxyService = fuenteProxyService;
   }
 
+  // Obtener todas las fuentes
   @GetMapping("/")
   public ResponseEntity<List<FuenteProxy>> getFuentesDeDatos() {
     return ResponseEntity.ok(fuenteProxyService.getFuentes());
   }
 
+  // Obtener una fuente por id
   @GetMapping("/{idFuenteDeDatos}")
   public FuenteProxy getFuenteDeDatos(@PathVariable(value = "idFuenteDeDatos") Integer idfuenteDeDatos) {
     return fuenteProxyService.obtenerFuente(idfuenteDeDatos);
   }
 
-  @GetMapping("/{idFuenteDeDatos}/hechos")
-  public ResponseEntity<List<Hecho>> obtenerHechos(@PathVariable Integer idFuenteDeDatos) {
-    return ResponseEntity.ok(fuenteProxyService.obtenerHechos(idFuenteDeDatos));
-  }
-
+  // Crear una fuente
   @PostMapping(value = "/", consumes = "application/json", produces = "application/json")
   public ResponseEntity<?> crearFuenteDeDatos(@RequestBody Map<String, Object> requestBody) {
     try {
@@ -40,5 +38,11 @@ public class ControllerFuenteProxy{
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno: " + e.getMessage());
     }
+  }
+
+  // Obtener hechos de una fuente
+  @GetMapping("/{idFuenteDeDatos}/hechos")
+  public ResponseEntity<List<Hecho>> obtenerHechos(@PathVariable Integer idFuenteDeDatos) {
+    return ResponseEntity.ok(fuenteProxyService.obtenerHechos(idFuenteDeDatos));
   }
 }
