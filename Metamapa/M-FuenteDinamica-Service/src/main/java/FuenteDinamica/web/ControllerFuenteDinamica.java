@@ -1,6 +1,6 @@
 package FuenteDinamica.web;
 import java.util.*;
-import FuenteDinamica.business.DTO.HechoDTO;
+import FuenteDinamica.DTO.HechoDTO;
 import FuenteDinamica.persistencia.RepositorioFuentes;
 import FuenteDinamica.business.Hechos.*;
 import FuenteDinamica.business.FuentesDeDatos.FuenteDinamica;
@@ -46,7 +46,7 @@ public class ControllerFuenteDinamica {
     }
   }
 
-  @PostMapping (value = "/{idFuenteDeDatos}/cargarHecho", consumes = "application/json", produces = "application/json")
+  @PostMapping (value = "/{idFuenteDeDatos}/hechos", consumes = "application/json", produces = "application/json")
   public ResponseEntity<?> cargarHecho(@PathVariable Integer idFuenteDeDatos, @Valid @RequestBody HechoDTO hechoDTO) {
     try {
       Hecho hecho = hechoDTO.toDomain(idFuenteDeDatos);

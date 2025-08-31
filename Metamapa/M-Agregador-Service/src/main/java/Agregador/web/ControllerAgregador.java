@@ -6,6 +6,7 @@ import java.util.*;
 import Agregador.Service.ServiceFuenteDeDatos;
 import Agregador.persistencia.RepositorioAgregador;
 import Agregador.persistencia.RepositorioColecciones;
+import Agregador.persistencia.RepositorioHechos;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -16,7 +17,7 @@ public class ControllerAgregador {
   private final ServiceFuenteDeDatos servicefuenteDeDatos;
   private final RepositorioAgregador repositorioAgregador = new RepositorioAgregador();
   private final RepositorioColecciones repositorioColecciones;
-
+  private final RepositorioHechos repositorioHechos = new RepositorioHechos();
   public ControllerAgregador(ServiceFuenteDeDatos servicefuenteDeDatos, RepositorioColecciones repositorioColecciones) {
     this.servicefuenteDeDatos = servicefuenteDeDatos;
     this.repositorioColecciones = repositorioColecciones;

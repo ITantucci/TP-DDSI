@@ -7,7 +7,7 @@ import java.util.*;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
+@Getter @Setter
 public class Hecho {
   private String titulo;
   private String descripcion;
@@ -17,16 +17,11 @@ public class Hecho {
   private LocalDate fechaHecho;
   private LocalDate fechaCarga;
   private LocalDate fechaModificacion;
-  @Setter
   private Usuario perfil;
   private BigInteger id;
-  @Setter
   private Boolean anonimo;
-  @Setter
   private Boolean eliminado;
-  @Setter
   private ArrayList<Multimedia> multimedia;
-  @Setter
   private HashMap<String, String> metadata;
 
   //TODO: Chequear si Categoria lo modelamos como string o un enum

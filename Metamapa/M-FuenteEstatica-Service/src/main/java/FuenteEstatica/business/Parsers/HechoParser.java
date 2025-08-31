@@ -9,4 +9,7 @@ public interface HechoParser {
     ArrayList<Hecho> parsearHechos(String path, Integer fuenteID);
 
     ArrayList<Hecho> parsearHechos(InputStream in, Integer fuenteID);
+
+    Hecho parse(String[] campos, Integer fuenteID);
+
 }

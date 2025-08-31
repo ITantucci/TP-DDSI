@@ -83,4 +83,14 @@ public class CSVHechoParser implements HechoParser {
         }
         return listaHecho;
     }
+
+    public Hecho parse(String[] campos, Integer fuenteID) {
+        String titulo = campos[0];
+        String descripcion = campos[1];
+        String categoria = campos[2];
+        float latitud = Float.parseFloat(campos[3]);
+        float longitud = Float.parseFloat(campos[4]);
+        LocalDate fecha = LocalDate.parse(campos[5]);
+        return new Hecho(titulo, descripcion, categoria, latitud, longitud, fecha,fuenteID);
+    }
 }

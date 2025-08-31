@@ -1,4 +1,4 @@
-package FuenteDinamica.business.DTO;
+package FuenteDinamica.DTO;
 import FuenteDinamica.business.Hechos.*;
 import lombok.*;
 
