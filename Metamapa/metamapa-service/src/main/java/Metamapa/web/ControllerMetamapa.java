@@ -32,8 +32,6 @@ public class ControllerMetamapa {
     this.serviceColecciones = serviceColecciones;
   }
 
-
-
   // API Administrativa de MetaMapa
   //● Operaciones CRUD sobre las colecciones.
   @GetMapping(value="/metamapa/colecciones/")
@@ -84,20 +82,27 @@ public class ControllerMetamapa {
   }
 
   @DeleteMapping("/metamapa/colecciones/{uuid}")
-  public String eliminarColeccion(@PathVariable("uuid") UUID uuid, RedirectAttributes ra) {
-    serviceColecciones.deleteColeccion(uuid);
-    ra.addFlashAttribute("mensaje", "Colección eliminada correctamente");
-    return "redirect:/metamapa/colecciones/";
-  }
+  public ResponseEntity<Map<String, String>> eliminarColeccion(@PathVariable UUID uuid) {
+    HttpStatus status = serviceColecciones.deleteColeccion(uuid);
 
+    if (status == HttpStatus.NO_CONTENT) {
+      return ResponseEntity.ok(Map.of("mensaje", "Colección eliminada correctamente"));
+    } else if (status == HttpStatus.NOT_FOUND) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+              .body(Map.of("error", "Colección no encontrada"));
+    } else {
+      return ResponseEntity.status(status)
+              .body(Map.of("error", "No se pudo eliminar la colección"));
+    }
+  }
+  //TODO: PATCH consenso error: I/O error on PATCH request for "http://localhost:9004/api-colecciones/1c388814-b009-4ad9-a4c0-19a23a3c3244": Invalid HTTP method: PATCH
   //● Modificación del algoritmo de consenso.
   @PatchMapping("/metamapa/colecciones/{uuid}/consenso/{algoritmo:Absoluto|MultiplesMenciones|MayoriaSimple}")
-  @ResponseBody
-  public ResponseEntity<Void> modificarConsenso(@PathVariable UUID uuid,
-                                                @PathVariable String algoritmo) {
-    boolean ok = serviceColecciones.actualizarAlgoritmoConsenso(uuid, algoritmo);
-    return ok ? ResponseEntity.noContent().build()   // 204
-            : ResponseEntity.notFound().build();   // 404 si la colección no existe en el backend
+  public ResponseEntity<?> modificarConsenso(@PathVariable UUID uuid, @PathVariable String algoritmo) {
+    HttpStatus status = serviceColecciones.actualizarAlgoritmoConsenso(uuid, algoritmo);
+    if (status.is2xxSuccessful()) return ResponseEntity.noContent().build(); // o ok(...) con mensaje
+    if (status == HttpStatus.NOT_FOUND) return ResponseEntity.notFound().build();
+    return ResponseEntity.status(status).body(java.util.Map.of("error", "No se pudo actualizar el consenso"));
   }
 
   //● Agregar fuentes de hechos de una colección.
@@ -353,11 +358,6 @@ public class ControllerMetamapa {
   }
 
   @GetMapping("/")
-  public String redirectRoot() {
-    return "redirect:/metamapa";
-  }
-
-  @GetMapping("/metamapa")
   public String mostrarHome(Model model) {
     return "home";
   }

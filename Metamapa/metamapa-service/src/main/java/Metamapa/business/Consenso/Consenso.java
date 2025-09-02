@@ -9,10 +9,10 @@ public interface Consenso {
 
     public static String toString(Consenso c) {
         if (c == null) return null;
-        if (c instanceof Consenso) return "Absoluto";
-        if (c instanceof Consenso) return "MultiplesMenciones";
-        if (c instanceof Consenso) return "MayoriaSimple";
-        return c.toString();
+        if (c instanceof Absoluto) return "Absoluto";
+        if (c instanceof MultiplesMenciones) return "MultiplesMenciones";
+        if (c instanceof MayoriaSimple) return "MayoriaSimple";
+        return c.getClass().getSimpleName();
     }
     public static Consenso fromString(String nombre) {
         if (nombre == null) nombre = "MayoriaSimple";

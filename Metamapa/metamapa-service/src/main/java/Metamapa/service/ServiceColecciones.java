@@ -10,9 +10,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -47,43 +49,87 @@ public class ServiceColecciones {
         return (row == null) ? null : toColeccion(row);
     }
 
-    public UUID crearColeccion(String titulo, String descripcion, String consenso,
+  public UUID crearColeccion(String titulo, String descripcion, String consenso,
                              List<Map<String, Object>> pertenencia,
                              List<Map<String, Object>> noPertenencia) {
+    // 1) Armar payload seguro (listas vacías si vienen null)
     Map<String, Object> payload = new HashMap<>();
     payload.put("titulo", titulo);
     payload.put("descripcion", descripcion);
-    payload.put("consenso", consenso);
-    payload.put("criteriosPertenencia", pertenencia);
-    payload.put("criteriosNoPertenencia", noPertenencia);
+    payload.put("consenso", consenso); // "Absoluto" | "MayoriaSimple" | "MultiplesMenciones"
+    payload.put("criteriosPertenencia", pertenencia == null ? List.of() : pertenencia);
+    payload.put("criteriosNoPertenencia", noPertenencia == null ? List.of() : noPertenencia);
+
+    // Log rápido para verificar qué se envía
+    System.out.println("CREAR → payload = " + payload);
+
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
-
     HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
 
-    Map<String, Object> response = restTemplate.postForObject(
-            baseUrl + "/api-colecciones/",
-            request,
-            Map.class
-    );
-      String handleStr = (String) Objects.requireNonNull(response).get("handle");
-      return UUID.fromString(handleStr);
-  }
+    // 2) Construir URL sin riesgo de dobles barras
+    String url = baseUrl.replaceAll("/+$", "") + "/api-colecciones/";
 
-  public void deleteColeccion(UUID uuid) {
-    String url = String.format("%s/api-colecciones/%s", baseUrl, uuid);
-    try {
-      restTemplate.delete(url);
-    } catch (Exception e) {
-      System.err.println("Error al eliminar la colección: " + e.getMessage());
+    // 3) POST y lectura tolerante de id/handle
+    Map<String, Object> response = restTemplate.postForObject(url, request, Map.class);
+    System.out.println("CREAR ← respuesta = " + response);
+
+    if (response == null) {
+      throw new IllegalStateException("Respuesta nula del Agregador");
     }
+    Object idLike = response.get("id");
+    if (idLike == null) idLike = response.get("handle"); // por si el DTO devuelve 'handle'
+    if (idLike == null) {
+      throw new IllegalStateException("Respuesta sin 'id' ni 'handle': " + response);
+    }
+
+    return UUID.fromString(idLike.toString());
   }
 
-  public boolean actualizarAlgoritmoConsenso(UUID idColeccion, String algoritmo) {
-    String url = String.format("%s/api-colecciones/%s/consenso/%s", baseUrl, idColeccion, algoritmo);
-    ResponseEntity<Void> resp = restTemplate.exchange(url, HttpMethod.PATCH, HttpEntity.EMPTY, Void.class);
-    return resp.getStatusCode().is2xxSuccessful();
+    public HttpStatus deleteColeccion(UUID uuid) {
+        URI uri = UriComponentsBuilder
+                .fromHttpUrl(baseUrl.replaceAll("/+$",""))
+                .pathSegment("api-colecciones", uuid.toString())
+                .build()
+                .toUri();
+
+        try {
+            ResponseEntity<Void> resp = restTemplate.exchange(uri, HttpMethod.DELETE, null, Void.class);
+            return (HttpStatus) resp.getStatusCode(); // 204 si salió bien
+        } catch (HttpStatusCodeException e) {
+            System.err.println("Error al eliminar la colección: " + e.getStatusCode() + " " + e.getResponseBodyAsString());
+            return (HttpStatus) e.getStatusCode(); // 404, 405, etc.
+        } catch (Exception e) {
+            System.err.println("Error al eliminar la colección: " + e.getMessage());
+            return HttpStatus.BAD_GATEWAY; // o INTERNAL_SERVER_ERROR
+        }
   }
+
+    public HttpStatus actualizarAlgoritmoConsenso(UUID uuid, String algoritmo) {
+        // Construir URL correcta: /api-colecciones/{id}
+        var uri = UriComponentsBuilder
+                .fromHttpUrl(baseUrl.replaceAll("/+$",""))
+                .pathSegment("api-colecciones", uuid.toString())
+                .build()
+                .toUri();
+
+        // Body JSON con el algoritmo
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        var body = java.util.Map.of("algoritmo", algoritmo);
+        var entity = new HttpEntity<>(body, headers);
+
+        try {
+            ResponseEntity<Void> resp = restTemplate.exchange(uri, HttpMethod.PATCH, entity, Void.class);
+            return (HttpStatus) resp.getStatusCode(); // 200/204 según tu Agregador
+        } catch (HttpStatusCodeException e) {
+            System.err.println("PATCH consenso error: " + e.getStatusCode() + " " + e.getResponseBodyAsString());
+            return (HttpStatus) e.getStatusCode();
+        } catch (Exception e) {
+            System.err.println("PATCH consenso error: " + e.getMessage());
+            return HttpStatus.BAD_GATEWAY;
+        }
+    }
 
   public List<Hecho> navegarFiltrado(
             UUID idColeccion,

@@ -105,9 +105,8 @@ public class ServiceColecciones {
   }
 
   public ColeccionDTO crearColeccion(ColeccionDTO coleccionDTO) {
-    String nombreConsenso = (coleccionDTO.getConsenso() != null && !coleccionDTO.getConsenso().isBlank())
-            ? coleccionDTO.getConsenso() : "MayoriaSimple";
-    Consenso cons = Consenso.fromString(nombreConsenso);
+    String nombre = coleccionDTO.getConsenso(); // o de tu body Map: (String) body.get("consenso")
+    Consenso consenso = Consenso.fromString(nombre);
 
     ArrayList<Criterio> pertenencia = coleccionDTO.getCriteriosPertenencia().stream()
             .map(CriterioDTO::toDomain)
@@ -116,7 +115,7 @@ public class ServiceColecciones {
             .map(CriterioDTO::toDomain)
             .collect(Collectors.toCollection(ArrayList::new));
 
-    Coleccion coleccion = new Coleccion(coleccionDTO.getTitulo(), coleccionDTO.getDescripcion(), cons, pertenencia, noPertenencia);
+    Coleccion coleccion = new Coleccion(coleccionDTO.getTitulo(), coleccionDTO.getDescripcion(), consenso, pertenencia, noPertenencia);
 
     repositorioColecciones.getColecciones().add(coleccion);
     return new ColeccionDTO(coleccion);
@@ -143,19 +142,24 @@ public class ServiceColecciones {
     return new ColeccionDTO(coleccion);
   }
 
-  public String modificarAlgoritmo(UUID id, Map<String, Object> requestBody) {
-    Coleccion coleccion = repositorioColecciones.buscarXUUID(id)
-            .orElseThrow(() -> new IllegalArgumentException("Colección no encontrada"));
-    String consensoStr = (String) requestBody.get("consenso");
-    //if (consensoStr == null)
-    //  return ResponseEntity.badRequest().body(Map.of("error", "El campo 'consenso' es obligatorio"));
-    coleccion.setConsenso(Consenso.fromString(consensoStr));
-    return "Algoritmo de consenso actualizado a " + consensoStr;
+  public void modificarAlgoritmo(UUID id, Map<String, Object> body) {
+    Coleccion c = repositorioColecciones.buscarXUUID(id)
+            .orElseThrow(() -> new NoSuchElementException("Colección no encontrada"));
+
+    String nombre = null;
+    if (body.get("consenso") != null) nombre = body.get("consenso").toString();
+
+    if (nombre == null || nombre.isBlank())
+      throw new IllegalArgumentException("El campo 'consenso' es obligatorio");
+
+    c.setConsenso(Consenso.fromString(nombre.trim()));
+    repositorioColecciones.update(c);
   }
 
   public boolean eliminarColeccion(UUID id) {
-    return repositorioColecciones.eliminar(id);
+    return repositorioColecciones.eliminarPorId(id);
   }
+
   /*
   // Metodo auxiliar para construir criterios JSON desde parámetros
   private List<Map<String, Object>> construirCriteriosJson(

@@ -1,5 +1,6 @@
 package Agregador.DTO;
 import Agregador.business.Colecciones.Coleccion;
+import Agregador.business.Colecciones.Criterio;
 import Agregador.business.Consenso.Consenso;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -35,5 +36,22 @@ public class ColeccionDTO {
               .map(CriterioDTO::new)
               .collect(Collectors.toList());
     }
+  }
+  public Coleccion toDomain() {
+    ArrayList<Criterio> pert = this.criteriosPertenencia == null ? new ArrayList<>() :
+            this.criteriosPertenencia.stream().map(CriterioDTO::toDomain)
+                    .collect(java.util.stream.Collectors.toCollection(java.util.ArrayList::new));
+
+    ArrayList<Criterio> noPert = this.criteriosNoPertenencia == null ? new ArrayList<>() :
+            this.criteriosNoPertenencia.stream().map(CriterioDTO::toDomain)
+                    .collect(java.util.stream.Collectors.toCollection(java.util.ArrayList::new));
+
+    return new Coleccion(
+            this.titulo,
+            this.descripcion,
+            Consenso.fromString(this.consenso), // ← crea la estrategia correcta
+            pert,
+            noPert
+    );
   }
 }

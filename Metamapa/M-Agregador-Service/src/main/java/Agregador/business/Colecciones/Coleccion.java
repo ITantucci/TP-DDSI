@@ -79,4 +79,9 @@ public class Coleccion {
     public ArrayList<Hecho> curarHechos(ArrayList<Hecho> hechos){
         return hechos.stream().filter(h -> consenso.esConsensuado(h)).collect(Collectors.toCollection(ArrayList::new));
     }
+
+    @com.fasterxml.jackson.annotation.JsonProperty("consenso")
+    public String getConsensoNombre() {
+        return Consenso.toString(consenso); // "Absoluto", etc.
+    }
 }

@@ -111,13 +111,10 @@ public class ControllerColecciones {
 
   // Crear una coleccion (post /colecciones)
   @PostMapping(value = "/", consumes = "application/json", produces = "application/json")
-  public ResponseEntity<?> crearColeccion(@Valid @RequestBody ColeccionDTO requestBody) {
-    try {
-      ColeccionDTO dto = this.serviceColecciones.crearColeccion(requestBody);
-      return ResponseEntity.status(HttpStatus.CREATED).body(dto);
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Error interno al crear la colección"));
-    }
+  public ResponseEntity<ColeccionDTO> crearColeccion(@Valid @RequestBody ColeccionDTO dto) {
+    ColeccionDTO creada = serviceColecciones.crearColeccion(dto);
+    System.out.println("9004 → crearColeccion.consenso = " + dto.getConsenso());
+    return ResponseEntity.status(HttpStatus.CREATED).body(creada);
   }
 
   @PutMapping(value = "/{id}", consumes = "application/json", produces = "application/json")
@@ -133,32 +130,30 @@ public class ControllerColecciones {
   }
 
   // Modificar algoritmo de consenso (patch /colecciones/{id})
-  @PatchMapping(value = "/{id}", consumes = "application/json", produces = "application/json")
-  public ResponseEntity<?> modificarAlgoritmo(@PathVariable("id") UUID id, @RequestBody Map<String, Object> requestBody) {
+  @PatchMapping(value = "/{id}", consumes = "application/json")
+  public ResponseEntity<?> modificarAlgoritmo(@PathVariable UUID id,
+                                              @RequestBody Map<String, Object> requestBody) {
     try {
-      return ResponseEntity.ok(this.serviceColecciones.modificarAlgoritmo(id, requestBody));
+      serviceColecciones.modificarAlgoritmo(id, requestBody);
+      return ResponseEntity.noContent().build(); // 204
+    } catch (NoSuchElementException e) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+              .body(Map.of("error", e.getMessage())); // 404
     } catch (IllegalArgumentException e) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+      return ResponseEntity.badRequest()
+              .body(Map.of("error", e.getMessage())); // 400
     } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+      System.err.println("Error al modificar algoritmo: " + e.getMessage());
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+              .body(Map.of("error", "Error interno")); // 500
     }
   }
 
   // Eliminar una colección (delete /colecciones/{id})
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> eliminarColeccion(@PathVariable("id") UUID id) {
-    try {
-      boolean eliminada = serviceColecciones.eliminarColeccion(id);
-      if (eliminada) {
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build(); // 204 No Content
-      } else {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-      }
-    } catch (IllegalArgumentException e) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-    } catch (Exception e) {
-      System.err.println("Error al eliminar colección: " + e.getMessage());
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-    }
+  public ResponseEntity<Void> eliminarColeccion(@PathVariable UUID id) {
+    boolean ok = serviceColecciones.eliminarColeccion(id);
+    return ok ? ResponseEntity.noContent().build() // 204
+            : ResponseEntity.notFound().build(); // 404 si no existía
   }
 }

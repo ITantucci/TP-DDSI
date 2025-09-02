@@ -1,6 +1,7 @@
 package Agregador.persistencia;
 
 import Agregador.business.Colecciones.*;
+import Agregador.business.Consenso.Consenso;
 import lombok.Getter;
 import org.springframework.stereotype.Repository;
 import java.util.*;
@@ -21,11 +22,15 @@ public class RepositorioColecciones {
       getColecciones().add(coleccion);
   }
 
-  public boolean eliminar(UUID id) {
-    return colecciones.removeIf(c -> c.getHandle().equals(id));
+  public boolean eliminarPorId(UUID id) {
+    return colecciones.removeIf(c -> id != null && id.equals(c.getHandle())); // evita NPE
   }
+
   public boolean contiene(UUID id) {
     return colecciones.stream().anyMatch(c -> c.getHandle().equals(id));
+  }
+  public void modificarConsenso(UUID id, Consenso consenso) {
+
   }
 
 /*  public RepositorioColecciones(){

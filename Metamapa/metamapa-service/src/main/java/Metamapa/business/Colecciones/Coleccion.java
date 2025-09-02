@@ -24,7 +24,6 @@ public class Coleccion {
     private ArrayList<Criterio> criterioNoPertenencia;
     @Getter
     private UUID handle;
-    @JsonIgnore
     @Getter @Setter
     private Consenso consenso;
    @Getter @Setter
@@ -86,12 +85,13 @@ public class Coleccion {
         return hechos.stream().filter(h -> consenso.esConsensuado(h, agregador.getFuentesDeDatos())).collect(Collectors.toCollection(ArrayList::new));
     }
 
-    @JsonProperty("consenso")
+    @com.fasterxml.jackson.annotation.JsonProperty("consenso")
     public String getConsensoNombre() {
-        if (consenso == null) return null;
-        // Si tus clases de consenso tienen toString() “lindo”, alcanza:
-        return consenso.toString();
-        // Alternativa a prueba de balas:
-        // return consenso.getClass().getSimpleName(); // "MayoriaSimple", "Absoluto", etc.
+        return Consenso.toString(consenso);
+
+    }
+    @com.fasterxml.jackson.annotation.JsonProperty("consenso")
+    public void setConsensoNombre(String nombre) {
+        this.consenso = Consenso.fromString(nombre);
     }
 }

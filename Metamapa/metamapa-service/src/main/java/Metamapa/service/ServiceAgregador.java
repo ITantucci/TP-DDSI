@@ -77,12 +77,14 @@ public class ServiceAgregador {
 
         @SuppressWarnings("unchecked")
         Map<String, Object> response = restTemplate.postForObject(
-                baseUrl + "/api-solcitudEliminacion/",
+                baseUrl + "/api-solicitudesEliminacion/", // corregido
                 request,
                 Map.class
         );
+
         return (Integer) response.get("id");
     }
+
     public Integer crearSolicitudEdicionYRetornarId(String hechoAfectado, String motivo, String url) {
         Map<String, Object> payload = new HashMap<>();
         payload.put("hechoAfectado", hechoAfectado);
