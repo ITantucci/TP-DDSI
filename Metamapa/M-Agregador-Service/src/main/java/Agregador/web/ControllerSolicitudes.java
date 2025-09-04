@@ -1,5 +1,6 @@
 package Agregador.web;
 import Agregador.DTO.AccionSolicitudDTO;
+import Agregador.DTO.SolicitudEdicionDTO;
 import Agregador.DTO.SolicitudEliminacionDTO;
 import Agregador.Service.ServiceSolicitudes;
 import org.springframework.http.*;
@@ -54,7 +55,7 @@ public class ControllerSolicitudes {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-}
+
 
     //Obtiene todas las solicitudes de edicion
     @GetMapping(value = "/solicitudesEdicion", produces = "application/json")

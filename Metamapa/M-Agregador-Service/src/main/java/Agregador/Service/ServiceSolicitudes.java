@@ -54,7 +54,7 @@ public class ServiceSolicitudes {
         return repoSolicitudes.findById(id)
                 .map(SolicitudEliminacionDTO::new);
     }
-}
+
 
     public List<SolicitudEdicionDTO> obtenerTodasSolicitudesEdicion() {
         return repoSolicitudes.findAllSolicitudesEdicion().stream()
