@@ -2,11 +2,15 @@ package Agregador.business.Solicitudes;
 import lombok.Getter;
 import java.math.BigInteger;
 
+import java.util.UUID;
+
 public class SolicitudEliminacion extends Solicitud {
   @Getter
   public String motivo;
   static private Integer contadorID = 1;
+
   public SolicitudEliminacion(BigInteger hechoAfectado, String motivo){
+
     super(hechoAfectado, EstadoSolicitud.PENDIENTE); //por defecto se inicializan pendientes
 
     Boolean esSpam;

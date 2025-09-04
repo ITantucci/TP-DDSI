@@ -1,5 +1,5 @@
 package Agregador.web;
-import Agregador.DTO.SolicitudEdicionDTO;
+import Agregador.DTO.AccionSolicitudDTO;
 import Agregador.DTO.SolicitudEliminacionDTO;
 import Agregador.Service.ServiceSolicitudes;
 import org.springframework.http.*;
@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
 @RestController
-@RequestMapping("/api-agregador")
+@RequestMapping("/api-solicitudes")
 public class ControllerSolicitudes {
     private final ServiceSolicitudes service;
 
@@ -15,15 +15,22 @@ public class ControllerSolicitudes {
 
     enum Accion { APROBAR, RECHAZAR }
 
-    @PatchMapping("/solicitudes/{id}")
+    @PatchMapping("/solicitudesEliminacion/{id}")
     public ResponseEntity<Void> actualizarEstadoSolicitud(@PathVariable Integer id,
-                                                          @RequestParam Accion accion) {
-        var r = (accion == Accion.APROBAR) ? service.aprobar(id) : service.rechazar(id);
+                                                          @RequestBody AccionSolicitudDTO dto) {
+        Accion a;
+        try {
+            a = Accion.valueOf(dto.getAccion().trim().toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.unprocessableEntity().build(); // 422 parámetro inválido
+        }
+
+        var r = (a == Accion.APROBAR) ? service.aprobar(id) : service.rechazar(id);
         return switch (r) {
-            case OK        -> ResponseEntity.noContent().build();   // 204
-            case NOT_FOUND -> ResponseEntity.notFound().build();    // 404
-            case CONFLICT  -> ResponseEntity.status(409).build();   // ya resuelta
-            default        -> ResponseEntity.unprocessableEntity().build(); // 422
+            case OK        -> ResponseEntity.noContent().build();
+            case NOT_FOUND -> ResponseEntity.notFound().build();
+            case CONFLICT  -> ResponseEntity.status(409).build();
+            default        -> ResponseEntity.unprocessableEntity().build();
         };
     }
 
@@ -40,6 +47,14 @@ public class ControllerSolicitudes {
         }
     }
 
+    @GetMapping(value = "/solicitudesEliminacion/{id}", produces = "application/json")
+    public ResponseEntity<?> obtenerSolicitud(@PathVariable Integer id) {
+        return service.buscarPorId(id)
+                .<ResponseEntity<?>>map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+}
 
     //Obtiene todas las solicitudes de edicion
     @GetMapping(value = "/solicitudesEdicion", produces = "application/json")

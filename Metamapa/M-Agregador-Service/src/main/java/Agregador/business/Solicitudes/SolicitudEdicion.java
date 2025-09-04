@@ -1,5 +1,9 @@
 package Agregador.business.Solicitudes;
 
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.*;
@@ -29,6 +33,7 @@ public class SolicitudEdicion extends Solicitud {
                           Boolean anonimidadMod,
                           String sugerencia,
                           BigInteger hechoAfectado) {
+
     super(hechoAfectado, EstadoSolicitud.PENDIENTE);
     /* // SE VERIFICA EN EL ServiceSolicitudes, AL CREARSE UNA
     if(hechoAfectado.getFechaCarga().plusDays(7).isBefore(LocalDate.now()))

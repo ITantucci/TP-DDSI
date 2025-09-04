@@ -10,6 +10,7 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 public class ServiceAgregador {
@@ -17,7 +18,7 @@ public class ServiceAgregador {
   private final String baseUrl;
 
   public ServiceAgregador(RestTemplate restTemplate,
-                         @Value("${metamapa.service.url}") String baseUrl) {
+                         @Value("${M.Agregador.Service.url}") String baseUrl) {
     this.restTemplate = restTemplate;
     this.baseUrl = baseUrl;
   }
@@ -33,7 +34,7 @@ public class ServiceAgregador {
   }
 
   public void actualizarAgregador() {
-    String url = String.format("%s/api-agregador/fuentes/actualizar", baseUrl);
+    String url = String.format("%s/api-agregador/fuentesDeDatos/actualizar", baseUrl);
     restTemplate.postForObject(url, null, Void.class);
   }
   public void agregarFuente(Integer idFuente){
@@ -45,26 +46,38 @@ public class ServiceAgregador {
     restTemplate.postForObject(url, null, Void.class);
   }
 
+  public void agregarFuenteAColeccion(UUID idColeccion, Integer idFuente){
+    String url = String.format("%s/api-agregador/fuentesDeDatos/%s/%d", baseUrl, idColeccion, idFuente);
+    restTemplate.postForObject(url, null, Void.class);
+  }
+
   //TODO: CHEQUEAR
   public enum Result { OK, NOT_FOUND, CONFLICT, INVALID }
-  public Result aprobarSolicitudEliminacion(UUID id) {
-    return resolverRemoto(id, "APROBAR");
-  }
-  public Result rechazarSolicitudEliminacion(UUID id) {
-    return resolverRemoto(id, "RECHAZAR");
-  }
-  private Result resolverRemoto(UUID id, String accion) {
-    String url = String.format("%s/api-agregador/solicitudesEliminacion/%s?accion=%s", baseUrl, id, accion);
+  public Result resolverRemoto(Integer id, String accion) {
+    var uri = UriComponentsBuilder
+            .fromHttpUrl(baseUrl.replaceAll("/+$",""))
+            .path("/api-solicitudes/solicitudesEliminacion/{id}")
+            .buildAndExpand(id)
+            .toUri();
+
+    var headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    var body = java.util.Map.of("accion", accion); // {"accion":"APROBAR"} o {"accion":"RECHAZAR"}
+    var entity = new HttpEntity<>(body, headers);
+
     try {
-      var resp = restTemplate.exchange(url, HttpMethod.PATCH, HttpEntity.EMPTY, Void.class);
+      var resp = restTemplate.exchange(uri, HttpMethod.PATCH, entity, Void.class);
       return resp.getStatusCode().is2xxSuccessful() ? Result.OK : Result.INVALID;
     } catch (HttpClientErrorException.NotFound e) { return Result.NOT_FOUND;
     } catch (HttpClientErrorException.Conflict e) { return Result.CONFLICT;
     } catch (HttpClientErrorException.UnprocessableEntity e) { return Result.INVALID; }
   }
-    public Integer crearSolicitudEliminacionYRetornarId(String hechoAfectado, String motivo, String url) {
+
+  public Result aprobarSolicitudEliminacion(Integer id)  { return resolverRemoto(id, "APROBAR");  }
+  public Result rechazarSolicitudEliminacion(Integer id) { return resolverRemoto(id, "RECHAZAR"); }
+    public Integer crearSolicitudEliminacionYRetornarId(Integer idHechoAfectado, String motivo, String url) {
         Map<String, Object> payload = new HashMap<>();
-        payload.put("hechoAfectado", hechoAfectado);
+        payload.put("idHechoAfectado", idHechoAfectado);
         payload.put("motivo", motivo);
         if (url != null && !url.isBlank()) {
             payload.put("url", url);
@@ -77,7 +90,7 @@ public class ServiceAgregador {
 
         @SuppressWarnings("unchecked")
         Map<String, Object> response = restTemplate.postForObject(
-                baseUrl + "/api-solicitudesEliminacion/", // corregido
+                baseUrl + "/api-solicitudes/solicitudesEliminacion", // corregido
                 request,
                 Map.class
         );
@@ -106,4 +119,17 @@ public class ServiceAgregador {
         );
         return (Integer) response.get("id");
     }
+
+  public Map<String,Object> obtenerSolicitudEliminacion(Integer id) {
+    String url = baseUrl.replaceAll("/+$","") + "/api-solicitudes/solicitudesEliminacion/" + id;
+
+    try {
+      @SuppressWarnings("unchecked")
+      Map<String,Object> response = restTemplate.getForObject(url, Map.class);
+      return response;
+    } catch (HttpClientErrorException.NotFound e) {
+      return null; // Not Found
+    }
+  }
+
 }

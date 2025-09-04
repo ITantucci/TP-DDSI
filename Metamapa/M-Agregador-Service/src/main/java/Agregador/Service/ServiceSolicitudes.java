@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.*;
 
+import java.util.Optional;
+
 @Service
 public class ServiceSolicitudes {
     public enum Result { OK, NOT_FOUND, CONFLICT, INVALID }
@@ -46,6 +48,13 @@ public class ServiceSolicitudes {
         this.repoSolicitudes.save(solicitud);
         return new SolicitudEliminacionDTO(solicitud);
     }
+
+    // Buscar por id
+    public Optional<SolicitudEliminacionDTO> buscarPorId(Integer id) {
+        return repoSolicitudes.findById(id)
+                .map(SolicitudEliminacionDTO::new);
+    }
+}
 
     public List<SolicitudEdicionDTO> obtenerTodasSolicitudesEdicion() {
         return repoSolicitudes.findAllSolicitudesEdicion().stream()

@@ -18,6 +18,17 @@ public class RepositorioHechos {
   }
 
   public Optional<Hecho> findHecho(BigInteger id) {
+    return hechos.stream().filter(h -> h.getId().equals(id)).findFirst();
+  }
+
+  public void saveAll(Collection<Hecho> nuevos) {
+    hechos.addAll(nuevos);
+  }
+
+
+  public void modificarHecho(Hecho hecho) {
+    //TODO implementar, no creo que haga falta
+
     return (hechos.stream().filter(h -> h.getId().equals(id)).findFirst());
   }
 
@@ -25,6 +36,7 @@ public class RepositorioHechos {
     Optional<Hecho> existingHechoOpt = findHecho(h.getId());
     existingHechoOpt.ifPresent(s -> hechos.remove(s));
     hechos.add(h);
+
   }
 
   public List<Hecho> filtrarPorCriterios(List<Criterio> inclusion, List<Criterio> exclusion) {

@@ -16,6 +16,7 @@ public abstract class Solicitud {
   static protected Integer contadorID = 1;
 
   public Solicitud(BigInteger hechoAfectado, EstadoSolicitud estado) {
+
     this.hechoAfectado = hechoAfectado;
     this.estado = estado;
     this.id = contadorID++;
