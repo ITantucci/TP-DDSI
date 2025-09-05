@@ -1,29 +1,21 @@
 package Metamapa.web;
-import Metamapa.DTO.AccionSolicitudDTO;
-import Metamapa.DTO.HechoDTO;
-import Metamapa.DTO.SolicitudEliminacionDTO;
+import Metamapa.DTO.*;
 import Metamapa.business.Colecciones.Coleccion;
 import Metamapa.business.Consenso.ModosDeNavegacion;
-import Metamapa.business.FuentesDeDatos.FuenteDeDatos;
 import Metamapa.business.Hechos.*;
 import Metamapa.service.*;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.*;
@@ -126,7 +118,7 @@ public class ControllerMetamapa {
   }
 
   //● Agregar fuentes de hechos de una colección.
-  @PostMapping("/colecciones/{uuid}/fuente/{idFuente}")
+  @PostMapping(value="/colecciones/{uuid}/fuente/{idFuente}", produces=MediaType.APPLICATION_JSON_VALUE)
   @ResponseBody
   public ResponseEntity<?> agregarFuente(@PathVariable UUID uuid, @PathVariable Integer idFuente) {
     try {

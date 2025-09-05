@@ -3,10 +3,7 @@ import Metamapa.business.Agregador.Agregador;
 import Metamapa.business.Hechos.Hecho;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -49,8 +46,8 @@ public class ServiceAgregador {
   }
 
   public void agregarFuenteAColeccion(UUID idColeccion, Integer idFuente){
-    String url = String.format("%s/api-agregador/fuentesDeDatos/%s/%d", baseUrl, idColeccion, idFuente);
-    restTemplate.postForObject(url, null, Void.class);
+    String url = String.format("%s/api-colecciones/fuentesDeDatos/%s/%d", baseUrl, idColeccion, idFuente);
+    restTemplate.postForObject(url, null, void.class);
   }
 
   //TODO: CHEQUEAR

@@ -1,7 +1,5 @@
 package Agregador.web;
-import Agregador.DTO.CriterioDTO;
 import Agregador.business.Agregador.Agregador;
-import Agregador.business.Colecciones.*;
 import Agregador.business.Hechos.Hecho;
 
 import java.util.*;

@@ -2,13 +2,9 @@ package Agregador.web;
 import Agregador.DTO.ColeccionDTO;
 import Agregador.DTO.FiltrosHechosDTO;
 import Agregador.Service.ServiceColecciones;
-import Agregador.business.Colecciones.Coleccion;
-import Agregador.business.Colecciones.CriterioFuenteDeDatos;
 import Agregador.business.Consenso.ModosDeNavegacion;
 import Agregador.business.Hechos.*;
 import java.util.*;
-
-import Agregador.persistencia.RepositorioColecciones;
 import jakarta.validation.Valid;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
