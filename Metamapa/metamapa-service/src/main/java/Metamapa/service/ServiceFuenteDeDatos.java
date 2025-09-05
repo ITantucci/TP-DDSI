@@ -1,40 +1,26 @@
 package Metamapa.service;
-
-import java.nio.charset.StandardCharsets;
-
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import org.springframework.http.client.ClientHttpResponse;
 import Metamapa.business.FuentesDeDatos.FuenteDeDatos;
-import Metamapa.business.FuentesDeDatos.FuenteDinamica;
-import Metamapa.business.FuentesDeDatos.FuenteEstatica;
-import Metamapa.business.FuentesDeDatos.FuenteProxy;
 import Metamapa.business.Hechos.Multimedia;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.http.client.ClientHttpResponse;
+import org.slf4j.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.util.*;
+import org.springframework.web.client.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.util.UriComponentsBuilder;
-
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.nio.charset.StandardCharsets;
 
 @Service
 public class ServiceFuenteDeDatos {
-
   private final RestTemplate restTemplate;
   private final ObjectMapper objectMapper;
 
@@ -53,7 +39,7 @@ public class ServiceFuenteDeDatos {
     // Normalizo quitando slash final; luego uso join(...) para agregarlo cuando haga falta
     this.urlDinamica = trimTrailingSlash(urlDinamica);
     this.urlEstatica = trimTrailingSlash(urlEstatica);
-    this.urlProxy    = trimTrailingSlash(urlProxy);
+    this.urlProxy = trimTrailingSlash(urlProxy);
   }
 
   // Mapa en memoria: en serio guardalo en un repo/DB
@@ -62,7 +48,7 @@ public class ServiceFuenteDeDatos {
 
   public String getFuenteDeDatosRaw(Integer id) {
     String base = resolverBaseUrl(id);
-    String url  = join(base, "/" + id);   // usamos el id prefijado que vos mismo generás (1000001)
+    String url = join(base, "/" + id);   // usamos el id prefijado que vos mismo generás (1000001)
     log.info("Proxy GET one -> {}", url);
     return httpGetRaw(url);                // devuelve JSON crudo (String)
   }
@@ -155,13 +141,13 @@ public class ServiceFuenteDeDatos {
   }
 
   private static String join(String base, String suffix) {
-    return (base.replaceAll("/+$","") + "/" + suffix.replaceAll("^/+",""));
+    return (base.replaceAll("/+$", "") + "/" + suffix.replaceAll("^/+", ""));
   }
 
   private static String normalizarTipo(String tipoRaw) {
     if (tipoRaw == null) throw new IllegalArgumentException("Tipo nulo");
     String t = tipoRaw.trim().toUpperCase(Locale.ROOT)
-            .replace("Á","A").replace("É","E").replace("Í","I").replace("Ó","O").replace("Ú","U");
+            .replace("Á", "A").replace("É", "E").replace("Í", "I").replace("Ó", "O").replace("Ú", "U");
     if (t.startsWith("FUENTE")) t = t.substring("FUENTE".length()); // quito prefijo “FUENTE”
     return t; // ESTATICA | DINAMICA | PROXY
   }
@@ -171,7 +157,7 @@ public class ServiceFuenteDeDatos {
     return switch (t) {
       case "ESTATICA" -> urlEstatica;
       case "DINAMICA" -> urlDinamica;
-      case "PROXY"    -> urlProxy;
+      case "PROXY" -> urlProxy;
       default -> throw new IllegalArgumentException("Tipo inválido: " + tipoRaw);
     };
   }
@@ -190,7 +176,7 @@ public class ServiceFuenteDeDatos {
     String b = base == null ? "" : base.replaceAll("/+$", "");
     if (b.equals(urlDinamica)) return "FUENTEDINAMICA";
     if (b.equals(urlEstatica)) return "FUENTEESTATICA";
-    if (b.equals(urlProxy))    return "FUENTEPROXY";
+    if (b.equals(urlProxy)) return "FUENTEPROXY";
     return "FUENTEDINAMICA"; // fallback razonable
   }
 
@@ -223,7 +209,6 @@ public class ServiceFuenteDeDatos {
     }
   }
 
-
   private List<FuenteDeDatos> parseFuentesFlex(String body, String defaultTipo) throws IOException {
     ObjectMapper om = objectMapper.copy()
             .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
@@ -247,7 +232,7 @@ public class ServiceFuenteDeDatos {
 
     // Caso 2: wrappers típicos
     if (root.isObject()) {
-      for (String key : List.of("items","data","content","results","list","fuentes","sources")) {
+      for (String key : List.of("items", "data", "content", "results", "list", "fuentes", "sources")) {
         JsonNode arr = root.get(key);
         if (arr != null && arr.isArray()) {
           ArrayNode mod = om.createArrayNode();
@@ -274,7 +259,6 @@ public class ServiceFuenteDeDatos {
     // Cualquier otro caso (texto/HTML/etc.)
     return List.of();
   }
-
 
   /* ===================== escrituras ===================== */
 
@@ -306,7 +290,7 @@ public class ServiceFuenteDeDatos {
       ObjectNode on = (ObjectNode) n;
 
       // Inyectar/normalizar tipoFuente (permite polimorfismo aunque el upstream no lo envíe)
-      String raw  = on.hasNonNull("tipoFuente") ? on.get("tipoFuente").asText() : null;
+      String raw = on.hasNonNull("tipoFuente") ? on.get("tipoFuente").asText() : null;
       String tipo = normalizarTipoParaJson(raw); // FUENTEDEMO / FUENTEESTATICA / FUENTEDINAMICA / FUENTEMETAMAPA / FUENTEPROXY
       on.put("tipoFuente", tipo);
 
@@ -322,10 +306,10 @@ public class ServiceFuenteDeDatos {
     if (raw == null) return "FUENTEDINAMICA";
     String r = raw.trim().toUpperCase(Locale.ROOT);
     return switch (r) {
-      case "FUENTEDEMO", "FUENTE DEMO", "DEMO"           -> "FUENTEDEMO";
+      case "FUENTEDEMO", "FUENTE DEMO", "DEMO" -> "FUENTEDEMO";
       case "FUENTEDINAMICA", "DINAMICA", "FUENTE DINAMICA" -> "FUENTEDINAMICA";
       case "FUENTEESTATICA", "ESTATICA", "FUENTE ESTATICA" -> "FUENTEESTATICA";
-      case "FUENTEPROXY", "PROXY", "FUENTE PROXY"         -> "FUENTEPROXY";
+      case "FUENTEPROXY", "PROXY", "FUENTE PROXY" -> "FUENTEPROXY";
       case "FUENTEMETAMAPA", "METAMAPA", "FUENTE METAMAPA" -> "FUENTEMETAMAPA";
       default -> "FUENTEDINAMICA";
     };
@@ -348,14 +332,13 @@ public class ServiceFuenteDeDatos {
     on.put("tipoFuente", normalizarTipoParaJson(defaultTipo));
   }
 
-
   // Crear fuente con DTO simple
 // Crear fuente con DTO simple
   public Integer crearFuenteYRetornarId(String tipo, String nombre, String url) {
     String t = normalizarTipo(tipo);          // -> ESTATICA | DINAMICA | PROXY
     String endpoint = endpointByTipo(t);      // base del micro correcto
 
-    Map<String,Object> payload = new HashMap<>();
+    Map<String, Object> payload = new HashMap<>();
     switch (t) {
       case "ESTATICA" -> payload.put("nombre", nombre);
       case "DINAMICA" -> { if (nombre != null && !nombre.isBlank()) payload.put("nombre", nombre); }
@@ -402,7 +385,6 @@ public class ServiceFuenteDeDatos {
     return idNum;
   }
 
-
 // Helpers
 
   private Integer tryExtractId(Map body, String key) {
@@ -432,29 +414,29 @@ public class ServiceFuenteDeDatos {
     }
 
     String base = resolverBaseUrl(idFuenteDeDatos);
-    String url  = join(base, "/" + idFuenteDeDatos + "/hechos"); // <- usa el id COMPLETO que te pasaron
+    String url = join(base, "/" + idFuenteDeDatos + "/hechos"); // <- usa el id COMPLETO que te pasaron
 
     boolean an = anonimo != null && anonimo;
-    String t  = titulo.trim();
-    String d  = (descripcion == null || descripcion.isBlank()) ? null : descripcion.trim();
-    String c  = (categoria == null || categoria.isBlank()) ? null : categoria.trim();
+    String t = titulo.trim();
+    String d = (descripcion == null || descripcion.isBlank()) ? null : descripcion.trim();
+    String c = (categoria == null || categoria.isBlank()) ? null : categoria.trim();
     String au = an ? null : ((autor == null || autor.isBlank()) ? null : autor.trim());
 
-    Map<String,Object> payload = new HashMap<>();
+    Map<String, Object> payload = new HashMap<>();
     payload.put("titulo", t);
     if (d != null) payload.put("descripcion", d);
     if (c != null) payload.put("categoria", c);
-    if (latitud != null)  payload.put("latitud",  latitud);
+    if (latitud != null) payload.put("latitud", latitud);
     if (longitud != null) payload.put("longitud", longitud);
     if (fechaHecho != null) payload.put("fechaHecho", fechaHecho.toString()); // yyyy-MM-dd
     if (au != null) payload.put("autor", au);
     payload.put("anonimo", an);
 
     if (multimedia != null && !multimedia.isEmpty()) {
-      List<Map<String,Object>> mm = multimedia.stream()
+      List<Map<String, Object>> mm = multimedia.stream()
               .filter(m -> m != null && m.getTipoMultimedia() != null && m.getPath() != null && !m.getPath().isBlank())
               .map(m -> {
-                Map<String,Object> e = new HashMap<>();
+                Map<String, Object> e = new HashMap<>();
                 e.put("tipoMultimedia", m.getTipoMultimedia().name());
                 e.put("path", m.getPath().trim());
                 return e;
@@ -466,7 +448,7 @@ public class ServiceFuenteDeDatos {
     h.setContentType(MediaType.APPLICATION_JSON);
 
     @SuppressWarnings("unchecked")
-    Map<String,Object> resp = restTemplate.postForObject(url, new HttpEntity<>(payload, h), Map.class);
+    Map<String, Object> resp = restTemplate.postForObject(url, new HttpEntity<>(payload, h), Map.class);
 
     if (resp == null) {
       throw new IllegalStateException("Respuesta vacía del servicio de la fuente al cargar el hecho.");
@@ -487,11 +469,9 @@ public class ServiceFuenteDeDatos {
 
   }
 
-
-
   public void cargarCSV(Integer id, MultipartFile file) throws IOException {
     String base = resolverBaseUrl(id);
-    String url  = join(base, "/" + id + "/cargarCSV");
+    String url = join(base, "/" + id + "/cargarCSV");
 
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -506,15 +486,15 @@ public class ServiceFuenteDeDatos {
     fileHeaders.setContentDisposition(ContentDisposition.formData()
             .name("file").filename(resource.getFilename()).build());
 
-    MultiValueMap<String,Object> body = new LinkedMultiValueMap<>();
+    MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
     body.add("file", new HttpEntity<>(resource, fileHeaders));
 
     restTemplate.postForEntity(url, new HttpEntity<>(body, headers), Void.class);
   }
 
   // NUEVO: devuelve una lista “plana” para la tabla (sin Jackson polimórfico)
-  public List<Map<String,Object>> getFuentesTabla() {
-    List<Map<String,Object>> out = new ArrayList<>();
+  public List<Map<String, Object>> getFuentesTabla() {
+    List<Map<String, Object>> out = new ArrayList<>();
     for (String base : List.of(urlEstatica, urlDinamica, urlProxy)) {
       if (base == null || base.isBlank()) continue;
       String url = base.endsWith("/") ? base : base + "/";
@@ -546,12 +526,12 @@ public class ServiceFuenteDeDatos {
   }
 
   // Helpers para “aplanar” un item a lo que la tabla necesita
-  private Map<String,Object> aFila(JsonNode n, String defaultTipo) {
-    Map<String,Object> row = new LinkedHashMap<>();
+  private Map<String, Object> aFila(JsonNode n, String defaultTipo) {
+    Map<String, Object> row = new LinkedHashMap<>();
     if (n == null || !n.isObject()) return row;
 
-    row.put("id",   opt(n,"id",  opt(n,"fuenteId", opt(n,"idFuente", null))));
-    row.put("nombre", opt(n,"nombre", "(sin nombre)"));
+    row.put("id", opt(n, "id", opt(n, "fuenteId", opt(n, "idFuente", null))));
+    row.put("nombre", opt(n, "nombre", "(sin nombre)"));
 
     // tipoFuente if present, sino "tipo", sino el default de la base
     String tipo = String.valueOf(
@@ -569,5 +549,4 @@ public class ServiceFuenteDeDatos {
     if (j.isBoolean()) return j.booleanValue();
     return j.asText();
   }
-
 }

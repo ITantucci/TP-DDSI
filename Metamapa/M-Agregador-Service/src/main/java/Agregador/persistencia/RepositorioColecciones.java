@@ -8,7 +8,6 @@ import Agregador.business.Consenso.ModosDeNavegacion;
 import Agregador.business.Hechos.Hecho;
 import lombok.Getter;
 import org.springframework.stereotype.Repository;
-
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 

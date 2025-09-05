@@ -14,7 +14,6 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
 import java.io.IOException;
 import java.net.URI;
 import java.time.LocalDate;
@@ -25,40 +24,37 @@ import java.util.*;
 public class ControllerMetamapa {
   private final ServiceFuenteDeDatos serviceFuenteDeDatos;
   private final ServiceAgregador serviceAgregador;
-  //private final ServiceIncidencias serviceIncidencias;
   private final ServiceColecciones serviceColecciones;
 
   public ControllerMetamapa(ServiceFuenteDeDatos serviceFuenteDeDatos,
                             ServiceAgregador serviceAgregador,
-                            ServiceIncidencias serviceIncidencias,
                             ServiceColecciones serviceColecciones) {
     this.serviceFuenteDeDatos = serviceFuenteDeDatos;
     this.serviceAgregador = serviceAgregador;
-    //this.serviceIncidencias = serviceIncidencias;
     this.serviceColecciones = serviceColecciones;
   }
 
   // API Administrativa de MetaMapa
   //● Operaciones CRUD sobre las colecciones.
-  @GetMapping(value= {"/colecciones/", "/colecciones"}, produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(value = {"/colecciones/", "/colecciones"}, produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseBody
   public List<Coleccion> obtenerColecciones() {
     return serviceColecciones.getColecciones();
   }
 
-  @GetMapping(value="/colecciones/{uuid}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(value = "/colecciones/{uuid}", produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseBody
   public ResponseEntity<Coleccion> obtenerColeccion(@PathVariable UUID uuid) {
     var c = serviceColecciones.getColeccion(uuid);
     return (c != null) ? ResponseEntity.ok(c) : ResponseEntity.notFound().build();
   }
 
-  @PostMapping(value="/colecciones", produces = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping(value = "/colecciones", produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseBody
   public ResponseEntity<?> crearColeccion(@RequestParam String titulo, @RequestParam String descripcion, @RequestParam String consenso,
-                               @RequestParam(required = false) List<String> pertenenciaTitulos,
-                               @RequestParam(required = false) List<String> noPertenenciaTitulos,
-                               RedirectAttributes ra) {
+                                          @RequestParam(required = false) List<String> pertenenciaTitulos,
+                                          @RequestParam(required = false) List<String> noPertenenciaTitulos,
+                                          RedirectAttributes ra) {
     // default del consenso si no viene
     String consensoEfectivo = (consenso == null || consenso.isBlank())
             ? "MayoriaSimple" : consenso;
@@ -90,7 +86,7 @@ public class ControllerMetamapa {
             .body(Map.of("id", id.toString()));
   }
 
-  @DeleteMapping(value="/colecciones/{uuid}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @DeleteMapping(value = "/colecciones/{uuid}", produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseBody
   public ResponseEntity<Map<String, String>> eliminarColeccion(@PathVariable UUID uuid) {
     HttpStatus status = serviceColecciones.deleteColeccion(uuid);
@@ -105,20 +101,20 @@ public class ControllerMetamapa {
               .body(Map.of("error", "No se pudo eliminar la colección"));
     }
   }
+
   //● Modificación del algoritmo de consenso.
-  @PatchMapping(value="/colecciones/{uuid}",
-          produces = MediaType.APPLICATION_JSON_VALUE)
+  @PatchMapping(value = "/colecciones/{uuid}", produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseBody
   public ResponseEntity<Void> modificarConsenso(
           @PathVariable UUID uuid,
-          @RequestBody Map<String,String> body) {
+          @RequestBody Map<String, String> body) {
     String consenso = body.get("consenso");
     serviceColecciones.actualizarAlgoritmoConsenso(uuid, consenso);
     return ResponseEntity.noContent().build();
   }
 
   //● Agregar fuentes de hechos de una colección.
-  @PostMapping(value="/colecciones/{uuid}/fuente/{idFuente}", produces=MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping(value = "/colecciones/{uuid}/fuente/{idFuente}", produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseBody
   public ResponseEntity<?> agregarFuente(@PathVariable UUID uuid, @PathVariable Integer idFuente) {
     try {
@@ -145,23 +141,20 @@ public class ControllerMetamapa {
     if (coleccion == null) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
-      try {
-          serviceAgregador.removerFuente(idFuente);
-          serviceAgregador.actualizarAgregador();
-          return ResponseEntity.noContent().build();
-      } catch (Exception e) {
-          return ResponseEntity.status(HttpStatus.BAD_GATEWAY).build();
-      }
+    try {
+      serviceAgregador.removerFuente(idFuente);
+      serviceAgregador.actualizarAgregador();
+      return ResponseEntity.noContent().build();
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.BAD_GATEWAY).build();
     }
+  }
 
   // ● Aprobar o denegar una solicitud de eliminación (endpoint único)
   //TODO: CHEQUEAR
-  @PatchMapping(value="/api/solicitudesEliminacion/{id}",
-          consumes = MediaType.APPLICATION_JSON_VALUE,
-          produces = MediaType.APPLICATION_JSON_VALUE)
+  @PatchMapping(value = "/api/solicitudesEliminacion/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseBody
-  public ResponseEntity<Void> resolverSolicitud(@PathVariable Integer id,
-                                                @RequestBody AccionSolicitudDTO dto) {
+  public ResponseEntity<Void> resolverSolicitud(@PathVariable Integer id, @RequestBody AccionSolicitudDTO dto) {
     String accion = dto.getAccion();
     if (accion == null) {
       return ResponseEntity.unprocessableEntity().build();
@@ -181,10 +174,10 @@ public class ControllerMetamapa {
     }
 
     return switch (r) {
-      case OK        -> ResponseEntity.noContent().build();   // 204
+      case OK -> ResponseEntity.noContent().build();   // 204
       case NOT_FOUND -> ResponseEntity.notFound().build();    // 404
-      case CONFLICT  -> ResponseEntity.status(409).build();   // ya resuelta
-      default        -> ResponseEntity.unprocessableEntity().build(); // 422
+      case CONFLICT -> ResponseEntity.status(409).build();   // ya resuelta
+      default -> ResponseEntity.unprocessableEntity().build(); // 422
     };
   }
 
@@ -197,34 +190,31 @@ public class ControllerMetamapa {
 
   //● TODO Generar una solicitud de eliminación a un hecho.
   @PostMapping(value = "/api/solicitudesEliminacion", consumes = "application/json", produces = "application/json")
-  public ResponseEntity<Map<String,Object>> generarSolicitudEliminacion(@Valid @RequestBody SolicitudEliminacionDTO dto) {
+  public ResponseEntity<Map<String, Object>> generarSolicitudEliminacion(@Valid @RequestBody SolicitudEliminacionDTO dto) {
     Integer idSolicitud = serviceAgregador.crearSolicitudEliminacionYRetornarId(
             dto.getIdHechoAfectado(),
             dto.getMotivo(),
             dto.getUrl()
     );
-
     URI location = ServletUriComponentsBuilder
             .fromCurrentRequest()       // /metamapa/api/solicitudesEliminacion
             .path("/{id}")              // /{id}
             .buildAndExpand(idSolicitud)
             .toUri();
-
     return ResponseEntity
             .created(location)
             .body(Map.of("idSolicitud", idSolicitud));
   }
 
-  @GetMapping(value="/api/solicitudesEliminacion/{id}", produces = "application/json")
+  @GetMapping(value = "/api/solicitudesEliminacion/{id}", produces = "application/json")
   @ResponseBody
-  public ResponseEntity<Map<String,Object>> getSolicitudEliminacion(@PathVariable Integer id) {
-    Map<String,Object> solicitud = serviceAgregador.obtenerSolicitudEliminacion(id);
+  public ResponseEntity<Map<String, Object>> getSolicitudEliminacion(@PathVariable Integer id) {
+    Map<String, Object> solicitud = serviceAgregador.obtenerSolicitudEliminacion(id);
     if (solicitud == null) {
       return ResponseEntity.notFound().build();
     }
     return ResponseEntity.ok(solicitud);
   }
-
 
   //● TODO: Navegación filtrada sobre una colección.
   @GetMapping("/colecciones/{idColeccion}/hechos/")
@@ -258,25 +248,23 @@ public class ControllerMetamapa {
     );
   }
 
-    //● TODO: Navegación curada o irrestricta sobre una colección.
+  //● TODO: Navegación curada o irrestricta sobre una colección.
   @GetMapping("/colecciones/{idColeccion}/hechos/{modo}")
-  public ArrayList<Hecho> obtenerHechosNavegacion(@PathVariable("idColeccion") UUID id,
-                                                  @PathVariable("modo") ModosDeNavegacion modosDeNavegacion) {
-      Coleccion coleccion = serviceColecciones.getColeccion(id);
-      return coleccion.getHechos(coleccion.getAgregador().getListaDeHechos(), modosDeNavegacion);
+  public ArrayList<Hecho> obtenerHechosNavegacion(@PathVariable("idColeccion") UUID id, @PathVariable("modo") ModosDeNavegacion modosDeNavegacion) {
+    Coleccion coleccion = serviceColecciones.getColeccion(id);
+    return coleccion.getHechos(coleccion.getAgregador().getListaDeHechos(), modosDeNavegacion);
   }
 
   //● TODO: Reportar un hecho. Supongo que se refiere a crear una solicitud de edicion
   @PostMapping("/solicitudesEdicion/")
-  public ResponseEntity<Map<String,Object>> generarSolicitudEdicion(@RequestParam("hechoAfectado") String hechoAfectado,
-                                                                   @RequestParam("motivo") String motivo,
-                                                                   @RequestParam(value = "url", required = false) String url) {
+  public ResponseEntity<Map<String, Object>> generarSolicitudEdicion(@RequestParam("hechoAfectado") String hechoAfectado,
+                                                                     @RequestParam("motivo") String motivo,
+                                                                     @RequestParam(value = "url", required = false) String url) {
     Integer idSolicitud = serviceAgregador.crearSolicitudEdicionYRetornarId(hechoAfectado, motivo, url);
     return ResponseEntity
             .created(URI.create("/metamapa/solicitudesEdicion/" + idSolicitud))
             .body(Map.of("idSolicitud", idSolicitud));
   }
-
 
   // UNO (passthrough de JSON)
   @GetMapping(value = "/api/fuentesDeDatos/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -306,26 +294,16 @@ public class ControllerMetamapa {
     }
   }
 
-
-
-  /*
-    @PostMapping(value = "/metamapa/fuentesDeDatos/", consumes = "application/json", produces = "application/json")
-    public  ResponseEntity<String> crearFuenteDeDatos(@RequestBody String requestBody) {
-      ResponseEntity<String> json = serviceFuenteDeDatos.crearFuente(requestBody);
-      return ResponseEntity.status(json.getStatusCode()).headers(json.getHeaders()).body(json.getBody());
-
-    }
-  */
   @PostMapping(value = "/api/fuentesDeDatos/", consumes = MediaType.APPLICATION_JSON_VALUE)
   @ResponseBody
-  public ResponseEntity<Map<String,Object>> crearFuenteDeDatos(@RequestBody Map<String, String> payload) {
+  public ResponseEntity<Map<String, Object>> crearFuenteDeDatos(@RequestBody Map<String, String> payload) {
     String tipo = payload.get("tipo");
     String nombre = payload.get("nombre");
     String url = payload.get("url");
 
     Integer idFuente = serviceFuenteDeDatos.crearFuenteYRetornarId(tipo, nombre, url);
 
-    Map<String,Object> body = new HashMap<>();
+    Map<String, Object> body = new HashMap<>();
     body.put("id", idFuente);
     body.put("nombre", nombre);
     body.put("tipo", tipo);
@@ -414,5 +392,4 @@ public class ControllerMetamapa {
   public String mostrarHome(Model model) {
     return "home";
   }
-
 }

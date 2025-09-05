@@ -9,8 +9,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.*;
 
-import java.util.Optional;
-
 @Service
 public class ServiceSolicitudes {
     public enum Result { OK, NOT_FOUND, CONFLICT, INVALID }

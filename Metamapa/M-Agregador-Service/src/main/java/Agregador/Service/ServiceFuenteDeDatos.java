@@ -1,16 +1,12 @@
 package Agregador.Service;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
-
 import Agregador.business.Consenso.Consenso;
 import Agregador.persistencia.RepositorioHechos;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import Agregador.business.Hechos.*;

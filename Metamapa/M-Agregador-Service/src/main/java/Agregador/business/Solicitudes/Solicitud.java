@@ -1,8 +1,6 @@
 package Agregador.business.Solicitudes;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.UUID;
 import java.math.BigInteger;
 
 public abstract class Solicitud {

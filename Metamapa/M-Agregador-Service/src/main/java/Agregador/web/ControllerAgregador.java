@@ -1,16 +1,13 @@
 package Agregador.web;
 import Agregador.business.Agregador.Agregador;
 import Agregador.business.Hechos.Hecho;
-
 import java.util.*;
 import Agregador.Service.ServiceFuenteDeDatos;
 import Agregador.persistencia.RepositorioAgregador;
 import Agregador.persistencia.RepositorioColecciones;
 import Agregador.persistencia.RepositorioHechos;
-import ch.qos.logback.classic.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 @RestController
 @RequestMapping("/api-agregador")

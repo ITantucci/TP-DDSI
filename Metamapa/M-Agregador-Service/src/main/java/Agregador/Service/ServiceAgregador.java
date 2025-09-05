@@ -3,9 +3,7 @@ package Agregador.Service;
 import Agregador.business.Hechos.Hecho;
 import Agregador.persistencia.RepositorioHechos;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
-import java.util.List;
 
 // Agregador/Service/ServiceAgregador.java
 @Service

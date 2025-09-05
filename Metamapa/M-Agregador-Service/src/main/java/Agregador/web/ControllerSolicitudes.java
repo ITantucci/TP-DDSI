@@ -56,7 +56,6 @@ public class ControllerSolicitudes {
     }
 
 
-
     //Obtiene todas las solicitudes de edicion
     @GetMapping(value = "/solicitudesEdicion", produces = "application/json")
     public ResponseEntity<List<SolicitudEdicionDTO>> obtenerTodasLasSolicitudesEdicion() {

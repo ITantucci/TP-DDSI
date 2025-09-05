@@ -27,7 +27,7 @@ public class RepositorioHechos {
 
 
   public void modificarHecho(Hecho hecho) {
-    //TODO implementar, no creo que haga falta
+    // implementar, no creo que haga falta
 
     //return (hechos.stream().filter(h -> h.getId().equals(id)).findFirst());
   }

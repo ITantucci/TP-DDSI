@@ -1,6 +1,5 @@
 package Agregador.business.Colecciones;
-import java.util.ArrayList;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,20 +7,14 @@ import Agregador.business.Agregador.Agregador;
 import Agregador.business.Consenso.*;
 import Agregador.business.Hechos.Hecho;
 
+@Getter @Setter
 public class Coleccion {
-    @Getter @Setter
     private String titulo;
-    @Getter @Setter
     private String descripcion;
-    @Getter @Setter
     private ArrayList<Criterio> criterioPertenencia;
-    @Getter @Setter
     private ArrayList<Criterio> criterioNoPertenencia;
-    @Getter @Setter
     private UUID handle;
-    @Getter @Setter
     private Consenso consenso;
-    @Getter @Setter
     private ModosDeNavegacion modoNavegacion;
 
     private final Agregador agregador = Agregador.getInstance();
