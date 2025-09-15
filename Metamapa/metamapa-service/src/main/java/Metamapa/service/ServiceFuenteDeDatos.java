@@ -1,8 +1,7 @@
 package Metamapa.service;
 import Metamapa.business.FuentesDeDatos.FuenteDeDatos;
 import Metamapa.business.Hechos.Multimedia;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.*;
 import com.fasterxml.jackson.databind.*;
 import org.springframework.http.client.ClientHttpResponse;
 import org.slf4j.*;
@@ -27,19 +26,23 @@ public class ServiceFuenteDeDatos {
   // Bases de cada micro (dejarlas tal cual en application.properties)
   private final String urlDinamica; // ej: http://localhost:9001/api-fuentesDeDatos
   private final String urlEstatica; // ej: http://localhost:9002/api-fuentesDeDatos
-  private final String urlProxy;    // ej: http://localhost:9003/api-fuentesDeDatos
+  private final String urlDemo;    // ej: http://localhost:9003/api-fuentesDeDatos
+  private final String urlMetamapa;
 
   public ServiceFuenteDeDatos(RestTemplate restTemplate,
                               @Value("${M.FuenteDinamica.Service.url}") String urlDinamica,
                               @Value("${M.FuenteEstatica.Service.url}") String urlEstatica,
-                              @Value("${M.FuenteProxy.Service.url}") String urlProxy,
+                              @Value("${M.FuenteDemo.Service.url}") String urlDemo,
+                              @Value("${M.FuenteMetamapa.Service.url}") String urlMetamapa,
+
                               ObjectMapper objectMapper) {
     this.restTemplate = restTemplate;
     this.objectMapper = objectMapper;
     // Normalizo quitando slash final; luego uso join(...) para agregarlo cuando haga falta
     this.urlDinamica = trimTrailingSlash(urlDinamica);
     this.urlEstatica = trimTrailingSlash(urlEstatica);
-    this.urlProxy = trimTrailingSlash(urlProxy);
+    this.urlDemo = trimTrailingSlash(urlDemo);
+    this.urlMetamapa = trimTrailingSlash(urlMetamapa);
   }
 
   // Mapa en memoria: en serio guardalo en un repo/DB
@@ -54,7 +57,7 @@ public class ServiceFuenteDeDatos {
   }
 
   public String getFuentesDeDatosRaw() {
-    List<String> bases = List.of(urlEstatica, urlDinamica, urlProxy);
+    List<String> bases = List.of(urlEstatica, urlDinamica, urlDemo, urlMetamapa);
     ArrayNode union = objectMapper.createArrayNode();
 
     for (String base : bases) {
@@ -157,7 +160,8 @@ public class ServiceFuenteDeDatos {
     return switch (t) {
       case "ESTATICA" -> urlEstatica;
       case "DINAMICA" -> urlDinamica;
-      case "PROXY" -> urlProxy;
+      case "DEMO" -> urlDemo;
+        case "METAMAPA" -> urlMetamapa;
       default -> throw new IllegalArgumentException("Tipo inválido: " + tipoRaw);
     };
   }
@@ -167,7 +171,8 @@ public class ServiceFuenteDeDatos {
     return switch (tipo) {
       case 1 -> urlDinamica;
       case 2 -> urlEstatica;
-      case 3 -> urlProxy;
+      case 3 -> urlDemo;
+        case 4 -> urlMetamapa;
       default -> throw new IllegalArgumentException("Tipo de fuente desconocido para id=" + idFuente);
     };
   }
@@ -176,7 +181,8 @@ public class ServiceFuenteDeDatos {
     String b = base == null ? "" : base.replaceAll("/+$", "");
     if (b.equals(urlDinamica)) return "FUENTEDINAMICA";
     if (b.equals(urlEstatica)) return "FUENTEESTATICA";
-    if (b.equals(urlProxy)) return "FUENTEPROXY";
+    if (b.equals(urlDemo)) return "FUENTEDEMO";
+    if (b.equals(urlMetamapa)) return "FUENTEMETAMAPA";
     return "FUENTEDINAMICA"; // fallback razonable
   }
 
@@ -186,7 +192,8 @@ public class ServiceFuenteDeDatos {
     List<FuenteDeDatos> total = new ArrayList<>();
     total.addAll(fetchList(urlEstatica));
     total.addAll(fetchList(urlDinamica));
-    total.addAll(fetchList(urlProxy));
+    total.addAll(fetchList(urlDemo));
+    total.addAll(fetchList(urlMetamapa));
     return total;
   }
 
@@ -495,7 +502,7 @@ public class ServiceFuenteDeDatos {
   // NUEVO: devuelve una lista “plana” para la tabla (sin Jackson polimórfico)
   public List<Map<String, Object>> getFuentesTabla() {
     List<Map<String, Object>> out = new ArrayList<>();
-    for (String base : List.of(urlEstatica, urlDinamica, urlProxy)) {
+    for (String base : List.of(urlEstatica, urlDinamica, urlDemo, urlMetamapa)) {
       if (base == null || base.isBlank()) continue;
       String url = base.endsWith("/") ? base : base + "/";
       String defaultTipo = tipoPorBase(base); // "FUENTEDINAMICA" etc.
