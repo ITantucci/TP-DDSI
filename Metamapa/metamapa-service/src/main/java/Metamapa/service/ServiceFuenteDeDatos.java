@@ -22,8 +22,6 @@ import java.nio.charset.StandardCharsets;
 public class ServiceFuenteDeDatos {
   private final RestTemplate restTemplate;
   private final ObjectMapper objectMapper;
-
-  // Bases de cada micro (dejarlas tal cual en application.properties)
   private final String urlDinamica; // ej: http://localhost:9001/api-fuentesDeDatos
   private final String urlEstatica; // ej: http://localhost:9002/api-fuentesDeDatos
   private final String urlDemo;    // ej: http://localhost:9003/api-fuentesDeDatos
@@ -34,7 +32,6 @@ public class ServiceFuenteDeDatos {
                               @Value("${M.FuenteEstatica.Service.url}") String urlEstatica,
                               @Value("${M.FuenteDemo.Service.url}") String urlDemo,
                               @Value("${M.FuenteMetamapa.Service.url}") String urlMetamapa,
-
                               ObjectMapper objectMapper) {
     this.restTemplate = restTemplate;
     this.objectMapper = objectMapper;
@@ -59,7 +56,6 @@ public class ServiceFuenteDeDatos {
   public String getFuentesDeDatosRaw() {
     List<String> bases = List.of(urlEstatica, urlDinamica, urlDemo, urlMetamapa);
     ArrayNode union = objectMapper.createArrayNode();
-
     for (String base : bases) {
       if (base == null || base.isBlank()) continue;
       String url = base.endsWith("/") ? base : base + "/";
@@ -161,18 +157,18 @@ public class ServiceFuenteDeDatos {
       case "ESTATICA" -> urlEstatica;
       case "DINAMICA" -> urlDinamica;
       case "DEMO" -> urlDemo;
-        case "METAMAPA" -> urlMetamapa;
+      case "METAMAPA" -> urlMetamapa;
       default -> throw new IllegalArgumentException("Tipo inválido: " + tipoRaw);
     };
   }
 
   private String resolverBaseUrl(Integer idFuente) {
-    int tipo = idFuente / OFFSET; // 1=dinámica, 2=estática, 3=proxy
+    int tipo = idFuente / OFFSET;
     return switch (tipo) {
       case 1 -> urlDinamica;
       case 2 -> urlEstatica;
       case 3 -> urlDemo;
-        case 4 -> urlMetamapa;
+      case 4 -> urlMetamapa;
       default -> throw new IllegalArgumentException("Tipo de fuente desconocido para id=" + idFuente);
     };
   }
@@ -229,7 +225,7 @@ public class ServiceFuenteDeDatos {
       ArrayNode mod = om.createArrayNode();
       for (JsonNode n : arr) {
         if (!n.isObject()) continue;  // ignoro raros
-        ObjectNode on = (ObjectNode) n.deepCopy();
+        ObjectNode on = n.deepCopy();
         asegurarTipoFuente(on, defaultTipo); // 👈 inyecta/normaliza
         mod.add(on);
       }
@@ -245,7 +241,7 @@ public class ServiceFuenteDeDatos {
           ArrayNode mod = om.createArrayNode();
           for (JsonNode n : arr) {
             if (!n.isObject()) continue;
-            ObjectNode on = (ObjectNode) n.deepCopy();
+            ObjectNode on = n.deepCopy();
             asegurarTipoFuente(on, defaultTipo);
             mod.add(on);
           }
@@ -254,7 +250,7 @@ public class ServiceFuenteDeDatos {
         }
       }
       // Si no hay wrapper, tratar como objeto único
-      ObjectNode on = (ObjectNode) root.deepCopy();
+      ObjectNode on = root.deepCopy();
       asegurarTipoFuente(on, defaultTipo);
       FuenteDeDatos uno = objectMapper
               .copy()
@@ -262,7 +258,6 @@ public class ServiceFuenteDeDatos {
               .readValue(on.traverse(), FuenteDeDatos.class);
       return (uno == null) ? List.of() : List.of(uno);
     }
-
     // Cualquier otro caso (texto/HTML/etc.)
     return List.of();
   }
@@ -283,13 +278,12 @@ public class ServiceFuenteDeDatos {
   private FuenteDeDatos parseFuenteFlex(String body) {
     ObjectMapper om = objectMapper.copy()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
     try {
       JsonNode n = om.readTree(body);
 
       // Si vino array por error, uso el primero
       if (n.isArray()) {
-        if (n.size() == 0) return null;
+        if (n.isEmpty()) return null;
         n = n.get(0);
       }
       if (!n.isObject()) throw new IllegalStateException("JSON inesperado (no es objeto).");
@@ -316,7 +310,6 @@ public class ServiceFuenteDeDatos {
       case "FUENTEDEMO", "FUENTE DEMO", "DEMO" -> "FUENTEDEMO";
       case "FUENTEDINAMICA", "DINAMICA", "FUENTE DINAMICA" -> "FUENTEDINAMICA";
       case "FUENTEESTATICA", "ESTATICA", "FUENTE ESTATICA" -> "FUENTEESTATICA";
-      case "FUENTEPROXY", "PROXY", "FUENTE PROXY" -> "FUENTEPROXY";
       case "FUENTEMETAMAPA", "METAMAPA", "FUENTE METAMAPA" -> "FUENTEMETAMAPA";
       default -> "FUENTEDINAMICA";
     };
@@ -412,7 +405,6 @@ public class ServiceFuenteDeDatos {
                              String autor,
                              Boolean anonimo,
                              List<Multimedia> multimedia) {
-
     if (titulo == null || titulo.isBlank()) {
       throw new IllegalArgumentException("El título es obligatorio.");
     }
@@ -473,7 +465,6 @@ public class ServiceFuenteDeDatos {
 
     return (idObj instanceof Number) ? ((Number) idObj).intValue()
             : Integer.parseInt(idObj.toString());
-
   }
 
   public void cargarCSV(Integer id, MultipartFile file) throws IOException {
@@ -512,8 +503,7 @@ public class ServiceFuenteDeDatos {
         if (body == null || body.isBlank()) continue;
 
         // Parseo genérico a List/Map, sin usar FuenteDeDatos
-        ObjectMapper om = objectMapper;
-        JsonNode root = om.readTree(body);
+        JsonNode root = objectMapper.readTree(body);
 
         if (root.isArray()) {
           for (JsonNode n : root) out.add(aFila(n, defaultTipo));

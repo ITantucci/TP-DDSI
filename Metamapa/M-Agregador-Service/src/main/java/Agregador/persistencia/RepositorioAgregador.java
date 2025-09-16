@@ -229,7 +229,7 @@ public List<Hecho> getHechos() {
    // return f;
    return null; // si no está disponible en este módulo
  }
- private ArrayList<Hecho> crearHechosBasicosDemo() {
+ private List<Hecho> crearHechosBasicosDemo() {
    // Creá 2–3 hechos mínimos para probar el endpoint GET /hechos
    List<Hecho> lista = new ArrayList<>();
    // Ejemplo genérico (ajustá al constructor de tu Hecho):

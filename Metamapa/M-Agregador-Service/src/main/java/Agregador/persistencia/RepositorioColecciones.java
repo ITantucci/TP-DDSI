@@ -3,17 +3,12 @@ import Agregador.business.Agregador.Agregador;
 import Agregador.business.Colecciones.*;
 import Agregador.business.Consenso.*;
 import Agregador.business.Hechos.Hecho;
-import lombok.Getter;
 import org.springframework.stereotype.Repository;
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @Repository
 public class RepositorioColecciones {
-
-  // Lista thread-safe para entorno multi-request (simple y suficiente para memoria)
-  @Getter
-  private final List<Coleccion> colecciones = new CopyOnWriteArrayList<>();
+  private final ArrayList<Coleccion> colecciones = new ArrayList<>();
 
   // === Búsquedas básicas ===
   public Optional<Coleccion> buscarXUUID(UUID uuid) {
@@ -21,13 +16,8 @@ public class RepositorioColecciones {
     return colecciones.stream().filter(c -> uuid.equals(c.getHandle())).findFirst();
   }
 
-  public boolean contiene(UUID id) {
-    if (id == null) return false;
-    return colecciones.stream().anyMatch(c -> id.equals(c.getHandle()));
-  }
-
-  public List<Coleccion> listar() {
-    return new ArrayList<>(colecciones);
+  public List<Coleccion> getColecciones() {
+    return colecciones;
   }
 
   // === Altas / Bajas / Modificaciones ===

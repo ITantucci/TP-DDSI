@@ -120,7 +120,7 @@ public class ServiceColecciones {
 
     Coleccion coleccion = new Coleccion(coleccionDTO.getTitulo(), coleccionDTO.getDescripcion(), consenso, pertenencia, noPertenencia);
 
-    repositorioColecciones.getColecciones().add(coleccion);
+    repositorioColecciones.crear(coleccion);
     return new ColeccionDTO(coleccion);
   }
 
