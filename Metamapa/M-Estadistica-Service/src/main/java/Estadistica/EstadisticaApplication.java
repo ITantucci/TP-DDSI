@@ -1,4 +1,4 @@
-package Agregador;
+package Estadistica;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
@@ -12,12 +12,14 @@ import java.util.Collections;
 
 @SpringBootApplication
 @EnableScheduling
-public class AgregadorApplication {
+public class EstadisticaApplication {
   public static void main(String[] args) {
-    SpringApplication app = new SpringApplication(AgregadorApplication.class);
+    SpringApplication app = new SpringApplication(EstadisticaApplication.class);
     // si querés fijar el puerto por código (mejor en application.properties):
-    app.setDefaultProperties(Collections.singletonMap("server.port", "9004"));
-    app.run(args); // <-- ¡una sola vez!
+    app.setDefaultProperties(Collections.singletonMap("server.port", "9008"));
+    app.run(args);
+
+
   }
 
   @Bean

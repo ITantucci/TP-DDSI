@@ -15,14 +15,12 @@ import java.util.List;
 @Getter @Setter
 public class HechoDTO {
 
-  // ——— Campos principales ———
   @NotBlank
   private String titulo;
 
   private String descripcion;
   private String categoria;
 
-  // Si mandás coordenadas, idealmente ambas.
   private Float latitud;
   private Float longitud;
 
@@ -30,16 +28,15 @@ public class HechoDTO {
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
   private LocalDate fechaHecho;
 
-  // Si anonimo = true, ignorá autor en el Controller/Service
   @Size(max = 100)
   private String autor;
 
   private Boolean anonimo = Boolean.FALSE;
 
-  // Lista de multimedia (opcional)
+  // Lista de multimedia
   private List<MultimediaItem> multimedia = new ArrayList<>();
 
-  // ——— Helper: convierte a la lista de Multimedia del dominio ———
+  // ——— Helper
   public List<Multimedia> toMultimediaDomain() {
     if (multimedia == null) return List.of();
     List<Multimedia> out = new ArrayList<>();
@@ -63,7 +60,7 @@ public class HechoDTO {
   // DTO interno para multimedia
   @Getter @Setter
   public static class MultimediaItem {
-    private TipoMultimedia tipoMultimedia; // IMAGEN, VIDEO, AUDIO, PDF, etc.
+    private TipoMultimedia tipoMultimedia; // FOTO, VIDEO, AUDIO
     private String path;                   // URL o ruta
   }
 }

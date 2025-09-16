@@ -352,6 +352,10 @@ public class ControllerMetamapa {
     return "redirect:/metamapa/fuentesDeDatos/" + idFuenteDeDatos;
   }
 
+  //TODO: Soporte para incorporación de videos e imágenes, ya esta hecho creo (?
+  //Se deberá contemplar en los endpoints generados en la entrega anterior la posibilidad de, al
+  // crear un hecho, incorporarle contenido multimedia que la persona contribuyente adjunte.
+
   @PostMapping(
           value = "/fuentesDeDatos/{idFuenteDeDatos}/hechos",
           consumes = "application/json",
