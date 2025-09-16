@@ -14,6 +14,24 @@ public class ControllerSolicitudes {
 
     public ControllerSolicitudes(ServiceSolicitudes service) { this.service = service; }
 
+    // Obtiene todas las solicitudes de eliminación, opcional que sean spam, para reutilizar si hace falta
+    @GetMapping(value = "/solicitudesEliminacion", produces = "application/json")
+    public ResponseEntity<List<SolicitudEliminacionDTO>> obtenerTodasLasSolicitudesEliminacion(
+            @RequestParam(required = false) Boolean spam) {
+        try {
+            List<SolicitudEliminacionDTO> solicitudes = service.obtenerTodasSolicitudesEliminacion(spam);
+
+            if (solicitudes.isEmpty()) {
+                return ResponseEntity.noContent().build(); // 204 sin body
+            }
+
+            return ResponseEntity.ok(solicitudes);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 500 sin body
+        }
+    }
+
+
     enum Accion { APROBAR, RECHAZAR }
 
     @PatchMapping("/solicitudesEliminacion/{id}")

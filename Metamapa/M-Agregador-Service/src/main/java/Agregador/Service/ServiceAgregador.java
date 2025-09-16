@@ -3,7 +3,10 @@ package Agregador.Service;
 import Agregador.business.Hechos.Hecho;
 import Agregador.persistencia.RepositorioHechos;
 import org.springframework.stereotype.Service;
-import java.util.ArrayList;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 // Agregador/Service/ServiceAgregador.java
 @Service
@@ -19,6 +22,21 @@ public class ServiceAgregador {
     this.fuentes = fuentes;
     this.repo = repo;
     this.normalizador = normalizador;
+  }
+
+  // Devuelve el nombre de la categoría con más hechos reportados
+  public String categoriaMasReportada() {
+    var hechos = repo.getHechos();                      // List<Hecho>
+    if (hechos == null || hechos.isEmpty()) return null;
+
+    return hechos.stream()
+            .map(Hecho::getCategoria)
+            .filter(Objects::nonNull)
+            .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+            .entrySet().stream()
+            .max(Map.Entry.comparingByValue())
+            .map(Map.Entry::getKey)
+            .orElse(null);
   }
 
 

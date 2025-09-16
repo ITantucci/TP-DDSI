@@ -10,8 +10,15 @@ public class RepositorioSolicitudes {
   private ArrayList<SolicitudEliminacion> solicitudesEliminacion = new ArrayList<>();
 
   // Metodo para obtener todas las solicitudes
-  public List<SolicitudEliminacion> findAll() {
+  public List<SolicitudEliminacion> findAllSolicitudesEliminacion() {
     return solicitudesEliminacion;  // Devuelve la lista completa de solicitudes
+  }
+
+  // Metodo para obtener todas las solicitudes de eliminacion que sean spam
+  public List<SolicitudEliminacion> findAllSolicitudesEliminacionSpam() {
+    return solicitudesEliminacion.stream()
+            .filter(solicitudEliminacion -> solicitudEliminacion.getEstado() == EstadoSolicitud.SPAM)
+            .toList();
   }
 
   // Metodo para guardar una solicitud
@@ -44,7 +51,7 @@ public class RepositorioSolicitudes {
   // Lista en memoria para almacenar las solicitudes
   private List<SolicitudEdicion> solicitudesEdicion = new ArrayList<>();
 
-  // Metodo para obtener todas las solicitudes
+  // Metodo para obtener todas las solicitudes de edicion
   public List<SolicitudEdicion> findAllSolicitudesEdicion() {
     return solicitudesEdicion;  // Devuelve la lista completa de solicitudes
   }

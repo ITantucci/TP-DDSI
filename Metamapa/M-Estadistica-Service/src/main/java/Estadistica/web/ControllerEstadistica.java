@@ -3,8 +3,12 @@ package Estadistica.web;
 import Estadistica.Service.ServiceEstadistica;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,6 +40,62 @@ public class ControllerEstadistica {
   }
   //Se elimina creo
   public void generarEstadisticas() {}
+
+  //TODO: De una colección, ¿en qué provincia se agrupan la mayor cantidad de hechos reportados? 
+
+  //TODO revisar:¿Cuál es la categoría con mayor cantidad de hechos reportados?
+  @Operation(
+          summary = "Categoría con mayor cantidad de hechos reportados",
+          description = "Devuelve el nombre de la categoría que posee la mayor cantidad de hechos registrados en el sistema."
+  )
+  @ApiResponses(value = {
+          @ApiResponse(
+                  responseCode = "200",
+                  description = "Categoría más reportada encontrada",
+                  content = @Content(
+                          mediaType = "application/json",
+                          schema = @Schema(implementation = String.class),
+                          examples = @ExampleObject(value = "\"Incendio forestal\"")
+                  )
+          ),
+          @ApiResponse(
+                  responseCode = "204",
+                  description = "No se encontraron hechos para calcular la estadística"
+          )
+  })
+  @GetMapping("/categoria")
+  public ResponseEntity<String> obtenerCategoriaMasReportada() {
+    String categoria = estadisticaService.obtenerCategoriaMasReportada();
+    return (categoria == null || categoria.isBlank())
+            ? ResponseEntity.noContent().build()
+            : ResponseEntity.ok(categoria);
+  }
+
+
+  //TODO: ¿En qué provincia se presenta la mayor cantidad de hechos de una cierta categoría?
+  //TODO: ¿A qué hora del día ocurren la mayor cantidad de hechos de una cierta categoría?
+
+  //TODO revisar: ¿Cuántas solicitudes de eliminación son spam?
+  @Operation(
+          summary = "Cantidad de solicitudes de eliminación que son spam",
+          description = "Devuelve el número total de solicitudes de eliminación marcadas como spam"
+  )
+  @ApiResponses(value = {
+          @ApiResponse(responseCode = "200", description = "Cantidad obtenida correctamente",
+                  content = @Content(mediaType = "application/json",
+                          schema = @Schema(implementation = Long.class))),
+          @ApiResponse(responseCode = "500", description = "Error interno del servidor",
+                  content = @Content)
+  })
+  @GetMapping("/spam")
+  public ResponseEntity<Long> contarSolicitudesSpam() {
+    try {
+      long cantidad = estadisticaService.getSolicitudesSpam();
+      return ResponseEntity.ok(cantidad);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(0L);
+    }
+  }
 
   @Operation(summary = "Exportación CSV genérica")
   @ApiResponse(responseCode = "200", description = "CSV",

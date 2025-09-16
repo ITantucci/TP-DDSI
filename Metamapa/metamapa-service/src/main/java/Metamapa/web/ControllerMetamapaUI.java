@@ -64,7 +64,6 @@ public class ControllerMetamapaUI {
     return "fuenteDeDatos";
   }
 
-  //VISTA
   @GetMapping(value = {"/colecciones", "/colecciones/"}, produces = MediaType.TEXT_HTML_VALUE)
   public String listarHtml(Model model,
                            @ModelAttribute("success") String ok,

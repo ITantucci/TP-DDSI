@@ -19,7 +19,7 @@ public class SolicitudEliminacion extends Solicitud {
       //a revisar que hacer en caso de que la API falle para detectar el spam
       esSpam = true;
    }
-    if(esSpam)this.estado = EstadoSolicitud.RECHAZADA;
+    if(esSpam)this.estado = EstadoSolicitud.SPAM; // EstadoSolicitud.RECHAZADA
     this.motivo = motivo;
     this.id = contadorID++;
   }

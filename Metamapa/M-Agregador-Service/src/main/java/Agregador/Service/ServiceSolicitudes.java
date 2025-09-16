@@ -20,7 +20,7 @@ public class ServiceSolicitudes {
         this.repoHechos = rh;
     }
 
-    // @Transactional (opcional si usás BD)
+    // @Transactional
     public Result aprobar(Integer id) {
         SolicitudEliminacion s = repoSolicitudes.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Colección no encontrada"));
@@ -58,6 +58,25 @@ public class ServiceSolicitudes {
         return repoSolicitudes.findAllSolicitudesEdicion().stream()
                 .map(SolicitudEdicionDTO::new)
                 .toList();
+    }
+
+    public List<SolicitudEliminacionDTO> obtenerTodasSolicitudesEliminacion(Boolean spam) {
+        if (Boolean.TRUE.equals(spam)) { // solo spam
+            return repoSolicitudes.findAllSolicitudesEliminacionSpam().stream()
+                    .map(SolicitudEliminacionDTO::new)
+                    .toList();
+        }
+    else if (Boolean.FALSE.equals(spam)) { // todas excepto spam
+            return repoSolicitudes.findAllSolicitudesEliminacion().stream()
+                    .filter(s -> s.getEstado() != EstadoSolicitud.SPAM)
+                    .map(SolicitudEliminacionDTO::new)
+                    .toList();
+        }
+        else { // spam == null → todas
+            return repoSolicitudes.findAllSolicitudesEliminacion().stream()
+                    .map(SolicitudEliminacionDTO::new)
+                    .toList();
+        }
     }
 
     public SolicitudEdicionDTO obtenerSolicitudEdicionPorId(Integer id) {
