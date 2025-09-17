@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/estadistica")
 public class ControllerEstadisticaUI {
-
-
   private final ServiceEstadistica estadisticaService;
 
   public ControllerEstadisticaUI(ServiceEstadistica estadisticaService) {

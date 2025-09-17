@@ -1,6 +1,5 @@
-package domain.business.Usuarios;
-import domain.business.tiposSolicitudes.SolicitudEdicion;
-import domain.business.tiposSolicitudes.SolicitudEliminacion;
+package Agregador.business.Usuarios;
+import Agregador.business.Solicitudes.*;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;

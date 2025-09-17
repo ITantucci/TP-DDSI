@@ -1,5 +1,4 @@
-package domain.business.Usuarios;
-import java.math.BigInteger;
+package Agregador.business.Usuarios;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

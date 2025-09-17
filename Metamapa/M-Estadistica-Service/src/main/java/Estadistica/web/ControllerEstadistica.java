@@ -11,10 +11,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 @Controller
 @Tag(name = "Servicio de Estadísticas", description = "Consultas y exportación de estadísticas")
@@ -26,6 +25,7 @@ public class ControllerEstadistica {
   public ControllerEstadistica(ServiceEstadistica estadisticaService) {
     this.estadisticaService = estadisticaService;
   }
+
 
   @PostMapping("/actualizar")
   public ResponseEntity<Void> actualizarEstadisticas() {
@@ -73,7 +73,21 @@ public class ControllerEstadistica {
 
 
   //TODO: ¿En qué provincia se presenta la mayor cantidad de hechos de una cierta categoría?
+
   //TODO: ¿A qué hora del día ocurren la mayor cantidad de hechos de una cierta categoría?
+  @Operation(
+          summary = "Hora del día con más hechos para una categoría",
+          description = "Devuelve la hora (0–23) en la que se registran más hechos de la categoría indicada."
+  )
+  @ApiResponses({
+          @ApiResponse(responseCode = "200", description = "OK"),
+          @ApiResponse(responseCode = "204", description = "Sin datos con hora disponible")
+  })
+  @GetMapping("/hechos/hora")
+  public ResponseEntity<Integer> horaMasReportada(@RequestParam String categoria) {
+    Integer hora = estadisticaService.horaMasReportada(categoria);
+    return (hora == null) ? ResponseEntity.noContent().build() : ResponseEntity.ok(hora);
+  }
 
   //TODO revisar: ¿Cuántas solicitudes de eliminación son spam?
   @Operation(

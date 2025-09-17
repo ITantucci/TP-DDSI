@@ -1,12 +1,8 @@
 package Agregador.web;
 
 import Agregador.Service.ServiceAgregador;
-import Agregador.Service.ServiceSolicitudes;
-import DTO.HechoDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api-hechos")
@@ -23,6 +19,12 @@ public class ControllerHechos {
     return (categoria == null || categoria.isBlank())
             ? ResponseEntity.noContent().build()
             : ResponseEntity.ok(categoria);
+  }
+
+  @GetMapping("/hora")
+  public ResponseEntity<Integer> horaMasReportada(@RequestParam String categoria) {
+    Integer hora = service.horaMasReportada(categoria);
+    return (hora == null) ? ResponseEntity.noContent().build() : ResponseEntity.ok(hora);
   }
 
 }

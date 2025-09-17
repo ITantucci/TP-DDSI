@@ -21,6 +21,14 @@ public class RepositorioHechos {
     return hechos.stream().filter(h -> h.getId().equals(id)).findFirst();
   }
 
+  public List<Hecho> findByCategoriaAndEliminadoFalse(String categoria) {
+    return hechos.stream()
+            .filter(h -> h.getCategoria() != null
+                    && h.getCategoria().equalsIgnoreCase(categoria))
+            .filter(h -> h.getEliminado() == null || !h.getEliminado())
+            .toList();
+  }
+
   public void saveAll(Collection<Hecho> nuevos) {
     hechos.addAll(nuevos);
   }
@@ -45,4 +53,6 @@ public class RepositorioHechos {
             .filter(h -> exclusion.stream().noneMatch(c -> c.cumple(h)))
             .toList();
   }
+
+
 }

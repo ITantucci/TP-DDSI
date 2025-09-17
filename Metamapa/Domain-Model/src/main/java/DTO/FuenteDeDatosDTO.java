@@ -4,13 +4,10 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import domain.business.FuentesDeDatos.TipoFuente;
 import domain.business.Usuarios.Perfil;
-import domain.business.incidencias.Hecho;
-import domain.business.incidencias.TipoMultimedia;
-import java.time.LocalDate;
+
 import java.util.ArrayList;
 
 import lombok.Getter;
-import org.javatuples.Pair;
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,

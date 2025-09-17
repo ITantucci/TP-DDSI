@@ -24,6 +24,7 @@
         <module>M-FuenteEstatica-Service</module>
         <module>M-FuenteDemo-Service</module>
         <module>M-FuenteMetamapa-Service</module>
+        <module>M-Estadistica-Service</module>
     </modules>
     <url/>
     <licenses>

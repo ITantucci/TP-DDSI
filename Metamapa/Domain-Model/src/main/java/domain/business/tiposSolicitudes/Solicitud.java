@@ -2,12 +2,10 @@ package domain.business.tiposSolicitudes;
 
 import domain.business.Usuarios.Usuario;
 import domain.business.incidencias.Hecho;
-import domain.business.incidencias.Multimedia;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigInteger;
-import java.util.*;
 
 @Getter @Setter
 @NoArgsConstructor

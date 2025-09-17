@@ -3,6 +3,9 @@ package Agregador.Service;
 import Agregador.business.Hechos.Hecho;
 import Agregador.persistencia.RepositorioHechos;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
@@ -39,5 +42,50 @@ public class ServiceAgregador {
             .orElse(null);
   }
 
+  public Integer horaMasReportada(String categoria) {
+    // Traé los hechos de esa categoría (y NO eliminados, si aplica)
+    List<Hecho> hechos = repo.findByCategoriaAndEliminadoFalse(categoria);
+
+    // Extraé la hora (0–23) de cada hecho
+    Map<Integer, Long> conteoPorHora = hechos.stream()
+            .map(this::horaDelHecho)                  // Integer 0..23 o null
+            .filter(Objects::nonNull)
+            .collect(Collectors.groupingBy(h -> h, Collectors.counting()));
+
+    // Tomá la hora con mayor frecuencia (modo)
+    return conteoPorHora.entrySet().stream()
+            .max(Map.Entry.comparingByValue())
+            .map(Map.Entry::getKey)
+            .orElse(null); // si no hay datos con hora
+  }
+  /**
+   * Extrae la hora del hecho.
+   * Recomendado: migrar Hecho.fechaHecho -> LocalDateTime.
+   * Provisorio: intentar por metadata["hora"] en formato HH:mm o HH.
+   */
+  private Integer horaDelHecho(Hecho h) {
+    // 1) Si migraste a LocalDateTime:
+    // if (h.getFechaHechoDateTime() != null) return h.getFechaHechoDateTime().getHour();
+
+    // 2) Mientras tanto, intentar metadata["hora"]
+    if (h.getMetadata() != null) {
+      String hh = h.getMetadata().get("hora");
+      if (hh != null) {
+        try {
+          // HH:mm
+          return java.time.LocalTime.parse(hh).getHour();
+        } catch (Exception ignore) {
+        }
+        try {
+          // HH directo
+          int x = Integer.parseInt(hh);
+          if (0 <= x && x <= 23) return x;
+        } catch (Exception ignore) {
+        }
+      }
+    }
+    // Sin hora disponible
+    return null;
+  }
 
 }

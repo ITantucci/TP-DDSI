@@ -1,7 +1,6 @@
 package Agregador.business.Consenso;
 
 import Agregador.business.Hechos.Hecho;
-import java.math.BigInteger;
 import java.util.ArrayList;
 
 public interface Consenso {

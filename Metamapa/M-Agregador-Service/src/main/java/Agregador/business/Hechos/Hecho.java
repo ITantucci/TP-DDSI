@@ -1,6 +1,6 @@
 package Agregador.business.Hechos;
 
-import Agregador.business.deprecado.Usuarios.Usuario;
+import Agregador.business.Usuarios.Usuario;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.*;

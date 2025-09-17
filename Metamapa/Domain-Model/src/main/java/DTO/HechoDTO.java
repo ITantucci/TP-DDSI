@@ -1,13 +1,10 @@
 package DTO;
 
 import domain.business.Usuarios.Perfil;
-import domain.business.incidencias.Hecho;
-import domain.business.incidencias.Multimedia;
-import domain.business.incidencias.Ubicacion;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
