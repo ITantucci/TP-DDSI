@@ -3,15 +3,10 @@ package Agregador.Service;
 import Agregador.business.Hechos.Hecho;
 import Agregador.persistencia.RepositorioHechos;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-// Agregador/Service/ServiceAgregador.java
 @Service
 public class ServiceAgregador {
 
