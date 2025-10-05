@@ -137,7 +137,7 @@ public class ServiceColecciones {
   }
 
   public boolean eliminarColeccion(UUID id) {
-    return repositorioColecciones.eliminarPorId(id);
+    return repositorioColecciones.deleteById(id);
   }
 
   public void agregarFuenteDeDatos(UUID idColeccion, Integer idFuente) {

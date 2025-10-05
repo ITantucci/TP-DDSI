@@ -1,14 +1,15 @@
 package Agregador.business.Solicitudes;
+import jakarta.persistence.Entity;
 import lombok.Getter;
 import java.math.BigInteger;
 
+@Entity
 public class SolicitudEliminacion extends Solicitud {
   @Getter
   public String motivo;
   static private Integer contadorID = 1;
 
   public SolicitudEliminacion(BigInteger hechoAfectado, String motivo){
-
     super(hechoAfectado, EstadoSolicitud.PENDIENTE); //por defecto se inicializan pendientes
 
     Boolean esSpam;
@@ -23,6 +24,8 @@ public class SolicitudEliminacion extends Solicitud {
     this.motivo = motivo;
     this.id = contadorID++;
   }
+
+  public SolicitudEliminacion() {}
 
   @Override
   public void aceptarSolicitud(){

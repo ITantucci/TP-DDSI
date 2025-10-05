@@ -1,5 +1,4 @@
 package Usuarios.web;
-
 import Usuarios.business.Usuarios.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,9 +21,9 @@ public class controllerUsuarios {
       Integer edad = (Integer) requestBody.get("edad");
       //Perfil perfil = new Perfil(nombre,apellido,edad);
       List<String> rolesInput = (List<String>) requestBody.get("roles");  // Recibe roles como lista de strings
-      List<Rol> roles = rolesInput.stream()
+      Set<Rol> roles = rolesInput.stream()
           .map(Rol::valueOf)  // Convierte el string a un Rol
-          .collect(Collectors.toList());
+          .collect(Collectors.toSet());
       Usuario user = new Usuario(email, contraseniaHasheada,nombre, apellido, edad,roles);
       System.out.println("User creado " + user);
       usersRepository.save(user);

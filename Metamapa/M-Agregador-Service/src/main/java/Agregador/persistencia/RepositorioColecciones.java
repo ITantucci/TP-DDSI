@@ -48,7 +48,7 @@ public class RepositorioColecciones {
   }
 
   /** Elimina por UUID. */
-  public boolean eliminarPorId(UUID id) {
+  public boolean deleteById(UUID id) {
     if (id == null) return false;
     return colecciones.removeIf(c -> id.equals(c.getHandle()));
   }

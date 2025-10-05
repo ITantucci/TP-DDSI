@@ -52,6 +52,4 @@ public class RepositorioHechos {
             .filter(h -> exclusion.stream().noneMatch(c -> c.cumple(h)))
             .toList();
   }
-
-
 }
