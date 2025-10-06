@@ -1,5 +1,4 @@
 package FuenteDinamica;
-
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.context.WebServerInitializedEvent;
@@ -13,6 +12,8 @@ public class RegistrarmeEnAgregador {
   private final RestTemplate rest;
   private final Environment env;
   private final String registryEndpoint;
+  private static final int MAX_RETRIES = 5;
+  private static final long RETRY_DELAY_MS = 5000;
 
   public RegistrarmeEnAgregador(RestTemplate rest,
                                 Environment env,
@@ -34,11 +35,25 @@ public class RegistrarmeEnAgregador {
             "url", baseUrl
     );
 
-    try {
-      rest.postForLocation(registryEndpoint, payload);
-      System.out.println("Self-registered in " + registryEndpoint + " -> " + baseUrl);
-    } catch (RestClientException ex) {
-      System.err.println("Failed to self-register: " + ex.getMessage());
+    int retries = 0;
+    while (retries < MAX_RETRIES) {
+      try {
+        rest.postForLocation(registryEndpoint, payload);
+        System.out.println("Self-registered in " + registryEndpoint + " -> " + baseUrl);
+        return;
+      } catch (RestClientException ex) {
+        retries++;
+        System.err.println("Failed to self-register (Attempt " + retries + "): " + ex.getMessage());
+        if (retries < MAX_RETRIES) {
+          try {
+            Thread.sleep(RETRY_DELAY_MS);  // Esperar 5 segundos antes del próximo intento
+          } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // Restaurar el estado de interrupción
+            break;
+          }
+        }
+      }
     }
+    System.err.println("⚠️ Could not register after " + MAX_RETRIES + " attempts.");
   }
 }

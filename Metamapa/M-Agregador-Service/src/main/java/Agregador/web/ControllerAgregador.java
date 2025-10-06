@@ -1,14 +1,11 @@
 package Agregador.web;
 import Agregador.Service.ServiceAgregador;
-import Agregador.business.Consenso.Consenso;
 import Agregador.business.Hechos.Hecho;
 import java.util.*;
 import Agregador.Service.ServiceFuenteDeDatos;
 import Agregador.persistencia.*;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import Agregador.Service.ServiceConsenso;
 
 @RestController
@@ -19,7 +16,7 @@ public class ControllerAgregador {
   private final RepositorioHechos repositorioHechos;
   private final ServiceAgregador serviceAgregador;
   private final ServiceConsenso serviceConsenso;
-  private ArrayList<String> URLsFuentes = new ArrayList<String>();
+  private final Set<String> URLsFuentes = new HashSet<>();
 
   public ControllerAgregador(ServiceFuenteDeDatos servicefuenteDeDatos,ServiceConsenso serviceConsenso,
                              RepositorioAgregador repositorioAgregador, ServiceAgregador serviceAgregador,
@@ -39,8 +36,8 @@ public class ControllerAgregador {
     }
   */
   @PostMapping("/fuenteDeDatos")
-  public ResponseEntity<String> agregarFuente(@RequestBody Map<String,Object> body) {
-    String url = (String)body.get("url");
+  public ResponseEntity<String> agregarFuente(@RequestBody Map<String, Object> body) {
+    String url = (String) body.get("url");
     if (url == null) {
       return ResponseEntity.noContent().build();
     }

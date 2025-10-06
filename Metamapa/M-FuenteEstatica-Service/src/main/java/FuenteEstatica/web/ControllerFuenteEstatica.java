@@ -86,7 +86,7 @@ public class ControllerFuenteEstatica {
   public ResponseEntity<ArrayList<Hecho>> getHechos(){
     ArrayList<Hecho> hechos = new ArrayList<Hecho>();
     try{
-      hechos = repositorioFuentes.fuentesDeDatos.stream().map(f -> procesarCSVs(f.getId())).flatMap(ArrayList::stream).collect(Collectors.toCollection(ArrayList::new));
+      hechos = repositorioFuentes.fuentesDeDatos.stream().map(f -> procesarCSVs(f.getFuenteId())).flatMap(ArrayList::stream).collect(Collectors.toCollection(ArrayList::new));
     }
     catch (Exception e){
       return ResponseEntity.status(HttpStatusCode.valueOf(500)).body(null);

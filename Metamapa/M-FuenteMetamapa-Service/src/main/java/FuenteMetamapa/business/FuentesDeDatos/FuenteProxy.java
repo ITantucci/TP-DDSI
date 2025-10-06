@@ -7,14 +7,14 @@ import lombok.Getter;
 import lombok.Setter;
 //import infrastructure.dto.client.MetaMapaRestClient;
 import lombok.*;
-import jakarta.persistence.*;
+//import jakarta.persistence.*;
 
 @JsonTypeName("FUENTEPROXY")
 @Getter@Setter
 
 public abstract class FuenteProxy {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    //@Id
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Integer id;
     public String endpointBase;
     public HechoParser parser;

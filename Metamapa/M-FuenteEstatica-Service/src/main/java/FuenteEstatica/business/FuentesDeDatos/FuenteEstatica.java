@@ -8,19 +8,19 @@ import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import lombok.Getter;
 import lombok.*;
-import jakarta.persistence.*;
+//import jakarta.persistence.*;
 
 @JsonTypeName("FUENTEESTATICA")
-@Entity
-@Table(name = "fuente_estatica")
+//@Entity
+//@Table(name = "fuente_estatica")
 @Getter @Setter
 public class FuenteEstatica {
   static protected Integer contadorID = 2000000;
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  //@Id
+  //@GeneratedValue(strategy = GenerationType.IDENTITY)
   protected Integer fuenteId;
   public String nombre;
-  @OneToMany(mappedBy = "fuente", cascade = CascadeType.ALL, orphanRemoval = true)
+  //@OneToMany(mappedBy = "fuente", cascade = CascadeType.ALL, orphanRemoval = true)
   public ArrayList<Hecho> hechos;
   //public HechoParser hechoParser;
 

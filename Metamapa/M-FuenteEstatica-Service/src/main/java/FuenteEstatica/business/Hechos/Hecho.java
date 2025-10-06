@@ -2,14 +2,14 @@ package FuenteEstatica.business.Hechos;
 import FuenteEstatica.business.FuentesDeDatos.FuenteEstatica;
 import java.time.LocalDate;
 import lombok.*;
-import jakarta.persistence.*;
+//import jakarta.persistence.*;
 
-@Entity
-@Table(name = "hecho")
+//@Entity
+//@Table(name = "hecho")
 @Getter @Setter
 public class Hecho {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  //@Id
+  //@GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
   private String titulo;
   private String descripcion;
@@ -18,8 +18,8 @@ public class Hecho {
   private Float longitud;
   private LocalDate fechaHecho;
   private LocalDate fechaCarga;
-  @ManyToOne
-  @JoinColumn(name = "fuente_id")
+  //@ManyToOne
+  //@JoinColumn(name = "fuente_id")
   private FuenteEstatica fuente;
   static public Integer contadorID = 1;
 
