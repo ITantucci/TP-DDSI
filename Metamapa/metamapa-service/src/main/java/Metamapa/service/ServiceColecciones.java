@@ -1,4 +1,4 @@
-package Metamapa.service;
+package Metamapa.Service;
 import Metamapa.business.Colecciones.*;
 import Metamapa.business.Consenso.*;
 import Metamapa.business.Hechos.*;

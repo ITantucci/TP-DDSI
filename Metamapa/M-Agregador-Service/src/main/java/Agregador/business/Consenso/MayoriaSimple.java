@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 //TODO linkear las fuentes de domain en este modulo o crear una carpeta con la clase a usar
 
-public class MayoriaSimple implements Consenso {
+public class MayoriaSimple extends Consenso {
   //si al menos la mitad de las fuentes contienen el mismo hecho, se lo considera
   //consensuado;
   @Override

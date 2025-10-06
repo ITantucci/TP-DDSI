@@ -1,11 +1,17 @@
 package Agregador.business.Colecciones;
-
+import lombok.Getter;
 import Agregador.business.Hechos.Hecho;
+import jakarta.persistence.*;
 
-public interface Criterio {
-  /**
-   * @param hecho el objeto a evaluar
-   * @return true si el hecho cumple el criterio, false en caso contrario
-   */
-  boolean cumple(Hecho hecho);
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+public abstract class Criterio {
+  @Id
+  Integer id;
+  @Getter
+  boolean inclusion;
+
+  public boolean cumple(Hecho hecho) {
+    return inclusion;
+  }
 }

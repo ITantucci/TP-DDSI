@@ -21,6 +21,7 @@ public class ControllerFuenteDinamica {
   public ControllerFuenteDinamica(RepositorioFuentes repositorioFuentes, RepositorioHechos repositorioHechos) {
     this.repositorioHechos = repositorioHechos;
     this.repositorioFuentes = repositorioFuentes;
+
   }
 
   // obtener todas las fuentes
@@ -97,20 +98,29 @@ public class ControllerFuenteDinamica {
     }
   }
 
-  public void publicarmeAAgregador() {
-    String url = String.format("%s/fuenteDeDatos", "${M.Agregador.Service.url}");
+  /*
+  public void publicarmeAAgregador(String URL) {
 
+    String url = String.format("%s/fuenteDeDatos", URL);
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
 
     String body = """
         {
-            "URLBase": """ + "${M.FuenteEstatica.Service.url}" + """
+            "URLBase": """ + URL + """
         }
     """;
 
     HttpEntity<String> request = new HttpEntity<>(body, headers);
     RestTemplate restTemplate = new RestTemplate();
-    restTemplate.postForObject(url, request, String.class);
+
+    try {
+      restTemplate.postForObject(url, request, String.class);
+      System.out.println("✅ Publicado exitosamente en agregador: " + url);
+    } catch (Exception e) {
+      System.err.println("⚠️ No se pudo conectar al agregador en " + url);
+      System.err.println("   → Error: " + e.getMessage());
+    }
   }
+  */
 }

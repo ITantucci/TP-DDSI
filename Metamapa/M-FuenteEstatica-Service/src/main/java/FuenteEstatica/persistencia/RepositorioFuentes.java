@@ -17,7 +17,7 @@ public class RepositorioFuentes {
   }
 
   public FuenteEstatica buscarFuente(Integer id) {
-    return fuentesDeDatos.stream().filter(f-> Objects.equals(f.getId(), id)).findFirst().orElseThrow(()-> new IllegalArgumentException("No se encontro una fuente con ese ID"));
+    return fuentesDeDatos.stream().filter(f-> Objects.equals(f.getFuenteId(), id)).findFirst().orElseThrow(()-> new IllegalArgumentException("No se encontro una fuente con ese ID"));
   }
 
   public List<FuenteEstatica> getFuentesDeDatos() {

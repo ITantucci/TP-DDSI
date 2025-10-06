@@ -7,20 +7,22 @@ import java.util.*;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import lombok.Getter;
+import lombok.*;
+import jakarta.persistence.*;
 
 @JsonTypeName("FUENTEESTATICA")
-
+@Entity
+@Table(name = "fuente_estatica")
+@Getter @Setter
 public class FuenteEstatica {
-  @Getter
   static protected Integer contadorID = 2000000;
-  @Getter
-  protected Integer id;
-  @Getter
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  protected Integer fuenteId;
   public String nombre;
-  @Getter
+  @OneToMany(mappedBy = "fuente", cascade = CascadeType.ALL, orphanRemoval = true)
   public ArrayList<Hecho> hechos;
-  /*@Getter
-  public HechoParser hechoParser;*/
+  //public HechoParser hechoParser;
 
   public FuenteEstatica() {} // va a haber que usar dtos para no modificar la capa de negocio
   public FuenteEstatica(String nombre) {
@@ -28,18 +30,18 @@ public class FuenteEstatica {
       throw new RuntimeException("No hay mas espacio para nuevas fuentes :(");
     } else {
       this.nombre = nombre;
-      this.id = contadorID++;
+      this.fuenteId = contadorID++;
       this.hechos = new ArrayList<>();
     }
   }
 
   public void cargar(String tipo,String path) {
     switch (tipo) {
-      case "CSV": new CSVHechoParser().parsearHechos(path, id).forEach(hecho -> this.hechos.add(hecho));
+      case "CSV": new CSVHechoParser().parsearHechos(path, this).forEach(hecho -> this.hechos.add(hecho));
       break;
       //case "JSON": new JSONHechoParser().parsearHechos(path, id).forEach((this::agregarHecho));  arreglar el codigo para que tome un JSON?
       //break;
-      default: new CSVHechoParser().parsearHechos(path, id).forEach(hecho -> this.hechos.add(hecho));
+      default: new CSVHechoParser().parsearHechos(path, this).forEach(hecho -> this.hechos.add(hecho));
       break;
     }
   }
@@ -48,7 +50,7 @@ public class FuenteEstatica {
     try (CSVReader reader = new CSVReader(new FileReader(path))) {
       String[] fila;
       while ((fila = reader.readNext()) != null) {
-        Hecho hecho = new CSVHechoParser().parse(fila, id);
+        Hecho hecho = new CSVHechoParser().parse(fila, this);
         // buscar si ya existe un hecho con el mismo título
         Optional<Hecho> existente = hechos.stream()
                 .filter(h -> h.getTitulo().equalsIgnoreCase(hecho.getTitulo()))

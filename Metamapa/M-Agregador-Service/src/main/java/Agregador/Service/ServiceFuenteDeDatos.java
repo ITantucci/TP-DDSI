@@ -21,7 +21,7 @@ public class ServiceFuenteDeDatos {
   private static final int FACTOR_TIPO = 1_000_000;
 
   // ==== Rutas (cambiá acá si loaders exponen distinto) ====
-  private static final String PATH_HECHOS_POR_FUENTE = "%s/fuentesDeDatos/%d/hechos"; // o "%s/%d/hechos"
+  //private static final String PATH_HECHOS_POR_FUENTE = "%s/fuentesDeDatos/%d/hechos"; // o "%s/%d/hechos"
   private static final String PATH_LISTAR_FUENTES    = "%s/fuentesDeDatos";           // o "%s/"
 
   public ServiceFuenteDeDatos(RestTemplate rt, RepositorioHechos repo) {
@@ -33,7 +33,7 @@ public class ServiceFuenteDeDatos {
 
   /** Trae hechos de UNA fuente (sin filtros) y los mapea a tu dominio. */
   public List<Hecho> getHechosDeFuente(String urlBase) {
-    String url = urlBase + "/Hechos";
+    String url = urlBase + "/api-fuentesDeDatos/hechos";
     ResponseEntity<List<Map<String,Object>>> resp = restTemplate.exchange(
             url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {}
     );
@@ -41,9 +41,7 @@ public class ServiceFuenteDeDatos {
     return raw.stream().map(json -> jsonToHecho(json, (int)json.get("fuenteID"))).toList();
   }
 
-
-  public void actualizarHechos(String url)
-  {
+  public void actualizarHechos(String url) {
       ArrayList<Hecho> hechos = new ArrayList<>(getHechosDeFuente(url));
 
       //TODO Normalizar y hacer chequeos de los datos enviados

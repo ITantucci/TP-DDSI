@@ -1,5 +1,4 @@
 package Agregador.Service;
-
 import Agregador.web.ControllerAgregador;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +8,6 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
    public class TareasProgramadas {
-
      private final ControllerAgregador controllerAgregador;
      private final MeterRegistry registry;
 

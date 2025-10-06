@@ -3,7 +3,7 @@ import Metamapa.DTO.*;
 import Metamapa.business.Colecciones.Coleccion;
 import Metamapa.business.Consenso.ModosDeNavegacion;
 import Metamapa.business.Hechos.*;
-import Metamapa.service.*;
+import Metamapa.Service.*;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.*;

@@ -1,5 +1,6 @@
 package FuenteEstatica.business.Parsers;
 import FuenteEstatica.business.Hechos.Hecho;
+import FuenteEstatica.business.FuentesDeDatos.FuenteEstatica;
 import com.opencsv.*;
 import java.io.*;
 import java.time.LocalDate;
@@ -8,7 +9,7 @@ import java.util.ArrayList;
 
 public class CSVHechoParser implements HechoParser {
     @Override
-    public ArrayList<Hecho> parsearHechos(String path, Integer fuenteID) {
+    public ArrayList<Hecho> parsearHechos(String path, FuenteEstatica fuente) {
         ArrayList<Hecho> listaHecho = new ArrayList<Hecho>();
 
         CSVParser parser = new CSVParserBuilder()
@@ -41,7 +42,7 @@ public class CSVHechoParser implements HechoParser {
                 Float longitud = Float.parseFloat(campos[4].trim());
                 LocalDate fechaHecho = LocalDate.parse(campos[5].trim(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
-                Hecho hecho = new Hecho(titulo,descripcion, categoria, latitud, longitud, fechaHecho,fuenteID);
+                Hecho hecho = new Hecho(titulo,descripcion, categoria, latitud, longitud, fechaHecho,fuente);
                 // TODO: revisar Deberiamos inicializar en NULL el resto de los campos del contructor del hecho???
                 listaHecho.add(hecho);
             }
@@ -51,7 +52,7 @@ public class CSVHechoParser implements HechoParser {
         return listaHecho;
     }
 
-    public ArrayList<Hecho> parsearHechos(InputStream in, Integer fuenteID) {
+    public ArrayList<Hecho> parsearHechos(InputStream in, FuenteEstatica fuente) {
         ArrayList<Hecho> listaHecho = new ArrayList<>();
         CSVParser parser = new CSVParserBuilder().withSeparator(',').withQuoteChar('"').build();
 
@@ -72,7 +73,7 @@ public class CSVHechoParser implements HechoParser {
                 Float longitud = Float.parseFloat(campos[4].trim());
                 LocalDate fechaHecho = LocalDate.parse(campos[5].trim(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
-                Hecho hecho = new Hecho(titulo,descripcion, categoria, latitud, longitud, fechaHecho,fuenteID);
+                Hecho hecho = new Hecho(titulo,descripcion, categoria, latitud, longitud, fechaHecho,fuente);
                 // TODO: revisar Deberiamos inicializar en NULL el resto de los campos del contructor del hecho???
                 listaHecho.add(hecho);
             }
@@ -82,13 +83,13 @@ public class CSVHechoParser implements HechoParser {
         return listaHecho;
     }
 
-    public Hecho parse(String[] campos, Integer fuenteID) {
+    public Hecho parse(String[] campos, FuenteEstatica fuente) {
         String titulo = campos[0];
         String descripcion = campos[1];
         String categoria = campos[2];
         float latitud = Float.parseFloat(campos[3]);
         float longitud = Float.parseFloat(campos[4]);
         LocalDate fecha = LocalDate.parse(campos[5]);
-        return new Hecho(titulo, descripcion, categoria, latitud, longitud, fecha,fuenteID);
+        return new Hecho(titulo, descripcion, categoria, latitud, longitud, fecha,fuente);
     }
 }

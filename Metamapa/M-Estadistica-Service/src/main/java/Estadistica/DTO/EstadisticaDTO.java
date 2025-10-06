@@ -22,9 +22,6 @@ public class EstadisticaDTO {
   // Cantidad de solicitudes de eliminación que son spam
   private long cantidadSolicitudesSpam;
 
-  // Total de hechos, útil para mostrar KPIs
-  private long totalHechos;
-
   // Getters y Setters
   public String getCategoriaMasReportada() { return categoriaMasReportada; }
   public void setCategoriaMasReportada(String categoriaMasReportada) { this.categoriaMasReportada = categoriaMasReportada; }
@@ -50,6 +47,4 @@ public class EstadisticaDTO {
   public long getCantidadSolicitudesSpam() { return cantidadSolicitudesSpam; }
   public void setCantidadSolicitudesSpam(long cantidadSolicitudesSpam) { this.cantidadSolicitudesSpam = cantidadSolicitudesSpam; }
 
-  public long getTotalHechos() { return totalHechos; }
-  public void setTotalHechos(long totalHechos) { this.totalHechos = totalHechos; }
 }

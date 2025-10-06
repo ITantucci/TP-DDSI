@@ -1,11 +1,9 @@
 package Metamapa.web;
-
-import Metamapa.service.ServiceColecciones;
-import Metamapa.service.ServiceFuenteDeDatos;
+import Metamapa.Service.ServiceColecciones;
+import Metamapa.Service.ServiceFuenteDeDatos;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;

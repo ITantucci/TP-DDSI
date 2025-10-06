@@ -1,5 +1,4 @@
 package Agregador;
-
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.springframework.boot.SpringApplication;

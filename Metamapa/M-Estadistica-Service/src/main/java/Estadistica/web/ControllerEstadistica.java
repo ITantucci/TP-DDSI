@@ -12,8 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Controller
 @Tag(name = "Servicio de Estadísticas", description = "Consultas y exportación de estadísticas")
@@ -26,7 +25,6 @@ public class ControllerEstadistica {
     this.estadisticaService = estadisticaService;
   }
 
-
   @PostMapping("/actualizar")
   public ResponseEntity<Void> actualizarEstadisticas() {
     estadisticaService.actualizar();
@@ -38,10 +36,34 @@ public class ControllerEstadistica {
     estadisticaService.actualizarDashboards();
     return ResponseEntity.accepted().build();
   }
-  //Se elimina creo
+  // Se elimina creo
   public void generarEstadisticas() {}
 
   //TODO: De una colección, ¿en qué provincia se agrupan la mayor cantidad de hechos reportados? 
+  @Operation(
+      summary = "Provincia con mayor cantidad de hechos reportados de una coleccion",
+      description = "Devuelve el nombre de la provincia que posee la mayor cantidad de hechos registrados de la coleccion indicada."
+  )
+  @ApiResponses(value = {
+      @ApiResponse(
+          responseCode = "200",
+          description = "Provincia más reportada encontrada de una coleccion",
+          content = @Content(
+              mediaType = "application/json",
+              schema = @Schema(implementation = String.class),
+              examples = @ExampleObject(value = "\"Incendio forestal\"")
+          )
+      ),
+      @ApiResponse(
+          responseCode = "204",
+          description = "No se encontraron hechos para calcular la estadística"
+      )
+  })
+  @GetMapping("/coleccion/{uuid}/provincia-mas-reportada")
+  public ResponseEntity<String> provinciaMasReportada(@PathVariable UUID uuid) {
+    String provinica = estadisticaService.provinciaMasReportadaDeColeccion(uuid);
+    return (provinica == null) ? ResponseEntity.noContent().build() : ResponseEntity.ok(provinica);
+  }
 
   //TODO revisar:¿Cuál es la categoría con mayor cantidad de hechos reportados?
   @Operation(
@@ -73,6 +95,19 @@ public class ControllerEstadistica {
 
 
   //TODO: ¿En qué provincia se presenta la mayor cantidad de hechos de una cierta categoría?
+  @Operation(
+      summary = "En qué provincia se presenta la mayor cantidad de hechos de una cierta categoría?",
+      description = "Devuelve la provincia con la mayor cantidad de hechos de la categoria indicada."
+  )
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "OK"),
+      @ApiResponse(responseCode = "204", description = "Sin datos con provincia disponible")
+  })
+  @GetMapping("/hechos/provincia-mas-reportada")
+  public ResponseEntity<String> provinciaMasReportada(@RequestParam String categoria) {
+    String provinica = estadisticaService.provinciaMasReportada(categoria);
+    return (provinica == null) ? ResponseEntity.noContent().build() : ResponseEntity.ok(provinica);
+  }
 
   //TODO: ¿A qué hora del día ocurren la mayor cantidad de hechos de una cierta categoría?
   @Operation(
@@ -111,6 +146,7 @@ public class ControllerEstadistica {
     }
   }
 
+  //TODO: Se deberá implementar la exportación de las estadísticas en formato CSV.
   @Operation(summary = "Exportación CSV genérica")
   @ApiResponse(responseCode = "200", description = "CSV",
           content = @Content(mediaType = "text/csv"))

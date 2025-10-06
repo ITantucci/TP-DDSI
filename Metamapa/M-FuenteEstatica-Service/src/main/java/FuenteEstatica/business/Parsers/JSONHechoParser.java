@@ -1,5 +1,6 @@
 package FuenteEstatica.business.Parsers;
 import FuenteEstatica.business.Hechos.Hecho;
+import FuenteEstatica.business.FuentesDeDatos.FuenteEstatica;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -15,7 +16,7 @@ public abstract class JSONHechoParser implements HechoParser {
     return listaHecho;
   }*/
   @Override
-  public ArrayList<Hecho> parsearHechos(String path, Integer fuenteID) {
+  public ArrayList<Hecho> parsearHechos(String path, FuenteEstatica fuente) {
     ObjectMapper mapper = new ObjectMapper();
     mapper.registerModule(new JavaTimeModule()); // Para LocalDate
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // Ignorar campos extra

@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.*;
 import jakarta.persistence.*;
 import lombok.*;
-
+import Agregador.business.Consenso.*;
 @Entity
 @Getter @Setter
 public class Hecho {
@@ -24,6 +24,14 @@ public class Hecho {
   private Boolean anonimo;
   private Boolean eliminado;
   private ArrayList<Multimedia> multimedia;
+  @Getter
+  @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+  @JoinTable(
+      name = "ConsensoHecho",
+      joinColumns = @JoinColumn(name = "consensoHecho_hecho"),
+      inverseJoinColumns = @JoinColumn(name = "consensoHecho_consenso")
+  )
+  private ArrayList<Consenso> consensos;
   @ElementCollection
   @CollectionTable(name = "hecho_metadata", joinColumns = @JoinColumn(name = "hecho_id"))
   @MapKeyColumn(name = "clave")
@@ -72,6 +80,9 @@ public class Hecho {
     return getMetadata().get(key).equals(value);
   }
 
+  public void agregarConsenso(Consenso consenso) {
+    consensos.add(consenso);
+  }
   public void editarHecho(String titulo, String descripcion, String categoria, Float latitud, Float longitud, LocalDate fechaHecho, Boolean anonimidad, ArrayList<Multimedia> multimedia) {
     if (titulo != null) {
       this.titulo = titulo;

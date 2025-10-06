@@ -1,7 +1,5 @@
 package FuenteDemo.service;
-
 import FuenteDemo.business.FuentesDeDatos.FuenteDemo;
-import FuenteDemo.business.FuentesDeDatos.FuenteProxy;
 import FuenteDemo.business.Hechos.Hecho;
 import FuenteDemo.persistencia.RepositorioFuentes;
 import java.util.*;
@@ -52,6 +50,4 @@ public class ServiceFuenteDemo {
       fd.actualizarHechos();
     }
   }*/
-
-
 }

@@ -1,5 +1,4 @@
 package Agregador.Service;
-
 import Agregador.business.Hechos.Hecho;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

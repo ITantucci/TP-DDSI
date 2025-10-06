@@ -1,6 +1,7 @@
 package Estadistica.Service;
 
 import Estadistica.DTO.EstadisticaDTO;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -47,6 +48,18 @@ public class ServiceEstadistica {
         return (lista == null) ? 0L : lista.size();
     }
 
+    public String provinciaMasReportadaDeColeccion(UUID idColeccion){
+        return "";
+    }
+
+    public String provinciaMasReportada(String categoria){
+        String url = UriComponentsBuilder.fromHttpUrl(baseUrl)
+            .path("/hechos/provincia-mas-reportada")
+            .queryParam("categoria", categoria)
+            .toUriString();
+        return restTemplate.getForObject(url, String.class);
+    }
+
     public void exportarCsv(){
 
     }
@@ -55,13 +68,11 @@ public class ServiceEstadistica {
         EstadisticaDTO dto = new EstadisticaDTO();
 
         //TODO: falta resto de cosas
-        // 3) Otros campos aún no implementados (los podés dejar en null o 0)
         dto.setProvinciaMasReportada(null);
         dto.setCantidadProvinciaMasReportada(0);
         dto.setProvinciaPorCategoria(null);
         dto.setCantidadProvinciaPorCategoria(0);
         dto.setHechosPorHoraCategoria(null);
-        dto.setTotalHechos(0);
 
         //Categoría más reportada
         String topCategoria = obtenerCategoriaMasReportada();

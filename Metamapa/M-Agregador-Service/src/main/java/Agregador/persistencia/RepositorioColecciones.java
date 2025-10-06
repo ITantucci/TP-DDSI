@@ -21,7 +21,6 @@ public class RepositorioColecciones {
   }
 
   // === Altas / Bajas / Modificaciones ===
-
   /** Agrega una colección nueva (asegura unicidad por handle). */
   public void crear(Coleccion coleccion) {
     Objects.requireNonNull(coleccion, "coleccion no puede ser null");
@@ -32,10 +31,8 @@ public class RepositorioColecciones {
 
   /** Crea y devuelve el UUID de la colección creada (útil para Services/Controllers). */
   public UUID crear(String titulo, String descripcion, Consenso consenso,
-                    List<Criterio> pertenencia, List<Criterio> noPertenencia) {
-    ArrayList<Criterio> p = pertenencia == null ? new ArrayList<>() : new ArrayList<>(pertenencia);
-    ArrayList<Criterio> np = noPertenencia == null ? new ArrayList<>() : new ArrayList<>(noPertenencia);
-    Coleccion c = new Coleccion(titulo, descripcion, consenso, p, np);
+                    List<Criterio> criterios) {
+    Coleccion c = new Coleccion(titulo, descripcion, consenso, (ArrayList)criterios);
     crear(c);
     return c.getHandle();
   }
@@ -54,7 +51,6 @@ public class RepositorioColecciones {
   }
 
   // === Cambios de configuración de la colección ===
-
   /** Cambia el consenso de la colección. */
   public boolean modificarConsenso(UUID id, Consenso consenso) {
     Objects.requireNonNull(id, "id no puede ser null");
@@ -70,44 +66,24 @@ public class RepositorioColecciones {
   }
 
   // === Gestión de criterios (pertenencia / no pertenencia) ===
-
-  public boolean agregarCriterioPertenencia(UUID id, Criterio criterio) {
+  public boolean agregarCriterio(UUID id, Criterio criterio) {
     Objects.requireNonNull(criterio, "criterio no puede ser null");
-    return findById(id).map(c -> { c.agregarCriterioPertenencia(criterio); return true; }).orElse(false);
+    return findById(id).map(c -> { c.agregarCriterio(criterio); return true; }).orElse(false);
   }
 
-  public boolean eliminarCriterioPertenencia(UUID id, Criterio criterio) {
+  public boolean eliminarCriterio(UUID id, Criterio criterio) {
     Objects.requireNonNull(criterio, "criterio no puede ser null");
-    return findById(id).map(c -> { c.eliminarCriterioPertenencia(criterio); return true; }).orElse(false);
-  }
-
-  public boolean agregarCriterioNoPertenencia(UUID id, Criterio criterio) {
-    Objects.requireNonNull(criterio, "criterio no puede ser null");
-    return findById(id).map(c -> { c.agregarCriterioNoPertenencia(criterio); return true; }).orElse(false);
-  }
-
-  public boolean eliminarCriterioNoPertenencia(UUID id, Criterio criterio) {
-    Objects.requireNonNull(criterio, "criterio no puede ser null");
-    return findById(id).map(c -> { c.eliminarCriterioNoPertenencia(criterio); return true; }).orElse(false);
+    return findById(id).map(c -> { c.eliminarCriterio(criterio); return true; }).orElse(false);
   }
 
   /**
    * Reemplaza “todo” el set de criterios de pertenencia.
    * Útil para PATCH/PUT donde te llega la lista completa desde UI.
    */
-  public boolean setCriteriosPertenencia(UUID id, List<Criterio> nuevos) {
+  public boolean setCriterios(UUID id, List<Criterio> nuevos) {
     Objects.requireNonNull(nuevos, "nuevos no puede ser null");
     return findById(id).map(c -> {
-      c.setCriterioPertenencia(new ArrayList<>(nuevos));
-      return true;
-    }).orElse(false);
-  }
-
-  /** Reemplaza “todo” el set de criterios de no pertenencia. */
-  public boolean setCriteriosNoPertenencia(UUID id, List<Criterio> nuevos) {
-    Objects.requireNonNull(nuevos, "nuevos no puede ser null");
-    return findById(id).map(c -> {
-      c.setCriterioNoPertenencia(new ArrayList<>(nuevos));
+      c.setCriterios(new ArrayList<>(nuevos));
       return true;
     }).orElse(false);
   }

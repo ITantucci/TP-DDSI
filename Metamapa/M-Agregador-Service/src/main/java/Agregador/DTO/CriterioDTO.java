@@ -18,31 +18,35 @@ public class CriterioDTO {
   private Float latitud;
   private Float longitud;
   private String tipoMultimedia;
+  private boolean inclusion;
 
   public CriterioDTO() {}
 
   public Criterio toDomain() {
     return switch (tipo.toLowerCase()) {
-      case "titulo" -> new CriterioTitulo(valor);
-      case "descripcion" -> new CriterioDescripcion(valor);
-      case "categoria" -> new CriterioCategoria(valor);
+      case "titulo" -> new CriterioTitulo(valor,this.inclusion);
+      case "descripcion" -> new CriterioDescripcion(valor,this.inclusion);
+      case "categoria" -> new CriterioCategoria(valor,this.inclusion);
       case "fecha" -> new CriterioFecha(
               LocalDate.parse(fechaDesde),
-              LocalDate.parse(fechaHasta)
+              LocalDate.parse(fechaHasta),
+              this.inclusion
       );
       case "fechareportaje" -> new CriterioFechaReportaje(
               LocalDate.parse(fechaDesde),
-              LocalDate.parse(fechaHasta)
+              LocalDate.parse(fechaHasta),
+          this.inclusion
       );
-      case "fuente", "criteriofuentededatos" -> new CriterioFuenteDeDatos(idFuenteDeDatos); // << alias OK
-      case "ubicacion" -> new CriterioUbicacion(latitud, longitud);
-      case "multimedia" -> new CriterioMultimedia(TipoMultimedia.valueOf(tipoMultimedia));
+      case "fuente", "criteriofuentededatos" -> new CriterioFuenteDeDatos(idFuenteDeDatos,this.inclusion); // << alias OK
+      case "ubicacion" -> new CriterioUbicacion(latitud, longitud,this.inclusion);
+      case "multimedia" -> new CriterioMultimedia(TipoMultimedia.valueOf(tipoMultimedia),this.inclusion);
       default -> throw new IllegalArgumentException("Tipo de criterio desconocido: " + tipo);
     };
   }
 
   public CriterioDTO(Criterio criterio) {
     this.tipo = criterio.getClass().getSimpleName().toLowerCase();
+    this.inclusion = criterio.isInclusion();
     if (criterio instanceof CriterioTitulo ct) {
       this.valor = ct.getTitulo();
     } else if (criterio instanceof CriterioDescripcion cd) {

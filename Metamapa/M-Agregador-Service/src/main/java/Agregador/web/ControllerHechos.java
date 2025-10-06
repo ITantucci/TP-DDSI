@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api-hechos")
 public class ControllerHechos {
-
   private final ServiceAgregador service;
 
   public ControllerHechos(ServiceAgregador service) { this.service = service; }
@@ -26,5 +25,4 @@ public class ControllerHechos {
     Integer hora = service.horaMasReportada(categoria);
     return (hora == null) ? ResponseEntity.noContent().build() : ResponseEntity.ok(hora);
   }
-
 }

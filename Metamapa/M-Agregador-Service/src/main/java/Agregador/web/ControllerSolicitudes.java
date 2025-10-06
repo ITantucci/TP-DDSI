@@ -31,7 +31,6 @@ public class ControllerSolicitudes {
         }
     }
 
-
     enum Accion { APROBAR, RECHAZAR }
 
     @PatchMapping("/solicitudesEliminacion/{id}")

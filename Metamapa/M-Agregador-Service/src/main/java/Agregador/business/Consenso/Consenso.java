@@ -1,20 +1,27 @@
 package Agregador.business.Consenso;
-
 import Agregador.business.Hechos.Hecho;
+import jakarta.persistence.*;
 import java.util.ArrayList;
 
-public interface Consenso {
-  boolean esConsensuado(Hecho hecho, ArrayList<Hecho> hechos);
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class Consenso {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  public Integer id;
 
-  //TODO reimplementar los consensos sin la clase fuente de datos
-  static String toString(Consenso c) {
+  public boolean esConsensuado(Hecho hecho, ArrayList<Hecho> hechos) {
+    return true;
+  };
+
+  public static String toString(Consenso c) {
     if (c == null) return null;
     if (c instanceof Absoluto) return "Absoluto";
     if (c instanceof MultiplesMenciones) return "MultiplesMenciones";
     if (c instanceof MayoriaSimple) return "MayoriaSimple";
     return c.getClass().getSimpleName();
   }
-  static Consenso fromString(String nombre) {
+  public static Consenso fromString(String nombre) {
     if (nombre == null) nombre = "MayoriaSimple";
     return switch (nombre) {
       case "Absoluto" -> new Absoluto();
@@ -24,7 +31,7 @@ public interface Consenso {
     };
   }
 
-  static Boolean sonIguales(Hecho hecho1, Hecho hecho2) {
+  public static Boolean sonIguales(Hecho hecho1, Hecho hecho2) {
     return hecho1.getFechaHecho() == hecho2.getFechaHecho() &&
             Math.abs(hecho1.getLatitud() - hecho2.getLatitud()) < 10  &&
             Math.abs(hecho1.getLongitud() - hecho2.getLongitud()) < 10 &&
@@ -64,6 +71,6 @@ public interface Consenso {
                     and (h2.latitud != h.latitud or h2.longitud != h.longitud or ... )
   );*/
 
-  // "SELECT * FROM hechos as Hecho1 where (select count(distinct left(Hechos1.hechos_id,4)) from hechos as Hecho2 where equals(Hecho1,Hecho2)) > 1 and (select count(*) from hechos as Hecho2 where Hecho1.titulo = Hecho2.titulo and todo lo demas distinto) "
-
+  // "SELECT * FROM hechos as Hecho1
+  // where (select count(distinct left(Hechos1.hechos_id,4)) from hechos as Hecho2 where equals(Hecho1,Hecho2)) > 1 and (select count(*) from hechos as Hecho2 where Hecho1.titulo = Hecho2.titulo and todo lo demas distinto) "
 }

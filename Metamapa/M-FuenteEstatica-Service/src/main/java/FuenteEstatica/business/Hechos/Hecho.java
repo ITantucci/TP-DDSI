@@ -1,11 +1,16 @@
 package FuenteEstatica.business.Hechos;
-
+import FuenteEstatica.business.FuentesDeDatos.FuenteEstatica;
 import java.time.LocalDate;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import jakarta.persistence.*;
 
+@Entity
+@Table(name = "hecho")
 @Getter @Setter
 public class Hecho {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer id;
   private String titulo;
   private String descripcion;
   private String categoria;
@@ -13,8 +18,9 @@ public class Hecho {
   private Float longitud;
   private LocalDate fechaHecho;
   private LocalDate fechaCarga;
-  private int fuenteId;
-  private Integer id;
+  @ManyToOne
+  @JoinColumn(name = "fuente_id")
+  private FuenteEstatica fuente;
   static public Integer contadorID = 1;
 
   public Hecho(
@@ -24,7 +30,7 @@ public class Hecho {
           Float latitud,
           Float longitud,
           LocalDate fechaHecho,
-          int fuenteId) {
+          FuenteEstatica fuente) {  // <--- aquí pasás la referencia, no el ID
     this.titulo = titulo;
     this.descripcion = descripcion;
     this.categoria = categoria;
@@ -33,6 +39,8 @@ public class Hecho {
     this.fechaHecho = fechaHecho;
     this.fechaCarga = LocalDate.now();
     this.id = contadorID++;
-    this.fuenteId = fuenteId;
+    this.fuente = fuente;
   }
+
+  public Hecho() {}
 }

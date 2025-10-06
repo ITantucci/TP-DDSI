@@ -7,6 +7,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.springframework.web.client.RestTemplate;
+import lombok.*;
+import jakarta.persistence.*;
 
 @JsonTypeName("FUENTEMETAMAPA")
 public class FuenteMetamapa extends FuenteProxy {

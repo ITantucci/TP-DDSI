@@ -6,15 +6,19 @@ import java.util.ArrayList;
 import lombok.Getter;
 import lombok.Setter;
 //import infrastructure.dto.client.MetaMapaRestClient;
+import lombok.*;
+import jakarta.persistence.*;
 
 @JsonTypeName("FUENTEPROXY")
-@Getter
+@Getter@Setter
+
 public abstract class FuenteProxy {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    protected Integer id;
     public String endpointBase;
-    @Setter
     public HechoParser parser;
     static protected Integer contadorID = 3000000;
-    protected Integer id;
     public String nombre;
     public ArrayList<Hecho> hechos;
     public TipoFuente tipoFuente;
