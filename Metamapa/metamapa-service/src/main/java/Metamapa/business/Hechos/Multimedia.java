@@ -1,6 +1,5 @@
 package Metamapa.business.Hechos;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 public class Multimedia {
   @Getter @Setter

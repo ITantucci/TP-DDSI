@@ -1,9 +1,7 @@
 package Metamapa.business.Solicitudes;
 
 import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import java.net.http.*;
 
 public class DetectorDeSpam {
   private static final String API_KEY = "401e1369cc60";

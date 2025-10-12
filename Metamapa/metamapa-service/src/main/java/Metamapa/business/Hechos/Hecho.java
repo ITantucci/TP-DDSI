@@ -1,42 +1,31 @@
 package Metamapa.business.Hechos;
 
 import Metamapa.business.Usuarios.Usuario;
-import lombok.Getter;
-import lombok.Setter;
-
+import lombok.*;
 import java.math.BigInteger;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
+@Getter
 public class Hecho {
-  @Getter
   private String titulo;
-  @Getter
   private String descripcion;
-  @Getter
   private String categoria;
-  @Getter
   private Float latitud;
-  @Getter
   private Float longitud;
-  @Getter
   private LocalDate fechaHecho;
-  @Getter
   private LocalDate fechaCarga;
-  @Getter
   private LocalDate fechaModificacion;
-  @Getter @Setter
+  @Setter
   private Usuario usuario;
-  @Getter
   private BigInteger id;
-  @Getter @Setter
+  @Setter
   private Boolean anonimo;
-  @Getter @Setter
+  @Setter
   private Boolean eliminado;
-  @Getter @Setter
+  @Setter
   private ArrayList<Multimedia> multimedia;
-  @Getter @Setter
+  @Setter
   private HashMap<String, String> metadata;
 
   public Hecho(){}
@@ -52,7 +41,6 @@ public class Hecho {
       Integer hechoId,
       Boolean anonimo,
       ArrayList<Multimedia> multimedia) {
-
     this.titulo = titulo;
     this.descripcion = descripcion;
     this.categoria = categoria;
@@ -67,7 +55,6 @@ public class Hecho {
     this.multimedia = multimedia;
     this.metadata = new HashMap<>();
     this.id = BigInteger.valueOf(fuenteId).multiply(BigInteger.TEN.pow(12)).add(BigInteger.valueOf(hechoId)); //TODO FuenteId tiene que venir de la siguiente froma xyyyyyy siendo x el tipo de fuente 1 para dinamica, 2 para estaica, 3 para proxy. y despues yyyyyy es el id de la fuente. esto se logra para sumandole 1000000 a un id de fuente dinamica, 2000000 para estatica y 3000000 para proxu
-
   }
 
   public Boolean tieneEtiqueta(String key, String value) {

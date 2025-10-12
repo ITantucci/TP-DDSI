@@ -1,10 +1,6 @@
 package Metamapa.business.Parsers;
-//import infrastructure.dto.HechoDTO;
-
 import Metamapa.business.Hechos.Hecho;
-import com.opencsv.CSVParser;
-import com.opencsv.CSVParserBuilder;
-
+import com.opencsv.*;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

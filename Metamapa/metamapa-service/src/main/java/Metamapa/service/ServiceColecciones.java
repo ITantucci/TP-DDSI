@@ -1,4 +1,4 @@
-package Metamapa.Service;
+package Metamapa.service;
 import Metamapa.business.Colecciones.*;
 import Metamapa.business.Consenso.*;
 import Metamapa.business.Hechos.*;
@@ -63,21 +63,16 @@ public class ServiceColecciones {
     payload.put("consenso", consenso); // "Absoluto" | "MayoriaSimple" | "MultiplesMenciones"
     payload.put("criteriosPertenencia", pertenencia == null ? List.of() : pertenencia);
     payload.put("criteriosNoPertenencia", noPertenencia == null ? List.of() : noPertenencia);
-
     // Log rápido para verificar qué se envía
     System.out.println("CREAR → payload = " + payload);
-
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
     HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
-
     // 2) Construir URL sin riesgo de dobles barras
     String url = baseUrl.replaceAll("/+$", "") + "/api-colecciones/";
-
     // 3) POST y lectura tolerante de id/handle
     Map<String, Object> response = restTemplate.postForObject(url, request, Map.class);
     System.out.println("CREAR ← respuesta = " + response);
-
     if (response == null) {
       throw new IllegalStateException("Respuesta nula del Agregador");
     }
@@ -86,7 +81,6 @@ public class ServiceColecciones {
     if (idLike == null) {
       throw new IllegalStateException("Respuesta sin 'id' ni 'handle': " + response);
     }
-
     return UUID.fromString(idLike.toString());
   }
 
@@ -96,7 +90,6 @@ public class ServiceColecciones {
             .pathSegment("api-colecciones", uuid.toString())
             .build()
             .toUri();
-
     try {
       ResponseEntity<Void> resp = restTemplate.exchange(uri, HttpMethod.DELETE, null, Void.class);
       return (HttpStatus) resp.getStatusCode(); // 204 si salió bien
@@ -116,13 +109,11 @@ public class ServiceColecciones {
             .pathSegment("api-colecciones", uuid.toString())
             .build()
             .toUri();
-
     // Body JSON con el algoritmo
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
     var body = java.util.Map.of("consenso", algoritmo); // <-- antes decía "algoritmo"
     var entity = new HttpEntity<>(body, headers);
-
     try {
       ResponseEntity<Void> resp = restTemplate.exchange(uri, HttpMethod.PATCH, entity, Void.class);
       return (HttpStatus) resp.getStatusCode(); // 200/204 según tu Agregador
@@ -149,8 +140,7 @@ public class ServiceColecciones {
           Float ubicacionLongitud,
           Double radioKm,                         // criterio por radio
           Integer idFuente,
-          TipoMultimedia tipoMultimedia
-  ) {
+          TipoMultimedia tipoMultimedia) {
     // OJO: esta ruta debe coincidir con tu controller del Agregador
     // Ej: @GetMapping("/metamapa/api/colecciones/{idColeccion}/hechos")
     String base = String.format("%s/metamapa/api/colecciones/%s/hechos", baseUrl, idColeccion);
@@ -199,23 +189,16 @@ public class ServiceColecciones {
     String descripcion = (String) row.get("descripcion");
     String consensoStr = (String) row.get("consenso");
     Consenso consenso = Consenso.fromString(consensoStr);
-
     // handle/id
     String handleStr = (String) (row.get("handle") != null ? row.get("handle") : row.get("id"));
     UUID handle = (handleStr != null && !handleStr.isBlank()) ? UUID.fromString(handleStr) : null;
-
     // criterios (si tus endpoints los devuelven; si no, dejá listas vacías)
     @SuppressWarnings("unchecked")
     List<Map<String, Object>> critP = (List<Map<String, Object>>) row.get("criteriosPertenencia");
     @SuppressWarnings("unchecked")
     List<Map<String, Object>> critNP = (List<Map<String, Object>>) row.get("criteriosNoPertenencia");
-
     ArrayList<Criterio> pert = mapCriterios(critP);
     ArrayList<Criterio> noPert = mapCriterios(critNP);
-
-    if (handle != null) {
-      return new Coleccion(titulo, descripcion, consenso, pert, noPert);
-    }
     return new Coleccion(titulo, descripcion, consenso, pert, noPert);
   }
 

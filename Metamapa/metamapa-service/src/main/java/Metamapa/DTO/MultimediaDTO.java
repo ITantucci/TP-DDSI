@@ -1,9 +1,7 @@
 package Metamapa.DTO;
 
-import Metamapa.business.Hechos.Multimedia;
-import Metamapa.business.Hechos.TipoMultimedia;
-import lombok.Getter;
-import lombok.Setter;
+import Metamapa.business.Hechos.*;
+import lombok.*;
 
 @Getter @Setter
 public class MultimediaDTO {

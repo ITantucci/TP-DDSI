@@ -3,7 +3,7 @@ import Metamapa.DTO.*;
 import Metamapa.business.Colecciones.Coleccion;
 import Metamapa.business.Consenso.ModosDeNavegacion;
 import Metamapa.business.Hechos.*;
-import Metamapa.Service.*;
+import Metamapa.service.*;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.*;
@@ -58,7 +58,6 @@ public class ControllerMetamapa {
     // default del consenso si no viene
     String consensoEfectivo = (consenso == null || consenso.isBlank())
             ? "MayoriaSimple" : consenso;
-
     List<Map<String, Object>> pertenencia = new ArrayList<>();
     if (pertenenciaTitulos != null) {
       for (String t : pertenenciaTitulos) {
@@ -80,7 +79,6 @@ public class ControllerMetamapa {
             pertenencia,
             noPertenencia
     );
-
     return ResponseEntity
             .created(URI.create("/metamapa/colecciones/" + id))
             .body(Map.of("id", id.toString()));
@@ -90,7 +88,6 @@ public class ControllerMetamapa {
   @ResponseBody
   public ResponseEntity<Map<String, String>> eliminarColeccion(@PathVariable UUID uuid) {
     HttpStatus status = serviceColecciones.deleteColeccion(uuid);
-
     if (status == HttpStatus.NO_CONTENT) {
       return ResponseEntity.ok(Map.of("mensaje", "Colección eliminada correctamente"));
     } else if (status == HttpStatus.NOT_FOUND) {
@@ -159,7 +156,6 @@ public class ControllerMetamapa {
     if (accion == null) {
       return ResponseEntity.unprocessableEntity().build();
     }
-
     ServiceAgregador.Result r;
     try {
       if ("APROBAR".equalsIgnoreCase(accion.trim())) {
@@ -172,7 +168,6 @@ public class ControllerMetamapa {
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
-
     return switch (r) {
       case OK -> ResponseEntity.noContent().build();   // 204
       case NOT_FOUND -> ResponseEntity.notFound().build();    // 404

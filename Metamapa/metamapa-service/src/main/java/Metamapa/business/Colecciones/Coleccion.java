@@ -1,17 +1,11 @@
 package Metamapa.business.Colecciones;
 
 import Metamapa.business.Agregador.Agregador;
-import Metamapa.business.Consenso.Consenso;
-import Metamapa.business.Consenso.ModosDeNavegacion;
+import Metamapa.business.Consenso.*;
 import Metamapa.business.Hechos.Hecho;
-import java.util.ArrayList;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 public class Coleccion {
     @Getter @Setter

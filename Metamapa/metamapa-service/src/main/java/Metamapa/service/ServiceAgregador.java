@@ -1,4 +1,4 @@
-package Metamapa.Service;
+package Metamapa.service;
 import Metamapa.business.Agregador.Agregador;
 import Metamapa.business.Hechos.Hecho;
 import java.math.BigInteger;

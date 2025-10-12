@@ -1,36 +1,25 @@
 package Metamapa.DTO;
 
-import Metamapa.business.Hechos.Multimedia;
-import Metamapa.business.Hechos.TipoMultimedia;
+import Metamapa.business.Hechos.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
-
+import jakarta.validation.constraints.*;
+import lombok.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Getter @Setter
 public class HechoDTO {
-
   @NotBlank
   private String titulo;
-
   private String descripcion;
   private String categoria;
-
   private Float latitud;
   private Float longitud;
-
   // yyyy-MM-dd en JSON
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
   private LocalDate fechaHecho;
-
   @Size(max = 100)
   private String autor;
-
   private Boolean anonimo = Boolean.FALSE;
 
   // Lista de multimedia

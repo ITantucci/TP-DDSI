@@ -1,6 +1,5 @@
 package Metamapa.business.Consenso;
 
-
 import Metamapa.business.FuentesDeDatos.FuenteDeDatos;
 import Metamapa.business.Hechos.Hecho;
 import java.util.List;

@@ -1,4 +1,4 @@
-package Metamapa.Service;
+package Metamapa.service;
 import Metamapa.business.FuentesDeDatos.FuenteDeDatos;
 import Metamapa.business.Hechos.Multimedia;
 import com.fasterxml.jackson.databind.node.*;

@@ -2,8 +2,6 @@ package Metamapa.business.Solicitudes;
 import lombok.Getter;
 import java.math.BigInteger;
 
-import java.util.UUID;
-
 public class SolicitudEliminacion extends Solicitud {
   @Getter
   public String motivo;
