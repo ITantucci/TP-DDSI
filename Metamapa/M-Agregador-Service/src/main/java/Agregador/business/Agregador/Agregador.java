@@ -31,6 +31,6 @@ public class Agregador {
 
         public void actualizarHechos(ArrayList<Hecho> hechos)
         {
-            //TODO implementar la actualizacion de hechos
+            // implementar la actualizacion de hechos
         }
 }

@@ -30,8 +30,7 @@ public class RepositorioColecciones {
   }
 
   /** Crea y devuelve el UUID de la colección creada (útil para Services/Controllers). */
-  public UUID crear(String titulo, String descripcion, Consenso consenso,
-                    List<Criterio> criterios) {
+  public UUID crear(String titulo, String descripcion, Consenso consenso, List<Criterio> criterios) {
     Coleccion c = new Coleccion(titulo, descripcion, consenso, (ArrayList)criterios);
     crear(c);
     return c.getHandle();

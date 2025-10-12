@@ -5,25 +5,24 @@ import java.util.*;
 import Agregador.business.Consenso.Consenso;
 import Agregador.persistencia.RepositorioHechos;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 @Service
 public class ServiceFuenteDeDatos {
   private final RestTemplate restTemplate;
   private final RepositorioHechos repositorioHechos;
-
+  private final Normalizador normalizador;
   private static final int FACTOR_TIPO = 1_000_000;
 
   // ==== Rutas (cambiá acá si loaders exponen distinto) ====
   //private static final String PATH_HECHOS_POR_FUENTE = "%s/fuentesDeDatos/%d/hechos"; // o "%s/%d/hechos"
   private static final String PATH_LISTAR_FUENTES    = "%s/fuentesDeDatos";           // o "%s/"
 
-  public ServiceFuenteDeDatos(RestTemplate rt, RepositorioHechos repo) {
+  public ServiceFuenteDeDatos(RestTemplate rt, RepositorioHechos repo, Normalizador normalizador) {
+    this.normalizador = normalizador;
     this.restTemplate = rt;
     this.repositorioHechos = repo;
   }
@@ -51,11 +50,9 @@ public class ServiceFuenteDeDatos {
   }
 
   public void actualizarHechos(String url) {
-    ArrayList<Hecho> hechos = new ArrayList<>(getHechosDeFuente(url));
-
-    //TODO Normalizar y hacer chequeos de los datos enviados
-
-    hechos.forEach(repositorioHechos::save);
+    List<Hecho> hechos = getHechosDeFuente(url);
+    // Normalizar y persistir
+    normalizador.normalizarYUnificar(hechos).forEach(repositorioHechos::save);
     System.out.println("Total hechos guardados: " + repositorioHechos.findAll().size());
   }
 
@@ -76,7 +73,6 @@ public class ServiceFuenteDeDatos {
 //  }
 
   /** Lista todas las fuentes (dinámicas+estáticas+proxy). */
-
   private List<FuenteInfoDTO> fetchFuentes(String base) {
     String url = String.format(PATH_LISTAR_FUENTES, base);
     ResponseEntity<List<FuenteInfoDTO>> resp = restTemplate.exchange(
@@ -86,7 +82,6 @@ public class ServiceFuenteDeDatos {
   }
 
   /** Devuelve SOLO los hechos nuevos respecto a tu repositorio (útil para sincronización). */
-
   public List<Hecho> getHechosNuevosDeFuente(String urlBase) {
     return getHechosDeFuente(urlBase).stream()
             .filter(h -> !existeHecho(h)) // <--- FIX: antes lo tenías al revés
@@ -107,16 +102,13 @@ public class ServiceFuenteDeDatos {
     Float latitud       = f(json.get("latitud"));
     Float longitud      = f(json.get("longitud"));
     LocalDate fechaHecho= date(json.get("fechaHecho"));
-
     // id del hecho dentro de la fuente (aceptamos "id" o "hechoId")
     Integer hechoId     = i(json.containsKey("id") ? json.get("id") : json.get("hechoId"));
-
     Boolean anonimo     = bool(json.get("anonimo"));
     // Si tu remoto lo manda:
     Boolean eliminado   = bool(json.get("eliminado"));
     LocalDate fechaCarga= date(json.get("fechaCarga"));
     LocalDate fechaMod  = date(json.get("fechaModificacion"));
-
     // Construcción del dominio (perfil/multimedia opcionales -> null / vacío)
     Hecho h = new Hecho(
             titulo, descripcion, categoria, latitud, longitud, fechaHecho,
@@ -129,7 +121,6 @@ public class ServiceFuenteDeDatos {
     if (fechaCarga != null) h.setFechaCarga(fechaCarga);
     if (fechaMod != null)   h.setFechaModificacion(fechaMod);
     if (eliminado != null)  h.setEliminado(eliminado);
-
     // metadata (si viene anidada)
     Map<String,Object> meta = (Map<String,Object>) json.get("metadata");
     if (meta != null) {

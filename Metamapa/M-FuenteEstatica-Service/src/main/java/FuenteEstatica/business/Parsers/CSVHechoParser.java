@@ -42,8 +42,7 @@ public class CSVHechoParser implements HechoParser {
                 Float longitud = Float.parseFloat(campos[4].trim());
                 LocalDate fechaHecho = LocalDate.parse(campos[5].trim(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
-                Hecho hecho = new Hecho(titulo,descripcion, categoria, latitud, longitud, fechaHecho,fuente);
-                // TODO: revisar Deberiamos inicializar en NULL el resto de los campos del contructor del hecho???
+                Hecho hecho = new Hecho(titulo,descripcion, categoria, latitud, longitud, fechaHecho, fuente.getFuenteId());
                 listaHecho.add(hecho);
             }
         } catch (Exception e) {
@@ -73,8 +72,7 @@ public class CSVHechoParser implements HechoParser {
                 Float longitud = Float.parseFloat(campos[4].trim());
                 LocalDate fechaHecho = LocalDate.parse(campos[5].trim(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
-                Hecho hecho = new Hecho(titulo,descripcion, categoria, latitud, longitud, fechaHecho,fuente);
-                // TODO: revisar Deberiamos inicializar en NULL el resto de los campos del contructor del hecho???
+                Hecho hecho = new Hecho(titulo,descripcion, categoria, latitud, longitud, fechaHecho, fuente.getFuenteId());
                 listaHecho.add(hecho);
             }
         } catch (IOException e) {
@@ -90,6 +88,6 @@ public class CSVHechoParser implements HechoParser {
         float latitud = Float.parseFloat(campos[3]);
         float longitud = Float.parseFloat(campos[4]);
         LocalDate fecha = LocalDate.parse(campos[5]);
-        return new Hecho(titulo, descripcion, categoria, latitud, longitud, fecha,fuente);
+        return new Hecho(titulo, descripcion, categoria, latitud, longitud, fecha, fuente.getFuenteId());
     }
 }

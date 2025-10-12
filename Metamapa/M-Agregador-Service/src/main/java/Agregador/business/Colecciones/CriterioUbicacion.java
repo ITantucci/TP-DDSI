@@ -17,8 +17,6 @@ public class CriterioUbicacion extends Criterio {
 
   @Override
   public boolean cumple(Hecho hechoAValidar) {
-    /*Ubicacion ubicacionAValidar = hechoAValidar.getUbicacion();
-    return ubicacionAValidar.esIgual(this.getLatitud(), this.getLongitud());*/
     //TODO: APROXIMAR UN RANGO
     return inclusion == Objects.equals(hechoAValidar.getLatitud(), latitud) && Objects.equals(hechoAValidar.getLongitud(), longitud);
   }

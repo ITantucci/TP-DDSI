@@ -8,15 +8,10 @@ import java.util.stream.Collectors;
 
 @Service
 public class ServiceAgregador {
-
-  private final ServiceFuenteDeDatos fuentes;        // orquesta requests a estática/dinámica/proxy
   private final RepositorioHechos repo;
   private final Normalizador normalizador;           // tu clase mejorada
 
-  public ServiceAgregador(ServiceFuenteDeDatos fuentes,
-                          RepositorioHechos repo,
-                          Normalizador normalizador) {
-    this.fuentes = fuentes;
+  public ServiceAgregador(RepositorioHechos repo, Normalizador normalizador) {
     this.repo = repo;
     this.normalizador = normalizador;
   }
@@ -25,7 +20,6 @@ public class ServiceAgregador {
   public String categoriaMasReportada() {
     var hechos = repo.findAll();                      // List<Hecho>
     if (hechos == null || hechos.isEmpty()) return null;
-
     return hechos.stream()
             .map(Hecho::getCategoria)
             .filter(Objects::nonNull)
@@ -39,13 +33,11 @@ public class ServiceAgregador {
   public Integer horaMasReportada(String categoria) {
     // Traé los hechos de esa categoría (y NO eliminados, si aplica)
     List<Hecho> hechos = repo.findByCategoriaAndEliminadoFalse(categoria);
-
     // Extraé la hora (0–23) de cada hecho
     Map<Integer, Long> conteoPorHora = hechos.stream()
             .map(this::horaDelHecho)                  // Integer 0..23 o null
             .filter(Objects::nonNull)
             .collect(Collectors.groupingBy(h -> h, Collectors.counting()));
-
     // Tomá la hora con mayor frecuencia (modo)
     return conteoPorHora.entrySet().stream()
             .max(Map.Entry.comparingByValue())
@@ -60,7 +52,6 @@ public class ServiceAgregador {
   private Integer horaDelHecho(Hecho h) {
     // 1) Si migraste a LocalDateTime:
     // if (h.getFechaHechoDateTime() != null) return h.getFechaHechoDateTime().getHour();
-
     // 2) Mientras tanto, intentar metadata["hora"]
     if (h.getMetadata() != null) {
       String hh = h.getMetadata().get("hora");

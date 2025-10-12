@@ -36,9 +36,10 @@ public class ServiceColecciones {
         .distinct()        // evita duplicados
         .toList();
     System.out.println("Filtros totales: " + todosLosCriterios);
-    // if (modoNavegacion == ModosDeNavegacion.IRRESTRICTA)
+    /*if (modoNavegacion == ModosDeNavegacion.CURADA){
+       TODO implementar modo CURADA
+    }*/
     return repositorioHechos.filtrarPorCriterios(todosLosCriterios);
-    //TODO implementar modo CURADA
   }
 
   private List<Criterio> construirCriteriosInclusion(FiltrosHechosDTO filtros) {
@@ -115,13 +116,9 @@ public class ServiceColecciones {
   public void modificarAlgoritmo(UUID id, Map<String, Object> body) {
     Coleccion c = repositorioColecciones.findById(id)
             .orElseThrow(() -> new NoSuchElementException("Colección no encontrada"));
-
     String nombre = null;
     if (body.get("consenso") != null) nombre = body.get("consenso").toString();
-
-    if (nombre == null || nombre.isBlank())
-      throw new IllegalArgumentException("El campo 'consenso' es obligatorio");
-
+    if (nombre == null || nombre.isBlank()) throw new IllegalArgumentException("El campo 'consenso' es obligatorio");
     c.setConsenso(Consenso.fromString(nombre.trim()));
     repositorioColecciones.update(c);
   }

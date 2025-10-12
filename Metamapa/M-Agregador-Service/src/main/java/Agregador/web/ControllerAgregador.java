@@ -18,9 +18,9 @@ public class ControllerAgregador {
   private final ServiceConsenso serviceConsenso;
   private final Set<String> URLsFuentes = new HashSet<>();
 
-  public ControllerAgregador(ServiceFuenteDeDatos servicefuenteDeDatos,ServiceConsenso serviceConsenso,
+  public ControllerAgregador(ServiceFuenteDeDatos servicefuenteDeDatos, ServiceConsenso serviceConsenso,
                              RepositorioAgregador repositorioAgregador, ServiceAgregador serviceAgregador,
-                                RepositorioHechos repositorioHechos) {
+                             RepositorioHechos repositorioHechos) {
     this.servicefuenteDeDatos = servicefuenteDeDatos;
     this.repositorioAgregador = repositorioAgregador;
     this.repositorioHechos = repositorioHechos;
@@ -63,16 +63,6 @@ public class ControllerAgregador {
   public ResponseEntity<List<Hecho>> getAgregadorHechos() {
     return ResponseEntity.ok(repositorioHechos.findAll());
   }
-
-  /*@GetMapping("/")
-  public ResponseEntity<Agregador> getAgregador() {
-    Agregador agregador = repositorioAgregador.getAgregador();
-    if (agregador == null) {
-      return ResponseEntity.noContent().build();
-    }
-    return ResponseEntity.ok(agregador);
-  }*/
-
 
 //  @PostMapping("/api-agregador/fuentes/actualizar")
 //  public ResponseEntity<Void> actualizarAgregador() {

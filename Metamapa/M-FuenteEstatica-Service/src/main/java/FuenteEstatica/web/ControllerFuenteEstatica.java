@@ -1,11 +1,11 @@
 package FuenteEstatica.web;
-
 import FuenteEstatica.persistencia.*;
 import FuenteEstatica.business.FuentesDeDatos.*;
 import FuenteEstatica.business.Hechos.*;
 import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
@@ -15,13 +15,17 @@ import java.io.File;
 @RestController
 @RequestMapping("/api-fuentesDeDatos")
 public class ControllerFuenteEstatica {
-  public RepositorioFuentes repositorioFuentes = new RepositorioFuentes();
-  public RepositorioHechos repositorioHechos = new RepositorioHechos();
-  public ControllerFuenteEstatica() {}
+  @Value("${rutas.pendientes}")
+  private String rutaPending;
+  @Value("${rutas.procesados}")
+  private String rutaProcessed;
+  private final RepositorioFuentes repositorioFuentes;
+  private final RepositorioHechos repositorioHechos;
 
-  //TODO no hardcodear las rutas
-  String rutaPending = "Metamapa/M-FuenteEstatica-Service/src/main/resources/pendientes";
-  String rutaProcessed = "Metamapa/M-FuenteEstatica-Service/src/main/resources/procesados";
+  public ControllerFuenteEstatica(RepositorioFuentes repositorioFuentes, RepositorioHechos repositorioHechos) {
+    this.repositorioFuentes = repositorioFuentes;
+    this.repositorioHechos = repositorioHechos;
+  }
 
   // Obtener todas las fuentes
   @GetMapping("/")
@@ -42,28 +46,33 @@ public class ControllerFuenteEstatica {
       String nombreFE = (String) requestBody.get("nombre");
       FuenteEstatica fuenteEstatica = new FuenteEstatica(nombreFE);
       repositorioFuentes.agregarFuente(fuenteEstatica);
+      //crear carpeta para la fuente
+      Path rutaPendienteFuente = Path.of(rutaPending, String.valueOf(fuenteEstatica.getFuenteId()));
+      Files.createDirectories(rutaPendienteFuente);
       return ResponseEntity.ok(fuenteEstatica);
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno " + e.getMessage());
     }
   }
 
-  public ArrayList<Hecho> procesarCSVs(Integer fuenteID){
-    File directorio = new File(rutaPending);
-    FuenteEstatica fuente = repositorioFuentes.buscarFuente(fuenteID);;
+  public ArrayList<Hecho> procesarCSVs(Integer fuenteID) {
+    Path rutaPendienteFuente = Path.of(rutaPending, String.valueOf(fuenteID));
+    File directorio = rutaPendienteFuente.toFile();
+    FuenteEstatica fuente = repositorioFuentes.buscarFuente(fuenteID);
     if (directorio.exists() && directorio.isDirectory()) {
-      File[] archivos = directorio.listFiles();
+      File[] archivos = directorio.listFiles(File::isFile); // solo archivos
       try {
         for (File archivo : archivos) {
-          fuente.cargar("CSV", rutaPending + "\\" + fuente.nombre + "\\" + archivo.getName());
-          Files.move(archivo.toPath(), Path.of(rutaProcessed + "\\" + fuente.nombre), StandardCopyOption.REPLACE_EXISTING);
+          String rutaArchivo = archivo.getAbsolutePath();
+          fuente.cargar("CSV", rutaArchivo);
+          // Mover archivo a la carpeta de "procesados" de la fuente
+          Path carpetaProcesados = Path.of(rutaProcessed, String.valueOf(fuenteID));
+          Files.createDirectories(carpetaProcesados); // crear carpeta si no existe
+          Files.move(archivo.toPath(), carpetaProcesados.resolve(archivo.getName()), StandardCopyOption.REPLACE_EXISTING);
         }
-      }
-      catch (Exception e){
+      } catch (Exception e) {
         System.out.println("Error al procesar los archivos CSV: " + e.getMessage());
       }
-    } else {
-      return new ArrayList<Hecho>();
     }
     return fuente.hechos;
   }
@@ -71,11 +80,10 @@ public class ControllerFuenteEstatica {
   // este me parece que no se usa, ya que el agregador se actualiza solo por ahi esta para otra cosa
   @GetMapping("/{idFuenteDeDatos}/hechos")
   public ResponseEntity<ArrayList<Hecho>> getHechosFuenteDeDatos(@PathVariable(value = "idFuenteDeDatos") Integer idfuenteDeDatos) {
-    ArrayList<Hecho> hechos = new ArrayList<Hecho>();
-    try{
+    ArrayList<Hecho> hechos;
+    try {
       hechos = procesarCSVs(idfuenteDeDatos);
-    }
-    catch (Exception e){
+    } catch (Exception e) {
       return ResponseEntity.status(HttpStatusCode.valueOf(500)).body(null);
     }
     return ResponseEntity.ok(hechos);
@@ -83,12 +91,11 @@ public class ControllerFuenteEstatica {
 
   // Todos los hechos de todas las fuentes
   @GetMapping("/hechos")
-  public ResponseEntity<ArrayList<Hecho>> getHechos(){
-    ArrayList<Hecho> hechos = new ArrayList<Hecho>();
-    try{
+  public ResponseEntity<ArrayList<Hecho>> getHechos() {
+    ArrayList<Hecho> hechos;
+    try {
       hechos = repositorioFuentes.fuentesDeDatos.stream().map(f -> procesarCSVs(f.getFuenteId())).flatMap(ArrayList::stream).collect(Collectors.toCollection(ArrayList::new));
-    }
-    catch (Exception e){
+    } catch (Exception e) {
       return ResponseEntity.status(HttpStatusCode.valueOf(500)).body(null);
     }
     return ResponseEntity.ok(hechos);
@@ -98,30 +105,29 @@ public class ControllerFuenteEstatica {
   @PostMapping(value = "/{idFuenteDeDatos}/cargarCSV", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = "application/json")
   public ResponseEntity<?> cargarCSV(@PathVariable(value = "idFuenteDeDatos") Integer idFuenteDeDatos, @RequestParam("file") MultipartFile file) {
     try { // En postman probar con form-data y file
-      Path carpetaPendientes = Paths.get(rutaPending + "\\" + idFuenteDeDatos);
-      Files.copy(file.getInputStream(), carpetaPendientes.resolve(file.getOriginalFilename()), StandardCopyOption.REPLACE_EXISTING);
+      Path carpetaPendientes = Paths.get(rutaPending, String.valueOf(idFuenteDeDatos));
+      Files.createDirectories(carpetaPendientes); // asegurarse que exista la carpeta
+      Files.copy(file.getInputStream(), carpetaPendientes.resolve(Objects.requireNonNull(file.getOriginalFilename())), StandardCopyOption.REPLACE_EXISTING);
       return ResponseEntity.ok("CSV cargado correctamente");
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error interno " + e.getMessage());
     }
   }
 
-  public void publicarmeAAgregador()
-  {
+  public void publicarmeAAgregador() {
     String url = String.format("%s/fuenteDeDatos", "${M.Agregador.Service.url}");
 
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
 
     String body = """
-        {
-            "URLBase": """ + "${M.FuenteEstatica.Service.url}" + """
-        }
-    """;
+            {
+                "URLBase": """ + "${M.FuenteEstatica.Service.url}" + """
+                }
+            """;
 
     HttpEntity<String> request = new HttpEntity<>(body, headers);
     RestTemplate restTemplate = new RestTemplate();
     restTemplate.postForObject(url, request, String.class);
-
   }
 }

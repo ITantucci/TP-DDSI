@@ -36,13 +36,12 @@ public class FuenteEstatica {
   }
 
   public void cargar(String tipo,String path) {
-    switch (tipo) {
-      case "CSV": new CSVHechoParser().parsearHechos(path, this).forEach(hecho -> this.hechos.add(hecho));
-      break;
+    if (tipo.equals("CSV")) {
+      this.hechos.addAll(new CSVHechoParser().parsearHechos(path, this));
       //case "JSON": new JSONHechoParser().parsearHechos(path, id).forEach((this::agregarHecho));  arreglar el codigo para que tome un JSON?
       //break;
-      default: new CSVHechoParser().parsearHechos(path, this).forEach(hecho -> this.hechos.add(hecho));
-      break;
+    } else {
+      this.hechos.addAll(new CSVHechoParser().parsearHechos(path, this));
     }
   }
 

@@ -31,11 +31,10 @@ public class ControllerSolicitudes {
         }
     }
 
-    enum Accion { APROBAR, RECHAZAR }
+    enum Accion {APROBAR, RECHAZAR}
 
     @PatchMapping("/solicitudesEliminacion/{id}")
-    public ResponseEntity<Void> actualizarEstadoSolicitud(@PathVariable Integer id,
-                                                          @RequestBody AccionSolicitudDTO dto) {
+    public ResponseEntity<Void> actualizarEstadoSolicitud(@PathVariable Integer id, @RequestBody AccionSolicitudDTO dto) {
         Accion a;
         try {
             a = Accion.valueOf(dto.getAccion().trim().toUpperCase());
