@@ -2,7 +2,6 @@ package Agregador.business.Colecciones;
 
 import lombok.Getter;
 import Agregador.business.Hechos.Hecho;
-
 import java.util.Objects;
 
 public class CriterioFuenteDeDatos extends Criterio {
@@ -21,4 +20,3 @@ public class CriterioFuenteDeDatos extends Criterio {
     return inclusion == Objects.equals(hechoAValidar.getIdFuente(), this.idFuenteDeDatos);
   }
 }
-

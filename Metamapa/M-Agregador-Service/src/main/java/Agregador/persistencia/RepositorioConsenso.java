@@ -34,5 +34,4 @@ public class RepositorioConsenso {
   public void update(Consenso consenso) {
     consensos.set(consensos.indexOf(consenso), consenso);
   }
-
 }

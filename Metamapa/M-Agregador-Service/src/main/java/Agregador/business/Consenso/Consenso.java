@@ -43,10 +43,8 @@ public abstract class Consenso {
   static public int contarFuentesDeDatos(ArrayList<Hecho> hechos) {
     ArrayList<Integer> fuentes = new ArrayList<>();
     int contador = 0;
-    for (Hecho hecho : hechos)
-    {
-        if(!fuentes.contains(hecho.getIdFuente()))
-        {
+    for (Hecho hecho : hechos) {
+        if(!fuentes.contains(hecho.getIdFuente())) {
           contador++;
           fuentes.add(hecho.getIdFuente());
         }

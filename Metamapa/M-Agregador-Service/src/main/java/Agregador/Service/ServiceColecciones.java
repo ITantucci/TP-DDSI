@@ -36,10 +36,12 @@ public class ServiceColecciones {
         .distinct()        // evita duplicados
         .toList();
     System.out.println("Filtros totales: " + todosLosCriterios);
-    /*if (modoNavegacion == ModosDeNavegacion.CURADA){
-       TODO implementar modo CURADA
-    }*/
-    return repositorioHechos.filtrarPorCriterios(todosLosCriterios);
+    if (modoNavegacion == ModosDeNavegacion.CURADA){
+      Consenso consensoColeccion = coleccion.getConsenso();
+      System.out.println("Consenso: " + consensoColeccion.toString());
+      return repositorioHechos.filtrarPorCriterios(todosLosCriterios, consensoColeccion);
+    }
+    return repositorioHechos.filtrarPorCriterios(todosLosCriterios, null);
   }
 
   private List<Criterio> construirCriteriosInclusion(FiltrosHechosDTO filtros) {

@@ -133,7 +133,7 @@ public class ServiceSolicitudes {
                     solicitud.getFechaHechoMod(),
                     solicitud.getAnonimidadMod(),
                     solicitud.getMultimediaMod());
-            repoHechos.updateHecho(hecho);
+            repoHechos.save(hecho);
         }
         return new SolicitudEdicionDTO(solicitud);
     }

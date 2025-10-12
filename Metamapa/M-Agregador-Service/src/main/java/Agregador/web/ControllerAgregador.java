@@ -54,8 +54,10 @@ public class ControllerAgregador {
     return ResponseEntity.ok("Se actualizaron los hechos");
   }
 
-  public void consensuarHechos() {
+  @PostMapping("/consensuarHechos")
+  public ResponseEntity<?> consensuarHechos() {
     serviceConsenso.consensuarHechos();
+    return ResponseEntity.ok("Se consensuaron los hechos");
   }
 
   // Listar todos los hechos

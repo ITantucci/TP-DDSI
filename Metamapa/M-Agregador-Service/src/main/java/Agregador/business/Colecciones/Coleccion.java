@@ -17,7 +17,8 @@ public class Coleccion {
     private UUID handle;
     @ManyToOne
     private Consenso consenso;
-    private ModosDeNavegacion modoNavegacion;
+
+//    private ModosDeNavegacion modoNavegacion;
 
     private final Agregador agregador = Agregador.getInstance();
 
@@ -37,6 +38,7 @@ public class Coleccion {
     }
 
     public ArrayList<Hecho> filtrarPorCriterios(ArrayList<Hecho> hechos, ArrayList<Criterio> criterioPertenenciaAdicional, ArrayList<Criterio> criterioNoPertenenciaAdicional, ModosDeNavegacion modoDeNavegacion) {
+
         hechos = hechos.stream()
             .filter(h -> criterios.stream().allMatch(c -> c.cumple(h))).collect(Collectors.toCollection(ArrayList::new));
 

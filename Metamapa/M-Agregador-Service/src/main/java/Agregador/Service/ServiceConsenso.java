@@ -15,8 +15,7 @@ public class ServiceConsenso {
       this.repositorioHechos = repositorioHechos;
   }
 
-  public void consensuarHechos()
-  {
+  public void consensuarHechos() {
     ArrayList<Hecho> hechos = (ArrayList<Hecho>) repositorioHechos.findAll();
     ArrayList<Consenso> consensos = repositorioConsenso.findAll();
 
@@ -24,7 +23,11 @@ public class ServiceConsenso {
                                             if(c.esConsensuado(h,hechos))
                                             {
                                               h.agregarConsenso(c);
+                                              System.out.println("Conseso: " +c.toString() );
                                             }
     }));
+
+    //todo persistir hechos
   }
+
 }

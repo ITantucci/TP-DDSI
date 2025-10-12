@@ -10,7 +10,7 @@ public class MayoriaSimple extends Consenso {
   //consensuado;
   @Override
   public boolean esConsensuado(Hecho hecho, ArrayList<Hecho> hechos) {
-    int apariciones = -1;
+    int apariciones = 0;
     int cantFuentes = Consenso.contarFuentesDeDatos(hechos);
       for (Hecho h : hechos) {
         if (Consenso.sonIguales(hecho,h)) {

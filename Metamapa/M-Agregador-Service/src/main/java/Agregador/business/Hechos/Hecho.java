@@ -6,6 +6,9 @@ import java.util.*;
 import jakarta.persistence.*;
 import lombok.*;
 import Agregador.business.Consenso.*;
+import java.util.Set;
+import java.util.HashSet;
+
 @Entity
 @Getter @Setter
 public class Hecho {
@@ -19,7 +22,7 @@ public class Hecho {
   private LocalDate fechaHecho;
   private LocalDate fechaCarga;
   private LocalDate fechaModificacion;
-  @OneToOne
+  @ManyToOne
   private Usuario perfil;
   private Boolean anonimo;
   private Boolean eliminado;
@@ -31,7 +34,7 @@ public class Hecho {
       joinColumns = @JoinColumn(name = "consensoHecho_hecho"),
       inverseJoinColumns = @JoinColumn(name = "consensoHecho_consenso")
   )
-  private ArrayList<Consenso> consensos;
+  private HashSet<Consenso> consensos;
   @ElementCollection
   @CollectionTable(name = "hecho_metadata", joinColumns = @JoinColumn(name = "hecho_id"))
   @MapKeyColumn(name = "clave")
@@ -65,6 +68,7 @@ public class Hecho {
     this.eliminado = false;
     this.multimedia = multimedia;
     this.metadata = new HashMap<>();
+    this.consensos = new HashSet<Consenso>();
     this.id = BigInteger.valueOf(fuenteId.longValue()).multiply(BASE).add(BigInteger.valueOf(hechoId.longValue()));
     //TODO FuenteId tiene que venir de la siguiente froma xyyyyyy siendo x el tipo de fuente 1 para dinamica, 2 para estaica, 3 para proxy. y despues yyyyyy es el id de la fuente. esto se logra para sumandole 1000000 a un id de fuente dinamica, 2000000 para estatica y 3000000 para proxu
     // prefijos 1000000/2000000/3000000 para tipo de fuente → ya quedan dentro de fuenteId
@@ -83,6 +87,12 @@ public class Hecho {
   public void agregarConsenso(Consenso consenso) {
     consensos.add(consenso);
   }
+
+  public boolean estaConsensuado(Consenso consenso) {
+    //todo hacerlo por id
+    return consensos.stream().anyMatch(c -> c.getClass() == consenso.getClass());
+  }
+
   public void editarHecho(String titulo, String descripcion, String categoria, Float latitud, Float longitud, LocalDate fechaHecho, Boolean anonimidad, ArrayList<Multimedia> multimedia) {
     if (titulo != null) {
       this.titulo = titulo;

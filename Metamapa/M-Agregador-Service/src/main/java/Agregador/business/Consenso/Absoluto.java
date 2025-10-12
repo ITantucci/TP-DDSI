@@ -7,6 +7,14 @@ public class Absoluto extends Consenso {
 // si todas las fuentes contienen el mismo, se lo considera consensuado.
   @Override
   public boolean esConsensuado(Hecho hecho, ArrayList<Hecho> hechos) {
-    return hechos.stream().allMatch(h -> h.getTitulo() == hecho.getTitulo());
+    int apariciones = 0;
+    int cantFuentes = Consenso.contarFuentesDeDatos(hechos);
+    for (Hecho h : hechos) {
+      if (Consenso.sonIguales(hecho, h)) {
+        apariciones++;
+        break;
+      }
+    }
+    return apariciones >= cantFuentes;
   }
 }
