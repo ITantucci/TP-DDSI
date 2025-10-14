@@ -36,7 +36,6 @@ public class HechoDTO {
     hecho.setIdUsuario(this.idUsuario);
     hecho.setFuente(fuente);
     hecho.setAnonimo(this.anonimo);
-
     // Inicializar metadata si es null
     if (this.metadata != null) {
       hecho.setMetadata(new HashMap<>(this.metadata));

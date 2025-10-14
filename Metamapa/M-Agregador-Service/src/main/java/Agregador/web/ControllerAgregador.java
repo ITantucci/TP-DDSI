@@ -21,11 +21,11 @@ public class ControllerAgregador {
     this.serviceConsenso = serviceConsenso;
   }
 
-  /*  public void guardarHechos(int idFuente){
+  /* public void guardarHechos(int idFuente){
       ArrayList<Map<String,Object>> hechos = servicefuenteDeDatos.getHechosDeFuente(idFuente);
 
       hechos.forEach(h -> repositorioAgregador.persistirHechos(h));
-    }*/
+  }*/
 
   @PostMapping("/fuenteDeDatos")
   public ResponseEntity<String> agregarFuente(@RequestBody Map<String, Object> body) {
@@ -58,12 +58,4 @@ public class ControllerAgregador {
   public ResponseEntity<List<Hecho>> getAgregadorHechos() {
     return ResponseEntity.ok(repositorioHechos.findAll());
   }
-
-//  @PostMapping("/api-agregador/fuentes/actualizar")
-//  public ResponseEntity<Void> actualizarAgregador() {
-//    var fuentes = servicefuenteDeDatos.obtenerFuenteDeDatos();
-//    if (fuentes == null || fuentes.isEmpty()) return ResponseEntity.noContent().build();
-//    repositorioAgregador.getAgregador().actualizarFuentesDeDatos(fuentes);
-//    return ResponseEntity.noContent().build();
-//  }
 }

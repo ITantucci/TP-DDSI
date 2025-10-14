@@ -18,7 +18,6 @@ public class SolicitudEdicion extends Solicitud {
   private ArrayList<Multimedia> multimediaMod;
   private Boolean anonimidadMod;
   private String sugerencia;
-  static private Integer contadorID = 1;
 
   public SolicitudEdicion(String tituloMod,
                           String descMod,
@@ -31,10 +30,6 @@ public class SolicitudEdicion extends Solicitud {
                           String sugerencia,
                           Hecho hechoAfectado) {
     super(hechoAfectado, EstadoSolicitud.PENDIENTE);
-    /* // SE VERIFICA EN EL ServiceSolicitudes, AL CREARSE UNA
-    if(hechoAfectado.getFechaCarga().plusDays(7).isBefore(LocalDate.now())){
-        throw new RuntimeException("Paso mas de una semana de la carga del Hecho");
-    }*/
     this.tituloMod = tituloMod;
     this.descMod = descMod;
     this.categoriaMod = categoriaMod;
@@ -44,22 +39,29 @@ public class SolicitudEdicion extends Solicitud {
     this.multimediaMod = multimediaMod;
     this.anonimidadMod = anonimidadMod;
     this.sugerencia = sugerencia;
-    this.id = contadorID++;
   }
 
   public SolicitudEdicion() {}
 
-  public void agregarSugerencia(String sugerencia){
+  public void agregarSugerencia(String sugerencia) {
     this.sugerencia = sugerencia;
   }
 
   @Override
-  public void aceptarSolicitud(){
+  public void aceptarSolicitud() {
     super.aceptarSolicitud();
-    //hechoAfectado.editarHecho(this);
+    getHechoAfectado().editarHecho(
+            this.tituloMod,
+            this.descMod,
+            this.categoriaMod,
+            this.latitudMod,
+            this.longitudMod,
+            this.fechaHechoMod,
+            this.anonimidadMod,
+            this.multimediaMod);
   }
 
-  public void rechazarSolicitud(){
+  public void rechazarSolicitud() {
     super.rechazarSolicitud();
   }
 }

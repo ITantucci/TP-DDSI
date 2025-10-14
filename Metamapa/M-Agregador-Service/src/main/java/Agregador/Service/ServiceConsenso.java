@@ -19,7 +19,7 @@ public class ServiceConsenso {
     hechos.forEach(h -> consensos.forEach(c -> {
       if (c.esConsensuado(h, hechos)) {
         h.agregarConsenso(c);
-        System.out.println("Conseso: " + c.toString());
+        System.out.println("Consenso: " + c);
       }
     }));
 

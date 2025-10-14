@@ -3,6 +3,7 @@ import Agregador.DTO.*;
 import Agregador.business.Hechos.Hecho;
 import Agregador.business.Solicitudes.*;
 import Agregador.persistencia.*;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
@@ -16,18 +17,17 @@ public class ServiceSolicitudes {
     private final RepositorioSolicitudesEdicion repoSolicitudesEdicion;
     private final RepositorioHechos repoHechos;
 
-    // @Transactional
+    @Transactional
     public Result aprobar(Integer id) {
         SolicitudEliminacion s = repoSolicitudesEliminacion.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Solicitud de eliminación no encontrada con id " + id));
         if (s.getEstado() != EstadoSolicitud.PENDIENTE) return Result.CONFLICT;
         s.aceptarSolicitud(); // cambia a APROBADA, timestamps, etc.
-        //repoAgregador.bloquearHecho(s.getHechoAfectado()); // no mostrar / no re-ingestar
         repoSolicitudesEliminacion.save(s);
         return Result.OK;
     }
 
-    // @Transactional
+    @Transactional
     public Result rechazar(Integer id) {
         SolicitudEliminacion s = repoSolicitudesEliminacion.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Solicitud de eliminación no encontrada con id " + id));
@@ -77,7 +77,7 @@ public class ServiceSolicitudes {
 
     public SolicitudEdicionDTO obtenerSolicitudEdicionPorId(Integer id) {
         SolicitudEdicion s = repoSolicitudesEdicion.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Solicitud de eliminación no encontrada con id " + id));
+                .orElseThrow(() -> new NoSuchElementException("Solicitud de edicion no encontrada con id " + id));
         return new SolicitudEdicionDTO(s);
     }
 
@@ -102,34 +102,25 @@ public class ServiceSolicitudes {
         return new SolicitudEdicionDTO(solicitud);
     }
 
+    @Transactional
     public SolicitudEdicionDTO actualizarEstadoSolicitudEdicion(Integer id, Map<String, Object> requestBody) {
         SolicitudEdicion solicitud = repoSolicitudesEdicion.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Solicitud no encontrada"));
-        String nuevoEstadoStr = (String) requestBody.get("estado");
-        if (nuevoEstadoStr == null) {
-            throw new IllegalArgumentException("Estado no proporcionado");
-        }
-        EstadoSolicitud nuevoEstado;
-        try {
-            nuevoEstado = EstadoSolicitud.valueOf(nuevoEstadoStr);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Estado inválido: " + nuevoEstadoStr);
-        }
-        solicitud.setEstado(nuevoEstado);
-        repoSolicitudesEdicion.save(solicitud);
+                .orElseThrow(() -> new NoSuchElementException("Solicitud de edición no encontrada con id " + id));
+        String estadoStr = Optional.ofNullable(requestBody.get("estado"))
+                .filter(String.class::isInstance)
+                .map(String.class::cast)
+                .map(String::trim)
+                .map(String::toUpperCase)
+                .orElseThrow(() -> new IllegalArgumentException("Campo 'estado' requerido y debe ser un string no vacío"));
+        EstadoSolicitud nuevoEstado = EstadoSolicitud.valueOf(estadoStr);
         if (nuevoEstado == EstadoSolicitud.APROBADA) {
-            Hecho hecho = repoHechos.findById(solicitud.getHechoAfectado().getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Hecho no encontrado"));
-            hecho.editarHecho(solicitud.getTituloMod(),
-                    solicitud.getDescMod(),
-                    solicitud.getCategoriaMod(),
-                    solicitud.getLatitudMod(),
-                    solicitud.getLongitudMod(),
-                    solicitud.getFechaHechoMod(),
-                    solicitud.getAnonimidadMod(),
-                    solicitud.getMultimediaMod());
-            repoHechos.save(hecho);
+            solicitud.aceptarSolicitud();
+        } else if (nuevoEstado == EstadoSolicitud.RECHAZADA) {
+            solicitud.rechazarSolicitud();
+        } else {
+            throw new IllegalArgumentException("Solo se permite cambiar a estado APROBADA o RECHAZADA");
         }
+        repoSolicitudesEdicion.save(solicitud);
         return new SolicitudEdicionDTO(solicitud);
     }
 }

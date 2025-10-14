@@ -44,9 +44,9 @@ public class ControllerFuenteDinamica {
   // crear una fuente
   @PostMapping(value = "/", consumes = "application/json", produces = "application/json")
   public ResponseEntity<FuenteDinamica> crearFuenteDeDatos(@RequestBody FuenteDinamica body, UriComponentsBuilder uriBuilder) {
-      var creada = repositorioFuentes.save(body);
-      var loc = uriBuilder.path("/api-fuentesDeDatos/{id}").buildAndExpand(creada.getFuenteId()).toUri();
-      return ResponseEntity.created(loc).body(creada);
+    var creada = repositorioFuentes.save(body);
+    var loc = uriBuilder.path("/api-fuentesDeDatos/{id}").buildAndExpand(creada.getFuenteId()).toUri();
+    return ResponseEntity.created(loc).body(creada);
   }
 
   // obtener todos los hechos
@@ -70,7 +70,7 @@ public class ControllerFuenteDinamica {
   }
 
   // Cargar un hecho a una fuente
-  @PostMapping (value = "/{idFuenteDeDatos}/hechos", consumes = "application/json", produces = "application/json")
+  @PostMapping(value = "/{idFuenteDeDatos}/hechos", consumes = "application/json", produces = "application/json")
   public ResponseEntity<?> cargarHecho(@PathVariable Integer idFuenteDeDatos, @Valid @RequestBody HechoDTO hechoDTO) {
     try {
       FuenteDinamica fuente = repositorioFuentes.findById(idFuenteDeDatos).orElse(null);

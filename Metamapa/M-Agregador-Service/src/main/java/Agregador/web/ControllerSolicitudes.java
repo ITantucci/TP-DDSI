@@ -14,12 +14,8 @@ public class ControllerSolicitudes {
 
     // Obtiene todas las solicitudes de eliminación, opcional que sean spam, para reutilizar si hace falta
     @GetMapping(value = "/solicitudesEliminacion", produces = "application/json")
-    public ResponseEntity<List<SolicitudEliminacionDTO>> obtenerTodasLasSolicitudesEliminacion(
-            @RequestParam(required = false) Boolean spam) {
+    public ResponseEntity<List<SolicitudEliminacionDTO>> obtenerTodasLasSolicitudesEliminacion(@RequestParam(required = false) Boolean spam) {
         List<SolicitudEliminacionDTO> solicitudes = service.obtenerTodasSolicitudesEliminacion(spam);
-        if (solicitudes.isEmpty()) {
-            return ResponseEntity.noContent().build(); // 204 sin body
-        }
         return ResponseEntity.ok(solicitudes);
     }
 
@@ -55,9 +51,6 @@ public class ControllerSolicitudes {
     @GetMapping(value = "/solicitudesEdicion", produces = "application/json")
     public ResponseEntity<List<SolicitudEdicionDTO>> obtenerTodasLasSolicitudesEdicion() {
         List<SolicitudEdicionDTO> solicitudes = service.obtenerTodasSolicitudesEdicion();
-        if (solicitudes.isEmpty()) {
-            return ResponseEntity.noContent().build(); // 204 sin body
-        }
         return ResponseEntity.ok(solicitudes);
     }
 
@@ -65,9 +58,6 @@ public class ControllerSolicitudes {
     @GetMapping(value = "/solicitudesEdicion/{id}", produces = "application/json")
     public ResponseEntity<SolicitudEdicionDTO> obtenerSolicitudEdicionPorId(@PathVariable Integer id) {
         SolicitudEdicionDTO solicitudDTO = service.obtenerSolicitudEdicionPorId(id);
-        if (solicitudDTO == null) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(solicitudDTO);
     }
 
@@ -82,9 +72,6 @@ public class ControllerSolicitudes {
     @PatchMapping(value = "/solicitudesEdicion/{id}", consumes = "application/json", produces = "application/json")
     public ResponseEntity<SolicitudEdicionDTO> actualizarEstadoSolicitudEdicion(@PathVariable Integer id, @RequestBody Map<String, Object> requestBody) {
         SolicitudEdicionDTO respuesta = service.actualizarEstadoSolicitudEdicion(id, requestBody);
-        if (respuesta == null) {
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(respuesta);
     }
 }

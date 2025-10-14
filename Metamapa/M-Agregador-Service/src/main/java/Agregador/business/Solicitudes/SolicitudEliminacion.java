@@ -7,7 +7,6 @@ import lombok.Getter;
 public class SolicitudEliminacion extends Solicitud {
   @Getter
   public String motivo;
-  static private Integer contadorID = 1;
 
   public SolicitudEliminacion(Hecho hechoAfectado, String motivo) {
     super(hechoAfectado, EstadoSolicitud.PENDIENTE); //por defecto se inicializan pendientes
@@ -20,18 +19,19 @@ public class SolicitudEliminacion extends Solicitud {
     }
     if (esSpam) setEstado(EstadoSolicitud.SPAM); // EstadoSolicitud.RECHAZADA
     this.motivo = motivo;
-    this.id = contadorID++;
   }
 
   public SolicitudEliminacion() {}
 
   @Override
-  public void aceptarSolicitud(){
+  public void aceptarSolicitud() {
+    if (getEstado() != EstadoSolicitud.PENDIENTE)
+      throw new IllegalStateException("Solo se puede aprobar si está pendiente");
     super.aceptarSolicitud();
-   // hechoAfectado.setEliminado(true);
+    getHechoAfectado().setEliminado(true);
   }
 
-  public void rechazarSolicitud(){
+  public void rechazarSolicitud() {
     super.rechazarSolicitud();
   }
 }
