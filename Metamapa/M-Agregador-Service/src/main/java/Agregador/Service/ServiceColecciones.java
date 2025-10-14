@@ -4,35 +4,28 @@ import Agregador.business.Colecciones.*;
 import Agregador.business.Consenso.*;
 import Agregador.business.Hechos.*;
 import Agregador.persistencia.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.*;
 
 @Service
+@RequiredArgsConstructor
 public class ServiceColecciones {
-  public final RepositorioColecciones repositorioColecciones;
-  public final RepositorioHechosImpl repositorioHechos;
-  public final RepositorioConsenso repositorioConsenso;
-
-  public ServiceColecciones(RepositorioColecciones repositorioColecciones, RepositorioHechosImpl repositorioHechos, RepositorioConsenso repositorioConsenso) {
-    this.repositorioHechos = repositorioHechos;
-    this.repositorioColecciones = repositorioColecciones;
-    this.repositorioConsenso = repositorioConsenso;
-  }
+  private final RepositorioColecciones repositorioColecciones;
+  private final RepositorioHechosImpl repositorioHechos;
+  private final RepositorioConsenso repositorioConsenso;
 
   public List<Hecho> getHechosFiltrados(UUID id, ModosDeNavegacion modoNavegacion, FiltrosHechosDTO filtros) {
     Coleccion coleccion = repositorioColecciones.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("Colección no encontrada"));
     System.out.println("Filtros recibidos: " + filtros);
-    List<Criterio> inclusion = construirCriteriosInclusion(filtros);
-    List<Criterio> exclusion = construirCriteriosExclusion(filtros);
-    List<Criterio> todosLosCriterios = Stream.of(
-                    coleccion.getCriterios().stream(),
-                    inclusion.stream(),
-                    exclusion.stream()
-            )
-            .flatMap(s -> s)   // achata todos los streams en uno solo
-            .distinct()        // evita duplicados
+    List<Criterio> inclusion = construirCriterios(filtros, true);
+    List<Criterio> exclusion = construirCriterios(filtros, false);
+    List<Criterio> todosLosCriterios = Stream
+            .of(coleccion.getCriterios(), inclusion, exclusion)
+            .flatMap(Collection::stream)
+            .distinct()
             .toList();
     System.out.println("Filtros totales: " + todosLosCriterios);
     if (modoNavegacion == ModosDeNavegacion.CURADA) {
@@ -43,36 +36,32 @@ public class ServiceColecciones {
     return repositorioHechos.filtrarPorCriterios(todosLosCriterios, null);
   }
 
-  private List<Criterio> construirCriteriosInclusion(FiltrosHechosDTO filtros) {
-    List<Criterio> inclusion = new ArrayList<>();
-    if (filtros.getTituloP() != null) inclusion.add(new CriterioTitulo(filtros.getTituloP(), true));
-    if (filtros.getDescripcionP() != null) inclusion.add(new CriterioDescripcion(filtros.getDescripcionP(), true));
-    if (filtros.getCategoriaP() != null) inclusion.add(new CriterioCategoria(filtros.getCategoriaP(), true));
-    if (filtros.getFechaReporteDesdeP() != null || filtros.getFechaReporteHastaP() != null)
-      inclusion.add(new CriterioFechaReportaje(filtros.getFechaReporteDesdeP(), filtros.getFechaReporteHastaP(), true));
-    if (filtros.getFechaAcontecimientoDesdeP() != null || filtros.getFechaAcontecimientoHastaP() != null)
-      inclusion.add(new CriterioFecha(filtros.getFechaAcontecimientoDesdeP(), filtros.getFechaAcontecimientoHastaP(), true));
-    if (filtros.getLatitudP() != null && filtros.getLongitudP() != null)
-      inclusion.add(new CriterioUbicacion(filtros.getLatitudP(), filtros.getLongitudP(), true));
-    if (filtros.getTipoMultimediaP() != null)
-      inclusion.add(new CriterioMultimedia(TipoMultimedia.valueOf(filtros.getTipoMultimediaP()), true));
-    return inclusion;
-  }
-
-  private List<Criterio> construirCriteriosExclusion(FiltrosHechosDTO filtros) {
-    List<Criterio> exclusion = new ArrayList<>();
-    if (filtros.getTituloNP() != null) exclusion.add(new CriterioTitulo(filtros.getTituloNP(), false));
-    if (filtros.getDescripcionNP() != null) exclusion.add(new CriterioDescripcion(filtros.getDescripcionNP(), false));
-    if (filtros.getCategoriaNP() != null) exclusion.add(new CriterioCategoria(filtros.getCategoriaNP(), false));
-    if (filtros.getFechaReporteDesdeNP() != null || filtros.getFechaReporteHastaNP() != null)
-      exclusion.add(new CriterioFechaReportaje(filtros.getFechaReporteDesdeNP(), filtros.getFechaReporteHastaNP(), false));
-    if (filtros.getFechaAcontecimientoDesdeNP() != null || filtros.getFechaAcontecimientoHastaNP() != null)
-      exclusion.add(new CriterioFecha(filtros.getFechaAcontecimientoDesdeNP(), filtros.getFechaAcontecimientoHastaNP(), false));
-    if (filtros.getLatitudNP() != null && filtros.getLongitudNP() != null)
-      exclusion.add(new CriterioUbicacion(filtros.getLatitudNP(), filtros.getLongitudNP(), false));
-    if (filtros.getTipoMultimediaNP() != null)
-      exclusion.add(new CriterioMultimedia(TipoMultimedia.valueOf(filtros.getTipoMultimediaNP()), false));
-    return exclusion;
+  private List<Criterio> construirCriterios(FiltrosHechosDTO filtros, boolean incluir) {
+    List<Criterio> criterios = new ArrayList<>();
+    if (incluir) {
+      if (filtros.getTituloP() != null) criterios.add(new CriterioTitulo(filtros.getTituloP(), true));
+      if (filtros.getDescripcionP() != null) criterios.add(new CriterioDescripcion(filtros.getDescripcionP(), true));
+      if (filtros.getCategoriaP() != null) criterios.add(new CriterioCategoria(filtros.getCategoriaP(), true));
+      if (filtros.getFechaReporteDesdeP() != null || filtros.getFechaReporteHastaP() != null)
+        criterios.add(new CriterioFechaReportaje(filtros.getFechaReporteDesdeP(), filtros.getFechaReporteHastaP(), true));
+      if (filtros.getFechaAcontecimientoDesdeP() != null || filtros.getFechaAcontecimientoHastaP() != null)
+        criterios.add(new CriterioFecha(filtros.getFechaAcontecimientoDesdeP(), filtros.getFechaAcontecimientoHastaP(), true));
+      if (filtros.getLatitudP() != null && filtros.getLongitudP() != null)
+        criterios.add(new CriterioUbicacion(filtros.getLatitudP(), filtros.getLongitudP(), true));
+      if (filtros.getTipoMultimediaP() != null) criterios.add(new CriterioMultimedia(TipoMultimedia.valueOf(filtros.getTipoMultimediaP()), true));
+    } else {
+      if (filtros.getTituloNP() != null) criterios.add(new CriterioTitulo(filtros.getTituloNP(), false));
+      if (filtros.getDescripcionNP() != null) criterios.add(new CriterioDescripcion(filtros.getDescripcionNP(), false));
+      if (filtros.getCategoriaNP() != null) criterios.add(new CriterioCategoria(filtros.getCategoriaNP(), false));
+      if (filtros.getFechaReporteDesdeNP() != null || filtros.getFechaReporteHastaNP() != null)
+        criterios.add(new CriterioFechaReportaje(filtros.getFechaReporteDesdeNP(), filtros.getFechaReporteHastaNP(), false));
+      if (filtros.getFechaAcontecimientoDesdeNP() != null || filtros.getFechaAcontecimientoHastaNP() != null)
+        criterios.add(new CriterioFecha(filtros.getFechaAcontecimientoDesdeNP(), filtros.getFechaAcontecimientoHastaNP(), false));
+      if (filtros.getLatitudNP() != null && filtros.getLongitudNP() != null)
+        criterios.add(new CriterioUbicacion(filtros.getLatitudNP(), filtros.getLongitudNP(), false));
+      if (filtros.getTipoMultimediaNP() != null) criterios.add(new CriterioMultimedia(TipoMultimedia.valueOf(filtros.getTipoMultimediaNP()), false));
+    }
+    return criterios;
   }
 
   public List<ColeccionDTO> obtenerTodasLasColecciones() {
@@ -83,7 +72,7 @@ public class ServiceColecciones {
 
   public ColeccionDTO obtenerColeccionPorId(UUID id) {
     Coleccion coleccion = repositorioColecciones.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Colección no encontrada"));
+            .orElseThrow(() -> new NoSuchElementException("Colección no encontrada con ID: " + id));
     return new ColeccionDTO(coleccion);
   }
 
@@ -91,7 +80,7 @@ public class ServiceColecciones {
     String nombre = coleccionDTO.getConsenso();
     // Buscar el consenso existente
     Consenso consenso = repositorioConsenso.findByDescripcion(nombre)
-            .orElseThrow(() -> new RuntimeException("Consenso no encontrado: " + nombre));
+            .orElseThrow(() -> new NoSuchElementException("Consenso no encontrado: " + nombre));
     ArrayList<Criterio> criterios = coleccionDTO.getCriterios().stream()
             .map(CriterioDTO::toDomain)
             .collect(Collectors.toCollection(ArrayList::new));
@@ -100,32 +89,42 @@ public class ServiceColecciones {
     return new ColeccionDTO(coleccion);
   }
 
-  public ColeccionDTO actualizarColeccion(UUID id, ColeccionDTO coleccionDTO) {
+  public ColeccionDTO actualizarColeccion(UUID id, ColeccionDTO dto) {
     Coleccion coleccion = repositorioColecciones.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Colección no encontrada"));
-    if (coleccionDTO.getTitulo() != null) coleccion.setTitulo(coleccionDTO.getTitulo());
-    if (coleccionDTO.getDescripcion() != null) coleccion.setDescripcion(coleccionDTO.getDescripcion());
-    if (coleccionDTO.getConsenso() != null) coleccion.setConsenso(Consenso.fromString(coleccionDTO.getConsenso()));
-    if (coleccionDTO.getCriterios() != null) {
-      List<Criterio> nuevosCriterios = coleccionDTO.getCriterios().stream()
-              .map(CriterioDTO::toDomain)
-              .toList();
-      coleccion.setCriterios(new ArrayList<>(nuevosCriterios));
-    }
+            .orElseThrow(() -> new NoSuchElementException("Colección no encontrada con ID: " + id));
+    coleccion.setTitulo(dto.getTitulo());
+    coleccion.setDescripcion(dto.getDescripcion());
+    String nombre = dto.getConsenso();
+    Consenso consenso = repositorioConsenso.findByDescripcion(nombre)
+            .orElseThrow(() -> new NoSuchElementException("Consenso no encontrado: " + nombre));
+    coleccion.setConsenso(consenso);
+    List<Criterio> criterios = dto.getCriterios() == null ? List.of() :
+            dto.getCriterios().stream()
+                    .map(CriterioDTO::toDomain)
+                    .toList();
+    coleccion.getCriterios().clear();
+    coleccion.getCriterios().addAll(criterios);
+    repositorioColecciones.save(coleccion);
     return new ColeccionDTO(coleccion);
   }
 
   public void modificarAlgoritmo(UUID id, Map<String, Object> body) {
     Coleccion c = repositorioColecciones.findById(id)
             .orElseThrow(() -> new NoSuchElementException("Colección no encontrada"));
-    String nombre = null;
-    if (body.get("consenso") != null) nombre = body.get("consenso").toString();
-    if (nombre == null || nombre.isBlank()) throw new IllegalArgumentException("El campo 'consenso' es obligatorio");
-    c.setConsenso(Consenso.fromString(nombre.trim()));
+    String nombre = Optional.ofNullable(body.get("consenso"))
+            .map(Object::toString)
+            .map(String::trim)
+            .filter(s -> !s.isEmpty())
+            .orElseThrow(() -> new IllegalArgumentException("El campo 'consenso' es obligatorio"));
+    Consenso consenso = repositorioConsenso.findByDescripcion(nombre)
+            .orElseThrow(() -> new NoSuchElementException("Consenso no encontrado: " + nombre));
+    c.setConsenso(consenso);
     repositorioColecciones.save(c);
   }
 
   public void eliminarColeccion(UUID id) {
+    if (!repositorioColecciones.existsById(id))
+      throw new IllegalArgumentException("Colección no encontrada con ID: " + id);
     repositorioColecciones.deleteById(id);
   }
 
@@ -138,7 +137,7 @@ public class ServiceColecciones {
 
   public void eliminarFuenteDeDatos(UUID idColeccion, Integer idFuente) {
     Coleccion col = repositorioColecciones.findById(idColeccion)
-            .orElseThrow(() -> new IllegalArgumentException("Colección no encontrada"));
+            .orElseThrow(() -> new NoSuchElementException("Colección no encontrada"));
     col.eliminarCriterio(new CriterioFuenteDeDatos(idFuente, true));
     repositorioColecciones.save(col);
   }

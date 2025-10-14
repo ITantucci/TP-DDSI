@@ -3,27 +3,23 @@ import Agregador.DTO.*;
 import Agregador.business.Hechos.Hecho;
 import Agregador.business.Solicitudes.*;
 import Agregador.persistencia.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class ServiceSolicitudes {
     public enum Result { OK, NOT_FOUND, CONFLICT, INVALID }
     private final RepositorioSolicitudesEliminacion repoSolicitudesEliminacion;
     private final RepositorioSolicitudesEdicion repoSolicitudesEdicion;
     private final RepositorioHechos repoHechos;
 
-    public ServiceSolicitudes(RepositorioSolicitudesEliminacion repoEliminacion, RepositorioSolicitudesEdicion repoEdicion, RepositorioHechos rh) {
-        this.repoSolicitudesEliminacion = repoEliminacion;
-        this.repoSolicitudesEdicion = repoEdicion;
-        this.repoHechos = rh;
-    }
-
     // @Transactional
     public Result aprobar(Integer id) {
         SolicitudEliminacion s = repoSolicitudesEliminacion.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Colección no encontrada"));
+                .orElseThrow(() -> new NoSuchElementException("Solicitud de eliminación no encontrada con id " + id));
         if (s.getEstado() != EstadoSolicitud.PENDIENTE) return Result.CONFLICT;
         s.aceptarSolicitud(); // cambia a APROBADA, timestamps, etc.
         //repoAgregador.bloquearHecho(s.getHechoAfectado()); // no mostrar / no re-ingestar
@@ -34,7 +30,7 @@ public class ServiceSolicitudes {
     // @Transactional
     public Result rechazar(Integer id) {
         SolicitudEliminacion s = repoSolicitudesEliminacion.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Colección no encontrada"));
+                .orElseThrow(() -> new NoSuchElementException("Solicitud de eliminación no encontrada con id " + id));
         if (s.getEstado() != EstadoSolicitud.PENDIENTE) return Result.CONFLICT;
         s.rechazarSolicitud();
         repoSolicitudesEliminacion.save(s);
@@ -50,18 +46,11 @@ public class ServiceSolicitudes {
     }
 
     // Buscar por id
-    public Optional<SolicitudEliminacionDTO> buscarPorId(Integer id) {
-        return repoSolicitudesEliminacion.findById(id)
-                .map(SolicitudEliminacionDTO::new);
+    public SolicitudEliminacionDTO buscarPorId(Integer id) {
+        SolicitudEliminacion s = repoSolicitudesEliminacion.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Solicitud de eliminación no encontrada con id " + id));
+        return new SolicitudEliminacionDTO(s);
     }
-
-
-    public List<SolicitudEdicionDTO> obtenerTodasSolicitudesEdicion() {
-        return repoSolicitudesEdicion.findAll().stream()
-                .map(SolicitudEdicionDTO::new)
-                .toList();
-    }
-
 
     public List<SolicitudEliminacionDTO> obtenerTodasSolicitudesEliminacion(Boolean spam) {
         if (Boolean.TRUE.equals(spam)) { // solo spam
@@ -73,6 +62,13 @@ public class ServiceSolicitudes {
         }
     }
 
+
+    public List<SolicitudEdicionDTO> obtenerTodasSolicitudesEdicion() {
+        return repoSolicitudesEdicion.findAll().stream()
+                .map(SolicitudEdicionDTO::new)
+                .toList();
+    }
+
     private List<SolicitudEliminacionDTO> toDTOs(List<SolicitudEliminacion> entidades) {
         return entidades.stream()
                 .map(SolicitudEliminacionDTO::new)
@@ -80,16 +76,16 @@ public class ServiceSolicitudes {
     }
 
     public SolicitudEdicionDTO obtenerSolicitudEdicionPorId(Integer id) {
-        Optional<SolicitudEdicion> solicitudOpt = repoSolicitudesEdicion.findById(id);
-        return solicitudOpt.map(SolicitudEdicionDTO::new).orElse(null);
+        SolicitudEdicion s = repoSolicitudesEdicion.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Solicitud de eliminación no encontrada con id " + id));
+        return new SolicitudEdicionDTO(s);
     }
 
     public SolicitudEdicionDTO crearSolicitudEdicion(SolicitudEdicionDTO dto) {
         Hecho hecho = repoHechos.findById(dto.getHechoAfectado())
                 .orElseThrow(() -> new NoSuchElementException("Hecho no encontrado"));
-        if (hecho.getFechaCarga().plusDays(7).isBefore(LocalDate.now())) {
+        if (hecho.getFechaCarga().plusDays(7).isBefore(LocalDate.now()))
             throw new IllegalArgumentException("Paso mas de una semana de la carga del Hecho");
-        }
         SolicitudEdicion solicitud = new SolicitudEdicion(
                 dto.getTituloMod(),
                 dto.getDescMod(),
@@ -108,7 +104,7 @@ public class ServiceSolicitudes {
 
     public SolicitudEdicionDTO actualizarEstadoSolicitudEdicion(Integer id, Map<String, Object> requestBody) {
         SolicitudEdicion solicitud = repoSolicitudesEdicion.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Solicitud no encontrada"));
+                .orElseThrow(() -> new NoSuchElementException("Solicitud no encontrada"));
         String nuevoEstadoStr = (String) requestBody.get("estado");
         if (nuevoEstadoStr == null) {
             throw new IllegalArgumentException("Estado no proporcionado");

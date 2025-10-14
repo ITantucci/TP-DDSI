@@ -5,11 +5,12 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter @Setter
 public class CriterioDTO {
-  @NotEmpty @NotBlank @NotNull
+  @NotBlank(message = "El tipo de criterio no puede estar vacío")
   private String tipo;
   private String valor;
   private String fechaDesde;
@@ -27,16 +28,24 @@ public class CriterioDTO {
       case "titulo" -> new CriterioTitulo(valor,this.inclusion);
       case "descripcion" -> new CriterioDescripcion(valor,this.inclusion);
       case "categoria" -> new CriterioCategoria(valor,this.inclusion);
-      case "fecha" -> new CriterioFecha(
-              LocalDate.parse(fechaDesde),
-              LocalDate.parse(fechaHasta),
-              this.inclusion
-      );
-      case "fechareportaje" -> new CriterioFechaReportaje(
-              LocalDate.parse(fechaDesde),
-              LocalDate.parse(fechaHasta),
-          this.inclusion
-      );
+      case "fecha" -> {
+        try {
+          yield new CriterioFecha(
+                  LocalDate.parse(fechaDesde),
+                  LocalDate.parse(fechaHasta),
+                  this.inclusion
+          );
+        } catch (DateTimeParseException e) {
+          throw new IllegalArgumentException("Formato de fecha inválido. Se esperaba yyyy-MM-dd");
+        }
+      }
+      case "fechareportaje" -> {
+        try {
+          yield new CriterioFechaReportaje(LocalDate.parse(fechaDesde), LocalDate.parse(fechaHasta), inclusion);
+        } catch (DateTimeParseException e) {
+          throw new IllegalArgumentException("Formato de fecha inválido. Se esperaba yyyy-MM-dd");
+        }
+      }
       case "fuente", "criteriofuentededatos" -> new CriterioFuenteDeDatos(idFuenteDeDatos,this.inclusion); // << alias OK
       case "ubicacion" -> new CriterioUbicacion(latitud, longitud,this.inclusion);
       case "multimedia" -> new CriterioMultimedia(TipoMultimedia.valueOf(tipoMultimedia),this.inclusion);
@@ -46,7 +55,6 @@ public class CriterioDTO {
 
   public CriterioDTO(Criterio criterio) {
     this.tipo = criterio.getClass().getSimpleName().toLowerCase();
-    System.out.println("INCLUSION!!!!!!!!!!!!!!!!!: " + criterio.getInclusion());
     this.inclusion = criterio.getInclusion();
     if (criterio instanceof CriterioTitulo ct) {
       this.valor = ct.getTitulo();

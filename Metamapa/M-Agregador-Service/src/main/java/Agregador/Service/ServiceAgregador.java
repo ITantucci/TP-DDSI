@@ -1,20 +1,17 @@
 package Agregador.Service;
 import Agregador.business.Hechos.Hecho;
 import Agregador.persistencia.RepositorioHechos;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ServiceAgregador {
   private final RepositorioHechos repo;
   private final Normalizador normalizador;           // tu clase mejorada
-
-  public ServiceAgregador(RepositorioHechos repo, Normalizador normalizador) {
-    this.repo = repo;
-    this.normalizador = normalizador;
-  }
 
   // Devuelve el nombre de la categoría con más hechos reportados
   public String categoriaMasReportada() {

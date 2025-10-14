@@ -8,9 +8,9 @@ import java.util.stream.Collectors;
 
 @Getter @Setter
 public class ColeccionDTO {
-  @NotEmpty @NotBlank @NotNull
+  @NotBlank(message = "El título no puede estar vacío")
   private String titulo;
-  @NotEmpty @NotBlank @NotNull
+  @NotBlank(message = "La descripción no puede estar vacía")
   private String descripcion;
   private UUID handle;
   private String consenso;

@@ -1,19 +1,16 @@
 package Agregador.Service;
 import Agregador.business.Hechos.Hecho;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import Agregador.business.Consenso.*;
 import java.util.ArrayList;
 import Agregador.persistencia.*;
 
 @Service
+@RequiredArgsConstructor
 public class ServiceConsenso {
-  RepositorioConsenso repositorioConsenso;
-  RepositorioHechos repositorioHechos;
-
-  public ServiceConsenso(RepositorioConsenso repositorioConsenso, RepositorioHechos repositorioHechos) {
-    this.repositorioConsenso = repositorioConsenso;
-    this.repositorioHechos = repositorioHechos;
-  }
+  private final RepositorioConsenso repositorioConsenso;
+  private final RepositorioHechos repositorioHechos;
 
   public void consensuarHechos() {
     ArrayList<Hecho> hechos = (ArrayList<Hecho>) repositorioHechos.findAll();

@@ -1,6 +1,5 @@
 package Agregador.DTO;
-import Agregador.business.Solicitudes.EstadoSolicitud;
-import Agregador.business.Solicitudes.SolicitudEliminacion;
+import Agregador.business.Solicitudes.*;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import java.math.BigInteger;

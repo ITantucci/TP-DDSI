@@ -4,13 +4,14 @@ import java.time.LocalDate;
 import java.util.*;
 import Agregador.business.Consenso.Consenso;
 import Agregador.persistencia.RepositorioHechos;
-import lombok.Data;
+import lombok.*;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
+@RequiredArgsConstructor
 public class ServiceFuenteDeDatos {
   private final RestTemplate restTemplate;
   private final RepositorioHechos repositorioHechos;
@@ -20,12 +21,6 @@ public class ServiceFuenteDeDatos {
   // ==== Rutas (cambiá acá si loaders exponen distinto) ====
   //private static final String PATH_HECHOS_POR_FUENTE = "%s/fuentesDeDatos/%d/hechos"; // o "%s/%d/hechos"
   private static final String PATH_LISTAR_FUENTES    = "%s/fuentesDeDatos";           // o "%s/"
-
-  public ServiceFuenteDeDatos(RestTemplate rt, RepositorioHechos repo, Normalizador normalizador) {
-    this.normalizador = normalizador;
-    this.restTemplate = rt;
-    this.repositorioHechos = repo;
-  }
 
   // ================== API ==================
   /** Trae hechos de UNA fuente (sin filtros) y los mapea a tu dominio. */
