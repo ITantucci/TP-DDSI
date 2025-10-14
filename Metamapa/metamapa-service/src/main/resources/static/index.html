@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>MetaMapa · Visualizador</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+</head>
+<body>
+<header>
+    <h1>MetaMapa</h1>
+    <nav>
+        <button onclick="mostrar('hechos')">Hechos</button>
+        <button onclick="mostrar('colecciones')">Colecciones</button>
+        <button onclick="mostrar('fuentes')">Fuentes</button>
+        <button onclick="mostrar('estadisticas')">Estadísticas</button>
+    </nav>
+</header>
+
+<main id="contenido">
+    <p>Seleccioná una sección para comenzar.</p>
+</main>
+
+<footer>&copy; 2025 MetaMapa</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/mapa.js"></script>
+<script src="js/stats.js"></script>
+</body>
+</html>
