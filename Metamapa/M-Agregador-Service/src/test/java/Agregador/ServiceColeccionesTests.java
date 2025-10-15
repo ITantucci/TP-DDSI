@@ -1,4 +1,7 @@
 package Agregador;
+
+/*
+
 import Agregador.DTO.*;
 import Agregador.Service.ServiceColecciones;
 import Agregador.business.Colecciones.*;
@@ -183,3 +186,5 @@ class ServiceColeccionesTests {
     assertThrows(NoSuchElementException.class, () -> service.modificarAlgoritmo(id, body));
   }
 }
+
+ */

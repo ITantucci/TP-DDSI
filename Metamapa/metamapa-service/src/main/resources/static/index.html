@@ -24,7 +24,41 @@
     </div>
 </nav>
 
-<div class="container-fluid mt-3" id="contenido"></div>
+<div class="container-fluid mt-3" id="contenido">
+    <div id="coleccionesView">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4>Colecciones</h4>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalColeccion">+ Nueva Colección</button>
+        </div>
+
+        <div class="mb-3">
+            <label for="modoNav" class="form-label">Modo de navegación:</label>
+            <select id="modoNav" class="form-select form-select-sm" style="width:auto; display:inline-block;">
+                <option value="IRRESTRICTA">Irrestricta</option>
+                <option value="CURADA">Curada</option>
+            </select>
+        </div>
+
+        <div id="filtrosColeccion" class="border p-3 rounded mb-3 bg-light">
+            <h6>Filtros temporales</h6>
+            <div class="row g-2">
+                <div class="col-md-4">
+                    <input id="tituloNP" class="form-control form-control-sm" placeholder="Excluir título...">
+                </div>
+                <div class="col-md-4">
+                    <input id="categoriaP" class="form-control form-control-sm" placeholder="Incluir categoría...">
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-sm btn-outline-success w-100" onclick="aplicarFiltrosColeccion()">Aplicar filtros</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="listaColecciones" class="mb-3"></div>
+        <div id="mapaColeccion" class="mapa"></div>
+    </div>
+
+</div>
 
 <!-- ========== MODAL CREAR HECHO ========== -->
 <div class="modal fade" id="modalHecho" tabindex="-1" aria-hidden="true">
@@ -42,7 +76,10 @@
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Categoría</label>
-                        <input name="categoria" class="form-control" placeholder="Delito, Accidente, etc.">
+                        <div class="input-group">
+                            <select name="categoria" id="categoriaSelect" class="form-select"></select>
+                            <button class="btn btn-outline-secondary" type="button" onclick="agregarNuevaCategoria()">+ Nueva</button>
+                        </div>
                     </div>
                 </div>
 
@@ -121,10 +158,11 @@
                 <div class="mb-3">
                     <label class="form-label">Tipo de consenso</label>
                     <select name="consenso" class="form-select">
-                        <option value="mayoria">Mayoría</option>
-                        <option value="unanimidad">Unanimidad</option>
-                        <option value="promedio">Promedio</option>
+                        <option value="mayoriaSimple">Mayoría simple</option>
+                        <option value="absoluto">Absoluto</option>
+                        <option value="multiplesMenciones">Múltiples menciones</option>
                     </select>
+
                 </div>
 
                 <hr>
@@ -155,7 +193,8 @@
             <div class="modal-body" id="detalleHecho"></div>
         </div>
     </div>
-</div><!-- Modal: Seleccionar ubicación -->
+</div>
+<!-- Modal: Seleccionar ubicación -->
 <div class="modal fade" id="modalUbicacion" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
@@ -180,6 +219,25 @@
         </div>
     </div>
 </div>
+<!-- Modal: Nueva Categoría -->
+<div class="modal fade" id="modalCategoria" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title">Agregar nueva categoría</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="nuevaCategoriaInput" class="form-control" placeholder="Escribí una nueva categoría...">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" onclick="guardarNuevaCategoria()">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="config.js"></script>

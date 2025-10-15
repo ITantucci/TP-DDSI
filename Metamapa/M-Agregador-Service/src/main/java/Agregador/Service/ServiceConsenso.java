@@ -23,6 +23,6 @@ public class ServiceConsenso {
       }
     }));
 
-    //todo persistir hechos
+
   }
 }

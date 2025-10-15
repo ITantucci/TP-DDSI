@@ -18,26 +18,30 @@ function colorPorCategoria(cat) {
 }
 
 function inicializarMapa(divId = "mapa") {
-    const div = document.getElementById(divId);
-    if (!div) {
-        console.warn(`⚠️ No se encontró el div con id=${divId} aún. Reintentando...`);
+    const cont = document.getElementById(divId);
+    if (!cont) {
+        console.warn(`⚠️ No se encontró el contenedor #${divId}, reintentando...`);
         setTimeout(() => inicializarMapa(divId), 200);
         return;
     }
 
-    // Evitar reinit duplicado
+    // Si ya hay un mapa previo, eliminarlo para evitar conflictos
     if (mapa) {
-        mapa.invalidateSize();
-        return;
+        mapa.remove();
+        mapa = null;
     }
 
+    // Crear un nuevo mapa
     mapa = L.map(divId).setView([-34.61, -58.38], 11);
+
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: '&copy; OpenStreetMap contributors'
     }).addTo(mapa);
+
     markersLayer = L.layerGroup().addTo(mapa);
-    agregarLeyenda();
+    console.log("🗺️ Mapa inicializado nuevamente.");
 }
+
 
 
 function limpiarMarcadores() {
