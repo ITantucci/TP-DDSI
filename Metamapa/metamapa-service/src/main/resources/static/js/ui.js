@@ -152,5 +152,46 @@ function agregarMultimedia() {
     cont.appendChild(row);
 }
 
-document.getElementById("formHecho").addEventListener("submit", crearHecho);
-document.getElementById("formColeccion").addEventListener("submit", crearColeccion);
+document.addEventListener("DOMContentLoaded", () => {
+    const formHecho = document.getElementById("formHecho");
+    const formColeccion = document.getElementById("formColeccion");
+    const modalHecho = document.getElementById("modalHecho");
+
+    // Enlazar formularios
+    if (formHecho) formHecho.addEventListener("submit", crearHecho);
+    if (formColeccion) formColeccion.addEventListener("submit", crearColeccion);
+
+    // Iniciar mapa cuando se abre el modal
+    modalHecho.addEventListener("shown.bs.modal", () => {
+        setTimeout(inicializarMapaSeleccion, 300);
+    });
+
+    // Limpiar marcador y campos cuando se cierra el modal
+    modalHecho.addEventListener("hidden.bs.modal", () => {
+        limpiarMapaSeleccion();
+        limpiarFormularioHecho();
+    });
+});
+
+
+// Limpiar marcador cuando se cierra el modal
+modalHecho.addEventListener("hidden.bs.modal", limpiarMapaSeleccion);
+
+function limpiarFormularioHecho() {
+    const form = document.getElementById("formHecho");
+    if (!form) return;
+
+    form.reset(); // limpia los inputs normales
+
+    // limpia campos manuales de lat/long
+    document.getElementById("latitud").value = "";
+    document.getElementById("longitud").value = "";
+
+    // limpiar contenedor de multimedia
+    const cont = document.getElementById("multimediaContainer");
+    if (cont) cont.innerHTML = "";
+
+    // limpiar resultado de estado
+    const res = document.getElementById("resultadoHecho");
+    if (res) res.innerHTML = "";
+}
