@@ -1,5 +1,5 @@
 // === Visualización de estadísticas MetaMapa ===
-
+console.log("✅ stats js cargado correctamente");
 // Consulta al backend
 async function getEstadisticas() {
     const r = await fetch(`${API_BASE}/estadisticas`);

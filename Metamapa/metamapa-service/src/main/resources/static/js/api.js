@@ -1,4 +1,4 @@
-
+console.log("✅ api.js cargado correctamente");
 // Crear un nuevo hecho en la fuente dinámica
 async function crearHecho(e) {
     e.preventDefault();

@@ -1,3 +1,4 @@
+console.log("✅ ui.js cargado correctamente");
 const cont = document.getElementById("contenido");
 
 async function mostrar(seccion) {
@@ -316,41 +317,13 @@ function limpiarFormularioHecho() {
     const res = document.getElementById("resultadoHecho");
     if (res) res.innerHTML = "";
 }
-function limpiarFormularioColeccion() {
-    const form = document.getElementById("formColeccion");
-    if (!form) return;
-    form.reset();
-    document.getElementById("criteriosContainer").innerHTML = "";
-    const res = document.getElementById("resultadoColeccion");
-    if (res) res.innerHTML = "";
-}
-const modalColeccion = document.getElementById("modalColeccion");
-modalColeccion.addEventListener("hidden.bs.modal", limpiarFormularioColeccion);
-async function editarColeccion(id) {
-    const resp = await fetch(`${window.METAMAPA.API_COLECCIONES}/${id}`);
-    if (!resp.ok) {
-        alert("Error al obtener la colección.");
-        return;
+document.addEventListener("DOMContentLoaded", () => {
+    const modalColeccion = document.getElementById("modalColeccion");
+    if (modalColeccion) {
+        modalColeccion.addEventListener("hidden.bs.modal", limpiarFormularioColeccion);
     }
+});
 
-    const c = await resp.json();
-    console.log("✏️ Editando colección:", c);
-
-    // Abrir modal con datos
-    const modal = new bootstrap.Modal(document.getElementById("modalColeccion"));
-    const form = document.getElementById("formColeccion");
-    form.idColeccion.value = id;
-    form.titulo.value = c.titulo;
-    form.descripcion.value = c.descripcion;
-    form.consenso.value = c.consenso || "mayoria";
-    document.getElementById("criteriosContainer").innerHTML = "";
-    (c.criterios || []).forEach(cr => agregarCriterio(cr));
-
-    document.getElementById("modalColeccionTitle").innerText = "Editar Colección";
-    modal.show();
-}
-const modalColeccion = document.getElementById("modalColeccion");
-modalColeccion.addEventListener("hidden.bs.modal", limpiarFormularioColeccion);
 function limpiarFormularioColeccion() {
     const form = document.getElementById("formColeccion");
     if (!form) return;
@@ -360,3 +333,12 @@ function limpiarFormularioColeccion() {
     const res = document.getElementById("resultadoColeccion");
     if (res) res.innerHTML = "";
 }
+
+// ==========================
+// Inicialización al cargar
+// ==========================
+document.addEventListener("DOMContentLoaded", async () => {
+    console.log("🚀 Iniciando MetaMapa...");
+    await mostrar("hechos");
+});
+

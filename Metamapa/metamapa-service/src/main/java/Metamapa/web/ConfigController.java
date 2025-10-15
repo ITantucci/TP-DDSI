@@ -20,7 +20,7 @@ public class ConfigController {
   @Value("${M.Agregador.Service.url}")
   private String agregadorUrl;
 
-  @Value("${M.Colecciones.Service.url:${M.Agregador.Service.url}/../api-colecciones}")
+  @Value("${M.Colecciones.Service.url:${M.Agregador.Service.url}}")
   private String coleccionesUrl;
 
   @GetMapping(value = "/config.js", produces = "application/javascript")

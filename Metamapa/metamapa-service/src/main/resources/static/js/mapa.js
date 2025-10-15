@@ -1,3 +1,4 @@
+console.log("✅ mapa.js cargado correctamente");
 let mapa;
 let markersLayer;
 let legendDiv;
@@ -17,6 +18,19 @@ function colorPorCategoria(cat) {
 }
 
 function inicializarMapa(divId = "mapa") {
+    const div = document.getElementById(divId);
+    if (!div) {
+        console.warn(`⚠️ No se encontró el div con id=${divId} aún. Reintentando...`);
+        setTimeout(() => inicializarMapa(divId), 200);
+        return;
+    }
+
+    // Evitar reinit duplicado
+    if (mapa) {
+        mapa.invalidateSize();
+        return;
+    }
+
     mapa = L.map(divId).setView([-34.61, -58.38], 11);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: '&copy; OpenStreetMap contributors'
@@ -24,6 +38,7 @@ function inicializarMapa(divId = "mapa") {
     markersLayer = L.layerGroup().addTo(mapa);
     agregarLeyenda();
 }
+
 
 function limpiarMarcadores() {
     if (markersLayer) markersLayer.clearLayers();
