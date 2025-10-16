@@ -16,54 +16,30 @@ public class ServiceColecciones {
   private final RepositorioHechosImpl repositorioHechos;
   private final RepositorioConsenso repositorioConsenso;
 
+
   public List<Hecho> getHechosFiltrados(UUID id, ModosDeNavegacion modoNavegacion, FiltrosHechosDTO filtros) {
-    Coleccion coleccion = repositorioColecciones.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Colección no encontrada"));
-    System.out.println("Filtros recibidos: " + filtros);
-    List<Criterio> inclusion = construirCriterios(filtros, true);
-    List<Criterio> exclusion = construirCriterios(filtros, false);
-    List<Criterio> todosLosCriterios = Stream
-            .of(coleccion.getCriterios(), inclusion, exclusion)
-            .flatMap(Collection::stream)
-            .distinct()
-            .toList();
-    System.out.println("Filtros totales: " + todosLosCriterios);
-    if (modoNavegacion == ModosDeNavegacion.CURADA) {
-      Consenso consensoColeccion = coleccion.getConsenso();
-      System.out.println("Consenso: " + consensoColeccion.toString());
-      return repositorioHechos.filtrarPorCriterios(todosLosCriterios, consensoColeccion);
-    }
-    return repositorioHechos.filtrarPorCriterios(todosLosCriterios, null);
-  }
+    Coleccion coleccion = repositorioColecciones.getColeccion(id)
+        .orElseThrow(() -> new IllegalArgumentException("Colección no encontrada: " + id));
+    List<Criterio> criterios = new ArrayList<>(coleccion.getCriterios());
+    criterios.addAll(repositorioHechos.construirCriterios(filtros, true));
+    criterios.addAll(repositorioHechos.construirCriterios(filtros, false));
 
-  private List<Criterio> construirCriterios(FiltrosHechosDTO filtros, boolean incluir) {
-    List<Criterio> criterios = new ArrayList<>();
-    if (incluir) {
-      if (filtros.getTituloP() != null) criterios.add(new CriterioTitulo(filtros.getTituloP(), true));
-      if (filtros.getDescripcionP() != null) criterios.add(new CriterioDescripcion(filtros.getDescripcionP(), true));
-      if (filtros.getCategoriaP() != null) criterios.add(new CriterioCategoria(filtros.getCategoriaP(), true));
-      if (filtros.getFechaReporteDesdeP() != null || filtros.getFechaReporteHastaP() != null)
-        criterios.add(new CriterioFechaReportaje(filtros.getFechaReporteDesdeP(), filtros.getFechaReporteHastaP(), true));
-      if (filtros.getFechaAcontecimientoDesdeP() != null || filtros.getFechaAcontecimientoHastaP() != null)
-        criterios.add(new CriterioFecha(filtros.getFechaAcontecimientoDesdeP(), filtros.getFechaAcontecimientoHastaP(), true));
-      if (filtros.getLatitudP() != null && filtros.getLongitudP() != null)
-        criterios.add(new CriterioUbicacion(filtros.getLatitudP(), filtros.getLongitudP(),filtros.getRadioP(), true));
-      if (filtros.getTipoMultimediaP() != null) criterios.add(new CriterioMultimedia(TipoMultimedia.valueOf(filtros.getTipoMultimediaP()), true));
-    } else {
-      if (filtros.getTituloNP() != null) criterios.add(new CriterioTitulo(filtros.getTituloNP(), false));
-      if (filtros.getDescripcionNP() != null) criterios.add(new CriterioDescripcion(filtros.getDescripcionNP(), false));
-      if (filtros.getCategoriaNP() != null) criterios.add(new CriterioCategoria(filtros.getCategoriaNP(), false));
-      if (filtros.getFechaReporteDesdeNP() != null || filtros.getFechaReporteHastaNP() != null)
-        criterios.add(new CriterioFechaReportaje(filtros.getFechaReporteDesdeNP(), filtros.getFechaReporteHastaNP(), false));
-      if (filtros.getFechaAcontecimientoDesdeNP() != null || filtros.getFechaAcontecimientoHastaNP() != null)
-        criterios.add(new CriterioFecha(filtros.getFechaAcontecimientoDesdeNP(), filtros.getFechaAcontecimientoHastaNP(), false));
-      if (filtros.getLatitudNP() != null && filtros.getLongitudNP() != null)
-        criterios.add(new CriterioUbicacion(filtros.getLatitudNP(), filtros.getLongitudNP(),filtros.getRadioNP(), false));
-      if (filtros.getTipoMultimediaNP() != null) criterios.add(new CriterioMultimedia(TipoMultimedia.valueOf(filtros.getTipoMultimediaNP()), false));
+    Consenso consenso = null;
+    if (modoNavegacion == ModosDeNavegacion.CURADA && coleccion.getConsenso() != null) {
+      consenso = repositorioConsenso.findByNombreTipo(coleccion.getConsenso().getNombreTipo())
+          .orElse(null);
     }
-    return criterios;
-  }
+    List<Hecho> hechos = repositorioHechos.filtrarPorCriterios(criterios, consenso);
 
+    System.out.println("Colección: " + coleccion.getTitulo() +
+        " | Criterios: " + criterios.size() +
+        " | Modo: " + modoNavegacion +
+        " | Hechos encontrados: " + hechos.size());
+
+    return hechos;
+  }
+}
+/*
   public List<ColeccionDTO> obtenerTodasLasColecciones() {
     return repositorioColecciones.findAll().stream()
             .map(ColeccionDTO::new) // convierte cada Coleccion a DTO
@@ -79,7 +55,7 @@ public class ServiceColecciones {
   public ColeccionDTO crearColeccion(ColeccionDTO coleccionDTO) {
     String nombre = coleccionDTO.getConsenso();
     // Buscar el consenso existente
-    Consenso consenso = repositorioConsenso.findByDescripcion(nombre)
+    Consenso consenso = repositorioConsenso.findByNombreTipo(nombre)
             .orElseThrow(() -> new NoSuchElementException("Consenso no encontrado: " + nombre));
     ArrayList<Criterio> criterios = coleccionDTO.getCriterios().stream()
             .map(CriterioDTO::toDomain)
@@ -144,4 +120,5 @@ public class ServiceColecciones {
     );
     repositorioColecciones.save(col);
   }
-}
+  }
+ */

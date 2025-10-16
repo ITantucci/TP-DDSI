@@ -2,6 +2,8 @@ package Agregador.business.Consenso;
 import Agregador.business.Hechos.Hecho;
 import jakarta.persistence.*;
 import java.util.ArrayList;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -11,12 +13,14 @@ public abstract class Consenso {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   public Integer id;
   @Column(unique = true)
-  private String descripcion;  // <- este campo
+  @Setter
+  @Getter
+  private String nombreTipo;  // <- este campo
 
   public Consenso() {}
 
-  public Consenso(String descripcion) {
-    this.descripcion = descripcion;
+  public Consenso(String nombreTipo) {
+    this.nombreTipo = nombreTipo;
   }
 
   public boolean esConsensuado(Hecho hecho, ArrayList<Hecho> hechos) {
@@ -61,6 +65,8 @@ public abstract class Consenso {
     }
     return contador;
   }
+
+
   //ABSOLUTA
   // "SELECT * FROM hechos as Hecho1 where (select count(distinct left(Hechos1.hechos_id,4)) from hechos) = (select count(distinct left(hechos_id,4)) from hechos as Hecho2 where equals(Hecho1,Hecho2))"
 

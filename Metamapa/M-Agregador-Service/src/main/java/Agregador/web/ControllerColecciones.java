@@ -1,8 +1,11 @@
 package Agregador.web;
 import Agregador.DTO.*;
 import Agregador.Service.ServiceColecciones;
+import Agregador.business.Colecciones.Criterio;
 import Agregador.business.Consenso.ModosDeNavegacion;
 import Agregador.business.Hechos.Hecho;
+import Agregador.persistencia.RepositorioColecciones;
+import Agregador.persistencia.RepositorioHechos;
 import java.util.*;
 import jakarta.validation.Valid;
 import org.springframework.http.*;
@@ -12,16 +15,19 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api-colecciones")
 public class ControllerColecciones {
   private final ServiceColecciones serviceColecciones;
-
-  public ControllerColecciones(ServiceColecciones serviceColecciones) {
+  private final RepositorioColecciones repositorioColecciones;
+  public ControllerColecciones(ServiceColecciones serviceColecciones, RepositorioColecciones repositorioColecciones) {
     this.serviceColecciones = serviceColecciones;
+    this.repositorioColecciones = repositorioColecciones;
   }
 
   @GetMapping("/{id}/hechos")
-  public ResponseEntity<List<Hecho>> getHechosColeccion(@PathVariable UUID id,
-                                                        @RequestParam(defaultValue = "IRRESTRICTA") ModosDeNavegacion modoNav,
-                                                        @Valid FiltrosHechosDTO filtros) {
-    List<Hecho> hechos = serviceColecciones.getHechosFiltrados(id, modoNav, filtros);
+  public ResponseEntity<?> getHechosColeccion(
+      @PathVariable UUID id,
+      @RequestParam(defaultValue = "IRRESTRICTA") ModosDeNavegacion modoNavegacion,
+      @Valid FiltrosHechosDTO filtros) {
+
+    List<Hecho> hechos = serviceColecciones.getHechosFiltrados(id, modoNavegacion, filtros);
     return ResponseEntity.ok(hechos);
   }
 
