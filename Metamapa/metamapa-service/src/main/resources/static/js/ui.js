@@ -5,55 +5,58 @@ async function mostrar(seccion) {
     if (seccion === "hechos") {
         cont.innerHTML = `
       <h3>Hechos curados</h3>
+      <div id="panelFiltrosHechos" class="border p-3 rounded bg-light mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="mb-0">Filtros dinámicos</h6>
+          <button class="btn btn-sm btn-outline-secondary" onclick="agregarFiltro('panelFiltrosHechos')">+ Agregar filtro</button>
+        </div>
+        <div id="filtrosContainerHechos"></div>
+        <button class="btn btn-sm btn-success mt-2" onclick="aplicarFiltrosHechos()">Aplicar filtros</button>
+      </div>
       <div id="mapa" class="mapa"></div>
       <div id="tablaHechos" class="mt-3"></div>
     `;
-        setTimeout(() => inicializarMapa(), 50);
+
+        setTimeout(() => inicializarMapa(), 100);
         const hechos = await obtenerHechos();
-        setTimeout(() => mostrarHechosEnMapa(hechos), 100);
+        setTimeout(() => mostrarHechosEnMapa(hechos), 200);
         document.getElementById("tablaHechos").innerHTML = renderTablaHechos("Hechos curados", hechos);
     }
 
     if (seccion === "colecciones") {
         const cont = document.getElementById("contenido");
         cont.innerHTML = `
-    <div id="coleccionesView">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4>Colecciones</h4>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalColeccion">+ Nueva Colección</button>
-      </div>
-
-      <div class="mb-3">
-        <label for="modoNav" class="form-label">Modo de navegación:</label>
-        <select id="modoNav" class="form-select form-select-sm" style="width:auto; display:inline-block;">
-          <option value="IRRESTRICTA">Irrestricta</option>
-          <option value="CURADA">Curada</option>
-        </select>
-      </div>
-
-      <div id="filtrosColeccion" class="border p-3 rounded mb-3 bg-light">
-        <h6>Filtros temporales</h6>
-        <div class="row g-2">
-          <div class="col-md-4">
-            <input id="tituloNP" class="form-control form-control-sm" placeholder="Excluir título...">
-          </div>
-          <div class="col-md-4">
-            <input id="categoriaP" class="form-control form-control-sm" placeholder="Incluir categoría...">
-          </div>
-          <div class="col-md-4">
-            <button class="btn btn-sm btn-outline-success w-100" onclick="aplicarFiltrosColeccion()">Aplicar filtros</button>
-          </div>
+      <div id="coleccionesView">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4>Colecciones</h4>
+          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalColeccion">+ Nueva Colección</button>
         </div>
-      </div>
 
-      <div id="listaColecciones" class="mb-3"></div>
-      <div id="mapaColeccion" class="mapa"></div>
-    </div>`;
+        <div class="mb-3">
+          <label for="modoNav" class="form-label">Modo de navegación:</label>
+          <select id="modoNav" class="form-select form-select-sm" style="width:auto; display:inline-block;">
+            <option value="IRRESTRICTA">Irrestricta</option>
+            <option value="CURADA">Curada</option>
+          </select>
+        </div>
+
+        <div id="panelFiltrosColeccion" class="border p-3 rounded bg-light mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="mb-0">Filtros dinámicos</h6>
+            <button class="btn btn-sm btn-outline-secondary" onclick="agregarFiltro('panelFiltrosColeccion')">+ Agregar filtro</button>
+          </div>
+          <div id="filtrosContainerColeccion"></div>
+          <button class="btn btn-sm btn-success mt-2" onclick="aplicarFiltrosColeccion()">Aplicar filtros</button>
+        </div>
+
+        <div id="listaColecciones" class="mb-3"></div>
+        <div id="mapaColeccion" class="mapa"></div>
+      </div>`;
+
         setTimeout(() => inicializarMapa("mapaColeccion"), 100);
-        const colecciones = await mostrarColecciones();
-
-
+        await mostrarColecciones();
     }
+
     if (seccion === "fuentes") {
         cont.innerHTML = "<p>Cargando fuentes...</p>";
         const fuentes = await obtenerFuentes();
@@ -61,10 +64,10 @@ async function mostrar(seccion) {
       <h3>Fuentes registradas (${fuentes.length})</h3>
       <ul class="list-group">
         ${fuentes.map(u => `<li class="list-group-item">${u}</li>`).join("")}
-      </ul>
-    `;
+      </ul>`;
     }
 }
+
 
 
 
@@ -491,6 +494,139 @@ async function aplicarFiltrosColeccion() {
         setTimeout(() => inicializarMapa("mapaColeccion"), 300);
     } catch (e) {
         alert("Error al aplicar filtros");
+        console.error(e);
+    }
+}
+// ==================================================
+// 🎛️ Gestión de filtros dinámicos
+// ==================================================
+function agregarFiltro(contexto) {
+    const containerId = contexto === "panelFiltrosHechos" ? "filtrosContainerHechos" : "filtrosContainerColeccion";
+    const container = document.getElementById(containerId);
+    const div = document.createElement("div");
+    div.className = "p-2 border rounded mb-2";
+
+    div.innerHTML = `
+    <div class="row g-2 align-items-end">
+      <div class="col-md-3">
+        <label class="form-label">Campo</label>
+        <select class="form-select campoFiltro">
+          <option value="titulo">Título</option>
+          <option value="descripcion">Descripción</option>
+          <option value="categoria">Categoría</option>
+          <option value="fechaAcontecimientoDesde">Fecha desde</option>
+          <option value="fechaAcontecimientoHasta">Fecha hasta</option>
+          <option value="ubicacion">Ubicación</option>
+          <option value="tipoMultimedia">Multimedia</option>
+        </select>
+      </div>
+
+      <div class="col-md-4 valorFiltroCol">
+        <label class="form-label">Valor</label>
+        <input type="text" class="form-control valorFiltro" placeholder="Texto o número">
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Tipo</label>
+        <select class="form-select tipoFiltro">
+          <option value="P">Incluir</option>
+          <option value="NP">Excluir</option>
+        </select>
+      </div>
+
+      <div class="col-md-2">
+        <button class="btn btn-outline-danger btn-sm" onclick="this.closest('div.p-2').remove()">✕</button>
+      </div>
+    </div>
+
+    <!-- Campos extra para ubicación -->
+    <div class="row mt-2 g-2 d-none camposUbicacion">
+      <div class="col-md-3"><input type="number" step="any" class="form-control latitud" placeholder="Latitud" readonly></div>
+      <div class="col-md-3"><input type="number" step="any" class="form-control longitud" placeholder="Longitud" readonly></div>
+      <div class="col-md-3"><input type="number" step="0.1" class="form-control radio" placeholder="Radio (km)" readonly></div>
+      <div class="col-md-3"><button class="btn btn-sm btn-outline-success w-100" onclick="abrirMapaUbicacion(this)">Seleccionar</button></div>
+    </div>
+  `;
+
+    const campo = div.querySelector(".campoFiltro");
+    campo.addEventListener("change", () => {
+        const camposUbicacion = div.querySelector(".camposUbicacion");
+        const valorCol = div.querySelector(".valorFiltroCol");
+        if (campo.value === "ubicacion") {
+            camposUbicacion.classList.remove("d-none");
+            valorCol.classList.add("d-none");
+        } else {
+            camposUbicacion.classList.add("d-none");
+            valorCol.classList.remove("d-none");
+        }
+    });
+
+    container.appendChild(div);
+}
+
+// Construir parámetros GET para filtros activos
+function construirParametrosFiltros(contexto) {
+    const containerId = contexto === "panelFiltrosHechos" ? "filtrosContainerHechos" : "filtrosContainerColeccion";
+    const filtros = document.querySelectorAll(`#${containerId} > div`);
+    const params = new URLSearchParams();
+
+    filtros.forEach(f => {
+        const campo = f.querySelector(".campoFiltro").value;
+        const tipo = f.querySelector(".tipoFiltro").value;
+        const valor = f.querySelector(".valorFiltro")?.value || null;
+        const lat = f.querySelector(".latitud")?.value;
+        const lon = f.querySelector(".longitud")?.value;
+        const radio = f.querySelector(".radio")?.value;
+
+        if (campo === "ubicacion" && lat && lon) {
+            params.append(`latitud${tipo}`, lat);
+            params.append(`longitud${tipo}`, lon);
+            if (radio) params.append(`radio${tipo}`, radio);
+        } else if (valor) {
+            params.append(`${campo}${tipo}`, valor);
+        }
+    });
+
+    return params;
+}
+
+// Aplicar filtros a hechos
+async function aplicarFiltrosHechos() {
+    const params = construirParametrosFiltros("panelFiltrosHechos");
+    const url = `${window.METAMAPA.API_AGREGADOR}/hechos?${params.toString()}`;
+    console.log("📡 Aplicando filtros hechos:", url);
+
+    try {
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error("Error al aplicar filtros");
+        const hechos = await resp.json();
+        inicializarMapa();
+        mostrarHechosEnMapa(hechos);
+        document.getElementById("tablaHechos").innerHTML = renderTablaHechos("Hechos filtrados", hechos);
+    } catch (e) {
+        alert("❌ Error al aplicar filtros");
+        console.error(e);
+    }
+}
+
+// Aplicar filtros en colecciones
+async function aplicarFiltrosColeccion() {
+    if (!coleccionSeleccionada) return alert("Seleccioná una colección primero.");
+    const params = construirParametrosFiltros("panelFiltrosColeccion");
+    const modo = document.getElementById("modoNav").value;
+    params.append("modoNav", modo);
+
+    const url = `${window.METAMAPA.API_COLECCIONES}/${coleccionSeleccionada}/hechos?${params.toString()}`;
+    console.log("📡 Aplicando filtros colección:", url);
+
+    try {
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error("Error al aplicar filtros");
+        const hechos = await resp.json();
+        inicializarMapa("mapaColeccion");
+        mostrarHechosEnMapa(hechos);
+    } catch (e) {
+        alert("❌ Error al aplicar filtros de colección");
         console.error(e);
     }
 }
