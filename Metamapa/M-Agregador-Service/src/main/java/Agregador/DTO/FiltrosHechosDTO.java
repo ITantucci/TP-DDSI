@@ -15,7 +15,7 @@ public class FiltrosHechosDTO {
   private LocalDate fechaAcontecimientoHastaP;
   private Float latitudP;
   private Float longitudP;
-  private Integer radioP;
+  private Float radioP;
   private String tipoMultimediaP;
   // --- Exclusión ---
   private String tituloNP;
@@ -27,6 +27,6 @@ public class FiltrosHechosDTO {
   private LocalDate fechaAcontecimientoHastaNP;
   private Float latitudNP;
   private Float longitudNP;
-  private Integer radioNP;
+  private Float radioNP;
   private String tipoMultimediaNP;
 }

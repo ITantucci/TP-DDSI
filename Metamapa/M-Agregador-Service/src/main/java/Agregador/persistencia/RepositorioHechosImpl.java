@@ -48,7 +48,7 @@ public class RepositorioHechosImpl implements RepositorioHechosCustom {
         criterios.add(new CriterioFechaReportaje(filtros.getFechaReporteDesdeP(), filtros.getFechaReporteHastaP(), true));
       if (filtros.getFechaAcontecimientoDesdeP() != null || filtros.getFechaAcontecimientoHastaP() != null)
         criterios.add(new CriterioFecha(filtros.getFechaAcontecimientoDesdeP(), filtros.getFechaAcontecimientoHastaP(), true));
-      if (filtros.getLatitudP() != null && filtros.getLongitudP() != null)
+      if (filtros.getLatitudP() != null && filtros.getLongitudP() != null && filtros.getRadioP() != null)
         criterios.add(new CriterioUbicacion(filtros.getLatitudP(), filtros.getLongitudP(),filtros.getRadioP(), true));
       if (filtros.getTipoMultimediaP() != null) criterios.add(new CriterioMultimedia(TipoMultimedia.valueOf(filtros.getTipoMultimediaP()), true));
     } else {
@@ -59,7 +59,7 @@ public class RepositorioHechosImpl implements RepositorioHechosCustom {
         criterios.add(new CriterioFechaReportaje(filtros.getFechaReporteDesdeNP(), filtros.getFechaReporteHastaNP(), false));
       if (filtros.getFechaAcontecimientoDesdeNP() != null || filtros.getFechaAcontecimientoHastaNP() != null)
         criterios.add(new CriterioFecha(filtros.getFechaAcontecimientoDesdeNP(), filtros.getFechaAcontecimientoHastaNP(), false));
-      if (filtros.getLatitudNP() != null && filtros.getLongitudNP() != null)
+      if (filtros.getLatitudNP() != null && filtros.getLongitudNP() != null&& filtros.getRadioNP() != null)
         criterios.add(new CriterioUbicacion(filtros.getLatitudNP(), filtros.getLongitudNP(),filtros.getRadioNP(), false));
       if (filtros.getTipoMultimediaNP() != null) criterios.add(new CriterioMultimedia(TipoMultimedia.valueOf(filtros.getTipoMultimediaNP()), false));
     }

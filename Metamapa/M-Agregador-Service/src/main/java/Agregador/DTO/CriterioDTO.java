@@ -18,7 +18,7 @@ public class CriterioDTO {
   private Integer idFuenteDeDatos;
   private Float latitud;
   private Float longitud;
-  private Integer radio;
+  private Float radio;
   private String tipoMultimedia;
   private Boolean inclusion;
 

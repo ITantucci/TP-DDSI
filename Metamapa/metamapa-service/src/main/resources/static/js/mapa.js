@@ -185,17 +185,94 @@ let circuloUbicacion;
 let radioActual = 5; // km
 let inputLatDestino, inputLonDestino, inputRadioDestino;
 
-function abrirMapaUbicacion(btn) {
-    const parent = btn.closest(".criterio-box");
-    inputLatDestino = parent.querySelector('[name="latitud"]');
-    inputLonDestino = parent.querySelector('[name="longitud"]');
-    inputRadioDestino = parent.querySelector('[name="radio"]');
+// ==================================================
+// 📍 Seleccionar ubicación en mapa (genérica)
+// ==================================================
+function abrirMapaUbicacion(boton) {
+    try {
+        // Buscar el contenedor más cercano que tenga inputs de coordenadas
+        const parent =
+            boton.closest(".criterio-box") ||
+            boton.closest(".p-2") ||
+            boton.closest(".row") ||
+            document;
 
-    const modal = new bootstrap.Modal(document.getElementById("modalUbicacion"));
-    modal.show();
+        // Buscar los inputs donde se guardarán los valores
+        const latInput =
+            parent.querySelector("input[name='latitud']") ||
+            parent.querySelector(".latitud");
+        const lonInput =
+            parent.querySelector("input[name='longitud']") ||
+            parent.querySelector(".longitud");
+        const radioInput =
+            parent.querySelector("input[name='radio']") ||
+            parent.querySelector(".radio");
 
-    setTimeout(() => inicializarMapaUbicacion(), 300);
+        // Guardar referencias globales para usarlas al confirmar
+        window._mapaUbicacionContext = { latInput, lonInput, radioInput };
+
+        // Abrir modal
+        const modal = new bootstrap.Modal(document.getElementById("modalUbicacion"));
+        modal.show();
+
+        // Inicializar mapa solo si no existe
+        setTimeout(() => {
+            const mapaCont = document.getElementById("mapaUbicacion");
+            if (!mapaCont._leaflet_id) {
+                const map = L.map(mapaCont).setView([-34.6, -58.4], 12);
+                L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                    maxZoom: 18,
+                }).addTo(map);
+
+                let marker = null;
+                let circle = null;
+
+                map.on("click", (e) => {
+                    const { lat, lng } = e.latlng;
+                    if (marker) map.removeLayer(marker);
+                    marker = L.marker([lat, lng]).addTo(map);
+
+                    const radioKm = parseFloat(
+                        document.getElementById("radioSlider").value
+                    );
+                    if (circle) map.removeLayer(circle);
+                    circle = L.circle([lat, lng], { radius: radioKm * 1000 }).addTo(map);
+
+                    mapaCont.dataset.lat = lat;
+                    mapaCont.dataset.lng = lng;
+                });
+            }
+        }, 200);
+    } catch (err) {
+        console.error("❌ Error al abrir mapa de ubicación:", err);
+    }
 }
+
+function confirmarUbicacion() {
+    const mapaCont = document.getElementById("mapaUbicacion");
+    const lat = parseFloat(mapaCont.dataset.lat);
+    const lng = parseFloat(mapaCont.dataset.lng);
+    const radio = parseFloat(document.getElementById("radioSlider").value);
+
+    if (isNaN(lat) || isNaN(lng)) {
+        alert("Seleccioná una ubicación en el mapa.");
+        return;
+    }
+
+    // Asignar a los campos detectados
+    if (window._mapaUbicacionContext) {
+        const { latInput, lonInput, radioInput } = window._mapaUbicacionContext;
+        if (latInput) latInput.value = lat.toFixed(6);
+        if (lonInput) lonInput.value = lng.toFixed(6);
+        if (radioInput) radioInput.value = radio.toFixed(1);
+    }
+
+    bootstrap.Modal.getInstance(document.getElementById("modalUbicacion")).hide();
+}
+
+
+// Confirmar selección de ubicación
+
 
 function inicializarMapaUbicacion() {
     if (!mapaUbicacion) {
@@ -254,17 +331,3 @@ function actualizarCirculoUbicacion(lat, lng) {
     mapaUbicacion.setView([lat, lng], 12);
 }
 
-function confirmarUbicacion() {
-    if (!marcadorUbicacion) {
-        alert("Debes seleccionar un punto en el mapa.");
-        return;
-    }
-
-    const { lat, lng } = marcadorUbicacion.getLatLng();
-    inputLatDestino.value = lat.toFixed(6);
-    inputLonDestino.value = lng.toFixed(6);
-    inputRadioDestino.value = radioActual.toFixed(1);
-
-    const modal = bootstrap.Modal.getInstance(document.getElementById("modalUbicacion"));
-    modal.hide();
-}

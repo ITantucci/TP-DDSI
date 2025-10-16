@@ -69,13 +69,19 @@ public class ControllerAgregador {
   }*/
   // Listar todos los hechos filtrados
 @GetMapping("/hechos")
-public ResponseEntity<List<Hecho>> getAgregadorHechos(@Valid FiltrosHechosDTO filtros) {
-  List<Criterio> criterios = new ArrayList<>();
-  criterios.addAll(repositorioHechos.construirCriterios(filtros, true));
-  criterios.addAll(repositorioHechos.construirCriterios(filtros, false));
-  if (criterios.isEmpty()) return ResponseEntity.ok(repositorioHechos.findAll());
+public ResponseEntity<?> getAgregadorHechos(@Valid FiltrosHechosDTO filtros) {
+  try {
+    List<Criterio> criterios = new ArrayList<>();
+    criterios.addAll(repositorioHechos.construirCriterios(filtros, true));
+    criterios.addAll(repositorioHechos.construirCriterios(filtros, false));
+    if (criterios.isEmpty()) return ResponseEntity.ok(repositorioHechos.findAll());
 
-  List<Hecho> filtrados = repositorioHechos.filtrarPorCriterios(criterios, null);
-  return ResponseEntity.ok(filtrados);
+    List<Hecho> filtrados = repositorioHechos.filtrarPorCriterios(criterios, null);
+    return ResponseEntity.ok(filtrados);
+  } catch (Exception e) {
+    e.printStackTrace();
+    return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+  }
 }
+
 }
