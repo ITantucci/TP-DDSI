@@ -1,4 +1,4 @@
-console.log("✅ mapa.js cargado correctamente");
+console.log("mapa.js cargado correctamente");
 let mapa;
 let markersLayer;
 let legendDiv;
@@ -20,7 +20,7 @@ function colorPorCategoria(cat) {
 function inicializarMapa(divId = "mapa") {
     const cont = document.getElementById(divId);
     if (!cont) {
-        console.warn(`⚠️ No se encontró el contenedor #${divId}, reintentando...`);
+        console.warn(`No se encontró el contenedor #${divId}, reintentando...`);
         setTimeout(() => inicializarMapa(divId), 200);
         return;
     }
@@ -109,7 +109,7 @@ function actualizarLeyenda(hechos) {
   `;
 }
 // ==========================
-// 🗺️ Mapa selector para crear hecho
+// Mapa selector para crear hecho
 // ==========================
 let mapaSeleccion;
 let marcadorSeleccion;
@@ -177,7 +177,7 @@ function limpiarMapaSeleccion() {
     }
 }
 // =============================
-// 🌍 MAPA DE UBICACIÓN (criterios con radio)
+// MAPA DE UBICACIÓN (criterios con radio)
 // =============================
 let mapaUbicacion;
 let marcadorUbicacion;
@@ -186,7 +186,7 @@ let radioActual = 5; // km
 let inputLatDestino, inputLonDestino, inputRadioDestino;
 
 // ==================================================
-// 📍 Seleccionar ubicación en mapa (genérica)
+// Seleccionar ubicación en mapa (genérica)
 // ==================================================
 function abrirMapaUbicacion(boton) {
     try {
@@ -244,7 +244,7 @@ function abrirMapaUbicacion(boton) {
             }
         }, 200);
     } catch (err) {
-        console.error("❌ Error al abrir mapa de ubicación:", err);
+        console.error("Error al abrir mapa de ubicación:", err);
     }
 }
 

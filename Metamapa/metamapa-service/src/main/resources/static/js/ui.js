@@ -1,4 +1,4 @@
-console.log("✅ ui.js cargado correctamente");
+console.log("ui.js cargado correctamente");
 const cont = document.getElementById("contenido");
 
 async function mostrar(seccion) {
@@ -68,9 +68,6 @@ async function mostrar(seccion) {
     }
 }
 
-
-
-
 // Mostrar detalle
 function mostrarDetalleHecho(h) {
     const modal = new bootstrap.Modal(document.getElementById("modalDetalle"));
@@ -97,19 +94,19 @@ function mostrarDetalleHecho(h) {
       </div>
 
       <hr>
-      <h6>📅 Fechas</h6>
+      <h6>Fechas</h6>
       <p><b>Fecha del hecho:</b> ${h.fechaHecho || "-"}</p>
       <p><b>Fecha de carga:</b> ${h.fechaCarga || "-"}</p>
       <p><b>Fecha de modificación:</b> ${h.fechaModificacion || "-"}</p>
 
       <hr>
-      <h6>🧠 Datos internos</h6>
+      <h6>Datos internos</h6>
       <p><b>Perfil:</b> ${h.perfil || "<i>Sin perfil</i>"}</p>
       <p><b>Consensos:</b> ${h.consensos && h.consensos.length ? h.consensos.join(", ") : "<i>Ninguno</i>"}</p>
       <pre class="bg-light p-2 rounded"><b>Metadata:</b>\n${JSON.stringify(h.metadata || {}, null, 2)}</pre>
 
       <hr>
-      <h6>📸 Multimedia</h6>
+      <h6>Multimedia</h6>
       ${!h.multimedia?.length
         ? "<p><i>Sin archivos multimedia</i></p>"
         : h.multimedia.map(m =>
@@ -349,12 +346,12 @@ function limpiarFormularioColeccion() {
 // Inicialización al cargar
 // ==========================
 document.addEventListener("DOMContentLoaded", async () => {
-    console.log("🚀 Iniciando MetaMapa...");
+    console.log("Iniciando MetaMapa...");
     await mostrar("hechos");
 });
 
 // ==================================================
-// 🧩 Gestión dinámica de categorías
+// Gestión dinámica de categorías
 // ==================================================
 let categoriasDisponibles = new Set();
 
@@ -391,7 +388,7 @@ async function cargarCategoriasExistentes() {
             select.appendChild(opt);
         }
     } catch (e) {
-        console.error("❌ Error al cargar categorías:", e);
+        console.error("Error al cargar categorías:", e);
     }
 }
 
@@ -443,7 +440,7 @@ async function mostrarColecciones() {
       </div>
     `).join("");
     } catch (e) {
-        cont.innerHTML = `<div class="alert alert-danger">❌ Error al cargar colecciones</div>`;
+        cont.innerHTML = `<div class="alert alert-danger">Error al cargar colecciones</div>`;
         console.error("Error al cargar colecciones:", e);
     }
 }
@@ -604,7 +601,7 @@ async function aplicarFiltrosHechos() {
         mostrarHechosEnMapa(hechos);
         document.getElementById("tablaHechos").innerHTML = renderTablaHechos("Hechos filtrados", hechos);
     } catch (e) {
-        alert("❌ Error al aplicar filtros");
+        alert("Error al aplicar filtros");
         console.error(e);
     }
 }
@@ -626,7 +623,7 @@ async function aplicarFiltrosColeccion() {
         inicializarMapa("mapaColeccion");
         mostrarHechosEnMapa(hechos);
     } catch (e) {
-        alert("❌ Error al aplicar filtros de colección");
+        alert("Error al aplicar filtros de colección");
         console.error(e);
     }
 }

@@ -38,7 +38,7 @@ public class RepositorioColeccionesImpl implements RepositorioColeccionesCustom 
 
   @Override
   public List<Criterio> getCriteriosColeccion(UUID id) {
-    // 1️⃣ Buscar la colección con sus criterios persistidos
+    // Buscar la colección con sus criterios persistidos
     Coleccion coleccion = em.createQuery("""
             SELECT c FROM Coleccion c 
             LEFT JOIN FETCH c.criterios 
@@ -47,7 +47,7 @@ public class RepositorioColeccionesImpl implements RepositorioColeccionesCustom 
         .setParameter("id", id)
         .getSingleResult();
 
-    // 2️⃣ Construir lista de criterios (base + filtros)
+    // Construir lista de criterios (base + filtros)
     List<Criterio> criterios = new ArrayList<>();
     criterios.addAll(coleccion.getCriterios());
 

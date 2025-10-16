@@ -11,6 +11,7 @@ import lombok.Setter;
 public abstract class Consenso {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Getter
   public Integer id;
   @Column(unique = true)
   @Setter

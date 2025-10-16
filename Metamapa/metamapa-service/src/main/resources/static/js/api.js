@@ -1,4 +1,4 @@
-console.log("✅ api.js cargado correctamente");
+console.log("api.js cargado correctamente");
 // Crear un nuevo hecho en la fuente dinámica
 async function crearHecho(e) {
     e.preventDefault();
@@ -25,11 +25,11 @@ async function crearHecho(e) {
         multimedia: multimedia
     };
 
-    console.log("📤 Enviando hecho:", data);
+    console.log("Enviando hecho:", data);
 
     // === Validar que todos los obligatorios estén presentes ===
     if (!data.titulo || !data.descripcion || isNaN(data.fuenteId)) {
-        alert("⚠️ Debes completar al menos título, descripción y fuente.");
+        alert("Debes completar al menos título, descripción y fuente.");
         return;
     }
 
@@ -53,7 +53,7 @@ async function crearHecho(e) {
 
     } else {
         const errorTxt = await resp.text();
-        res.innerHTML = `❌ Error al crear el hecho: ${errorTxt}`;
+        res.innerHTML = `Error al crear el hecho: ${errorTxt}`;
         res.className = "text-danger";
     }
 }
@@ -119,7 +119,7 @@ async function crearColeccion(e) {
         : `${window.METAMAPA.API_COLECCIONES}/`;
     const method = id ? "PUT" : "POST";
 
-    console.log("📤 Enviando colección:", data);
+    console.log("Enviando colección:", data);
 
     const resp = await fetch(url, {
         method,
@@ -139,7 +139,7 @@ async function crearColeccion(e) {
         mostrar("colecciones");
     } else {
         const txt = await resp.text();
-        res.innerHTML = `❌ Error: ${txt}`;
+        res.innerHTML = `Error: ${txt}`;
         res.className = "text-danger";
     }
 }
@@ -171,11 +171,11 @@ async function registrarFuente(url) {
 // Pedir al agregador que actualice los hechos desde las fuentes
 async function actualizarHechos() {
     const resp = await fetch(`${window.METAMAPA.API_AGREGADOR}/actualizarHechos`, { method: "POST" });
-    alert(resp.ok ? "✅ Hechos actualizados desde las fuentes." : "⚠️ Error al actualizar hechos.");
+    alert(resp.ok ? "Hechos actualizados desde las fuentes." : "⚠️ Error al actualizar hechos.");
 }
 
 // Ejecutar curado/consenso de hechos en el agregador
 async function curarHechos() {
     const resp = await fetch(`${window.METAMAPA.API_AGREGADOR}/consensuarHechos`, { method: "POST" });
-    alert(resp.ok ? "🧠 Curado completado correctamente." : "⚠️ Error al curar hechos.");
+    alert(resp.ok ? "Curado completado correctamente." : "⚠️ Error al curar hechos.");
 }

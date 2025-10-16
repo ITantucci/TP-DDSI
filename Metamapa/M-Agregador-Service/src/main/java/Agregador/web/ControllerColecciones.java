@@ -1,11 +1,10 @@
 package Agregador.web;
 import Agregador.DTO.*;
 import Agregador.Service.ServiceColecciones;
-import Agregador.business.Colecciones.Criterio;
+import Agregador.business.Colecciones.Coleccion;
 import Agregador.business.Consenso.ModosDeNavegacion;
 import Agregador.business.Hechos.Hecho;
 import Agregador.persistencia.RepositorioColecciones;
-import Agregador.persistencia.RepositorioHechos;
 import java.util.*;
 import jakarta.validation.Valid;
 import org.springframework.http.*;
@@ -33,15 +32,15 @@ public class ControllerColecciones {
 
   // Obtener todas las colecciones (get /colecciones)
   @GetMapping({"", "/"})
-  public ResponseEntity<List<ColeccionDTO>> obtenerTodasLasColecciones() {
-    return ResponseEntity.ok(serviceColecciones.obtenerTodasLasColecciones());
+  public ResponseEntity<List<Coleccion>> getColecciones() {
+    return ResponseEntity.ok(serviceColecciones.getColecciones());
   }
 
   // Obtener una colección por ID (get /colecciones/{id})
   @GetMapping("/{id}")
-  public ResponseEntity<ColeccionDTO> obtenerColeccionPorId(@PathVariable UUID id) {
-    ColeccionDTO dto = serviceColecciones.obtenerColeccionPorId(id);
-    return ResponseEntity.ok(dto);
+  public ResponseEntity<Optional<Coleccion>> getColeccion(@PathVariable UUID id) {
+    Optional<Coleccion> coleccion = serviceColecciones.getColeccion(id);
+    return ResponseEntity.ok(coleccion);
   }
 
   // Crear una coleccion (post /colecciones)

@@ -1,4 +1,6 @@
 package Agregador.persistencia;
+
+import Agregador.DTO.*;
 import Agregador.DTO.FiltrosHechosDTO;
 import Agregador.business.Colecciones.*;
 import Agregador.business.Consenso.Consenso;

@@ -1,5 +1,7 @@
 package Agregador.persistencia;
 import Agregador.business.Colecciones.*;
+import Agregador.DTO.*;
+
 import java.util.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 
