@@ -50,48 +50,10 @@ async function mostrar(seccion) {
       <div id="mapaColeccion" class="mapa"></div>
     </div>`;
         setTimeout(() => inicializarMapa("mapaColeccion"), 100);
-        await mostrarColecciones();
+        const colecciones = await mostrarColecciones();
+
+
     }
-    if (seccion === "colecciones") {
-        const cont = document.getElementById("contenido");
-        cont.innerHTML = `
-    <div id="coleccionesView">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4>Colecciones</h4>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalColeccion">+ Nueva Colección</button>
-      </div>
-
-      <div class="mb-3">
-        <label for="modoNav" class="form-label">Modo de navegación:</label>
-        <select id="modoNav" class="form-select form-select-sm" style="width:auto; display:inline-block;">
-          <option value="IRRESTRICTA">Irrestricta</option>
-          <option value="CURADA">Curada</option>
-        </select>
-      </div>
-
-      <div id="filtrosColeccion" class="border p-3 rounded mb-3 bg-light">
-        <h6>Filtros temporales</h6>
-        <div class="row g-2">
-          <div class="col-md-4">
-            <input id="tituloNP" class="form-control form-control-sm" placeholder="Excluir título...">
-          </div>
-          <div class="col-md-4">
-            <input id="categoriaP" class="form-control form-control-sm" placeholder="Incluir categoría...">
-          </div>
-          <div class="col-md-4">
-            <button class="btn btn-sm btn-outline-success w-100" onclick="aplicarFiltrosColeccion()">Aplicar filtros</button>
-          </div>
-        </div>
-      </div>
-
-      <div id="listaColecciones" class="mb-3"></div>
-      <div id="mapaColeccion" class="mapa"></div>
-    </div>`;
-
-        await mostrarColecciones();
-    }
-
-
     if (seccion === "fuentes") {
         cont.innerHTML = "<p>Cargando fuentes...</p>";
         const fuentes = await obtenerFuentes();

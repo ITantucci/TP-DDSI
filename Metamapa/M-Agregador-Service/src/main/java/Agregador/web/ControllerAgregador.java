@@ -1,8 +1,13 @@
 package Agregador.web;
+import Agregador.DTO.FiltrosHechosDTO;
+import Agregador.business.Colecciones.Criterio;
+import Agregador.business.Consenso.ModosDeNavegacion;
 import Agregador.business.Hechos.Hecho;
+import jakarta.validation.Valid;
 import java.util.*;
 import Agregador.Service.ServiceFuenteDeDatos;
 import Agregador.persistencia.*;
+import java.util.stream.Stream;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import Agregador.Service.ServiceConsenso;
@@ -56,10 +61,21 @@ public class ControllerAgregador {
     serviceConsenso.consensuarHechos();
     return ResponseEntity.ok("Se consensuaron los hechos");
   }
-
+/*
   // Listar todos los hechos
   @GetMapping("/hechos")
   public ResponseEntity<List<Hecho>> getAgregadorHechos() {
     return ResponseEntity.ok(repositorioHechos.findAll());
-  }
+  }*/
+  // Listar todos los hechos filtrados
+@GetMapping("/hechos")
+public ResponseEntity<List<Hecho>> getAgregadorHechos(@Valid FiltrosHechosDTO filtros) {
+  List<Criterio> criterios = new ArrayList<>();
+  criterios.addAll(repositorioHechos.construirCriterios(filtros, true));
+  criterios.addAll(repositorioHechos.construirCriterios(filtros, false));
+  if (criterios.isEmpty()) return ResponseEntity.ok(repositorioHechos.findAll());
+
+  List<Hecho> filtrados = repositorioHechos.filtrarPorCriterios(criterios, null);
+  return ResponseEntity.ok(filtrados);
+}
 }

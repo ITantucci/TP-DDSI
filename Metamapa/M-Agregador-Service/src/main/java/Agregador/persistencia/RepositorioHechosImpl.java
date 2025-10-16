@@ -1,7 +1,8 @@
 package Agregador.persistencia;
-import Agregador.business.Colecciones.Criterio;
+import Agregador.DTO.FiltrosHechosDTO;
+import Agregador.business.Colecciones.*;
 import Agregador.business.Consenso.Consenso;
-import Agregador.business.Hechos.Hecho;
+import Agregador.business.Hechos.*;
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.*;
 import java.util.*;
@@ -35,5 +36,33 @@ public class RepositorioHechosImpl implements RepositorioHechosCustom {
           .toList();
     }
     return filtrados;
+  }
+  @Override
+  public List<Criterio> construirCriterios(FiltrosHechosDTO filtros, boolean incluir) {
+    List<Criterio> criterios = new ArrayList<>();
+    if (incluir) {
+      if (filtros.getTituloP() != null) criterios.add(new CriterioTitulo(filtros.getTituloP(), true));
+      if (filtros.getDescripcionP() != null) criterios.add(new CriterioDescripcion(filtros.getDescripcionP(), true));
+      if (filtros.getCategoriaP() != null) criterios.add(new CriterioCategoria(filtros.getCategoriaP(), true));
+      if (filtros.getFechaReporteDesdeP() != null || filtros.getFechaReporteHastaP() != null)
+        criterios.add(new CriterioFechaReportaje(filtros.getFechaReporteDesdeP(), filtros.getFechaReporteHastaP(), true));
+      if (filtros.getFechaAcontecimientoDesdeP() != null || filtros.getFechaAcontecimientoHastaP() != null)
+        criterios.add(new CriterioFecha(filtros.getFechaAcontecimientoDesdeP(), filtros.getFechaAcontecimientoHastaP(), true));
+      if (filtros.getLatitudP() != null && filtros.getLongitudP() != null)
+        criterios.add(new CriterioUbicacion(filtros.getLatitudP(), filtros.getLongitudP(),filtros.getRadioP(), true));
+      if (filtros.getTipoMultimediaP() != null) criterios.add(new CriterioMultimedia(TipoMultimedia.valueOf(filtros.getTipoMultimediaP()), true));
+    } else {
+      if (filtros.getTituloNP() != null) criterios.add(new CriterioTitulo(filtros.getTituloNP(), false));
+      if (filtros.getDescripcionNP() != null) criterios.add(new CriterioDescripcion(filtros.getDescripcionNP(), false));
+      if (filtros.getCategoriaNP() != null) criterios.add(new CriterioCategoria(filtros.getCategoriaNP(), false));
+      if (filtros.getFechaReporteDesdeNP() != null || filtros.getFechaReporteHastaNP() != null)
+        criterios.add(new CriterioFechaReportaje(filtros.getFechaReporteDesdeNP(), filtros.getFechaReporteHastaNP(), false));
+      if (filtros.getFechaAcontecimientoDesdeNP() != null || filtros.getFechaAcontecimientoHastaNP() != null)
+        criterios.add(new CriterioFecha(filtros.getFechaAcontecimientoDesdeNP(), filtros.getFechaAcontecimientoHastaNP(), false));
+      if (filtros.getLatitudNP() != null && filtros.getLongitudNP() != null)
+        criterios.add(new CriterioUbicacion(filtros.getLatitudNP(), filtros.getLongitudNP(),filtros.getRadioNP(), false));
+      if (filtros.getTipoMultimediaNP() != null) criterios.add(new CriterioMultimedia(TipoMultimedia.valueOf(filtros.getTipoMultimediaNP()), false));
+    }
+    return criterios;
   }
 }
