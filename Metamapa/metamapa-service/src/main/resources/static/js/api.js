@@ -4,13 +4,6 @@ async function crearHecho(e) {
     e.preventDefault();
     const f = e.target;
 
-    // === Construir lista de multimedia ===
-    const multimediaInputs = f.querySelectorAll('#multimediaContainer .row');
-    const multimedia = Array.from(multimediaInputs).map(row => ({
-        tipoMultimedia: row.querySelector('[name="tipoMultimedia"]').value.trim(),
-        path: row.querySelector('[name="path"]').value.trim()
-    })).filter(m => m.tipoMultimedia && m.path);
-
     // === Armar el objeto idéntico al JSON de Postman ===
     const data = {
         titulo: f.titulo.value.trim(),
@@ -21,8 +14,7 @@ async function crearHecho(e) {
         fechaHecho: f.fechaHecho?.value || new Date().toISOString().split("T")[0],
         idUsuario: parseInt(f.idUsuario.value),
         fuenteId: parseInt(f.idFuente.value),
-        anonimo: f.anonimo.checked,
-        multimedia: multimedia
+        anonimo: f.anonimo.checked
     };
 
     console.log("Enviando hecho:", data);
@@ -36,18 +28,7 @@ async function crearHecho(e) {
     // === Enviar al backend exactamente como Postman ===
     const formData = new FormData();
 
-    // Datos del hecho
-    const hechoJSON = {
-        titulo: f.titulo.value.trim(),
-        descripcion: f.descripcion.value.trim(),
-        categoria: f.categoria.value.trim(),
-        latitud: parseFloat(f.latitud.value),
-        longitud: parseFloat(f.longitud.value),
-        fechaHecho: f.fechaHecho?.value || new Date().toISOString().split("T")[0],
-        idUsuario: parseInt(f.idUsuario.value),
-        anonimo: f.anonimo.checked
-    };
-    formData.append("hecho", JSON.stringify(hechoJSON));
+    formData.append("hecho", JSON.stringify(data));
 
     // ✅ Agregar todos los archivos seleccionados
     const input = document.getElementById("inputMultimedia");
@@ -56,7 +37,7 @@ async function crearHecho(e) {
     }
 
     // Enviar al backend
-    const resp = await fetch(`${window.METAMAPA.API_FUENTE_DINAMICA}/${f.idFuente.value}/hechos`, {
+    const resp = await fetch(`http://localhost:9001/api-fuentesDeDatos/${data.fuenteId}/hechos`, {
         method: "POST",
         body: formData // NO JSON.stringify, NO headers
     });

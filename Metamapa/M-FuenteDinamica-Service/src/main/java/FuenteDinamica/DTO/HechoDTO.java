@@ -21,6 +21,7 @@ public class HechoDTO {
   private String fechaHecho;
   @NotNull
   private Integer idUsuario;
+  private Integer fuenteId; // solo para subir hecho...
   private Boolean anonimo = false;
   private Map<String, String> metadata;
 

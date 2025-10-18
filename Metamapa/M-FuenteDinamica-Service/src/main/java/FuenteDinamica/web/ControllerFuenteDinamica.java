@@ -99,17 +99,19 @@ public class ControllerFuenteDinamica {
       File directorio = new File(uploadDir);
       if (!directorio.exists())
         directorio.mkdirs();
-      for (MultipartFile archivo : archivos) {
-        if (!archivo.isEmpty()) {
-          String nombreArchivo = System.currentTimeMillis() + "_" + archivo.getOriginalFilename();
-          Path rutaArchivo = Paths.get(uploadDir + nombreArchivo);
-          Files.copy(archivo.getInputStream(), rutaArchivo);
-          // 🧩 Crear entidad Multimedia y asociarla al Hecho
-          Multimedia mm = new Multimedia();
-          mm.setPath(nombreArchivo);
-          mm.setTipoMultimedia(deducirTipo(Objects.requireNonNull(archivo.getContentType())));
-          mm.setHecho(hecho);
-          hecho.agregarMultimedia(mm);
+      if (archivos != null) {
+        for (MultipartFile archivo : archivos) {
+          if (!archivo.isEmpty()) {
+            String nombreArchivo = System.currentTimeMillis() + "_" + archivo.getOriginalFilename();
+            Path rutaArchivo = Paths.get(uploadDir + nombreArchivo);
+            Files.copy(archivo.getInputStream(), rutaArchivo);
+            // 🧩 Crear entidad Multimedia y asociarla al Hecho
+            Multimedia mm = new Multimedia();
+            mm.setPath(nombreArchivo);
+            mm.setTipoMultimedia(deducirTipo(Objects.requireNonNull(archivo.getContentType())));
+            mm.setHecho(hecho);
+            hecho.agregarMultimedia(mm);
+          }
         }
       }
       // 5️⃣ Guardar hecho en BD
