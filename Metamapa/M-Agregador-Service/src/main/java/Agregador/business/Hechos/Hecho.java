@@ -39,7 +39,6 @@ public class Hecho {
   @Column(name = "valor")
   private Map<String, String> metadata;
 
-  //TODO: Chequear si Categoria lo modelamos como string o un enum
   public Hecho(){}
   public Hecho(
           String titulo,

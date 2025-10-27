@@ -2,8 +2,15 @@ console.log("ui.js cargado correctamente");
 const cont = document.getElementById("contenido");
 
 async function mostrar(seccion) {
-    if (seccion === "hechos") {
-        cont.innerHTML = `
+    cont.innerHTML = ""; // limpiar contenido
+
+    if (seccion === "hechos") await mostrarHechosView();
+    else if (seccion === "colecciones") await mostrarColeccionesView();
+    else if (seccion === "fuentes") await mostrarFuentesView();
+}
+
+async function mostrarHechosView() {
+    cont.innerHTML = `
       <h3>Hechos curados</h3>
       <div id="panelFiltrosHechos" class="border p-3 rounded bg-light mb-3">
         <div class="d-flex justify-content-between align-items-center mb-2">
@@ -16,16 +23,14 @@ async function mostrar(seccion) {
       <div id="mapa" class="mapa"></div>
       <div id="tablaHechos" class="mt-3"></div>
     `;
+    setTimeout(() => inicializarMapa(), 100);
+    const hechos = await obtenerHechos();
+    setTimeout(() => mostrarHechosEnMapa(hechos), 200);
+    document.getElementById("tablaHechos").innerHTML = renderTablaHechos("Hechos curados", hechos);
+}
 
-        setTimeout(() => inicializarMapa(), 100);
-        const hechos = await obtenerHechos();
-        setTimeout(() => mostrarHechosEnMapa(hechos), 200);
-        document.getElementById("tablaHechos").innerHTML = renderTablaHechos("Hechos curados", hechos);
-    }
-
-    if (seccion === "colecciones") {
-        const cont = document.getElementById("contenido");
-        cont.innerHTML = `
+async function mostrarColeccionesView() {
+    cont.innerHTML = `
       <div id="coleccionesView">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h4>Colecciones</h4>
@@ -51,21 +56,21 @@ async function mostrar(seccion) {
 
         <div id="listaColecciones" class="mb-3"></div>
         <div id="mapaColeccion" class="mapa"></div>
-      </div>`;
+      </div>
+    `;
+    setTimeout(() => inicializarMapa("mapaColeccion"), 100);
+    await mostrarColecciones();
+}
 
-        setTimeout(() => inicializarMapa("mapaColeccion"), 100);
-        await mostrarColecciones();
-    }
-
-    if (seccion === "fuentes") {
-        cont.innerHTML = "<p>Cargando fuentes...</p>";
-        const fuentes = await obtenerFuentes();
-        cont.innerHTML = `
+async function mostrarFuentesView() {
+    cont.innerHTML = "<p>Cargando fuentes...</p>";
+    const fuentes = await obtenerFuentes();
+    cont.innerHTML = `
       <h3>Fuentes registradas (${fuentes.length})</h3>
       <ul class="list-group">
         ${fuentes.map(u => `<li class="list-group-item">${u}</li>`).join("")}
-      </ul>`;
-    }
+      </ul>
+    `;
 }
 
 // Mostrar detalle
@@ -73,7 +78,7 @@ function mostrarDetalleHecho(h) {
     const modal = new bootstrap.Modal(document.getElementById("modalDetalle"));
 
     // Armar HTML detallado con todos los campos
-    const detalle = `
+    document.getElementById("detalleHecho").innerHTML = `
     <div class="container-fluid">
       <h4 class="mb-3">${h.titulo}</h4>
 
@@ -117,11 +122,8 @@ function mostrarDetalleHecho(h) {
         ).join("")}
     </div>
   `;
-
-    document.getElementById("detalleHecho").innerHTML = detalle;
     modal.show();
 }
-
 
 // Render tabla
 function renderTablaHechos(titulo, hechos) {
@@ -144,7 +146,6 @@ function renderTablaHechos(titulo, hechos) {
       </tbody>
     </table>`;
 }
-
 
 // Formulario Hecho
 function agregarMultimedia() {
@@ -233,8 +234,6 @@ function agregarCriterio(criterioExistente = null) {
   </div>
 </div>
 
-
-
     <div class="row mb-2 campos-multimedia d-none">
       <div class="col">
         <label>Tipo de Multimedia</label>
@@ -303,7 +302,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-
 // Limpiar marcador cuando se cierra el modal
 modalHecho.addEventListener("hidden.bs.modal", limpiarMapaSeleccion);
 
@@ -354,8 +352,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 // Gestión dinámica de categorías
 // ==================================================
 let categoriasDisponibles = new Set();
-
-
 
 // Obtener categorías únicas desde los hechos actuales
 async function cargarCategoriasExistentes() {
@@ -424,7 +420,6 @@ let coleccionSeleccionada = null;
 async function mostrarColecciones() {
     const cont = document.getElementById("listaColecciones");
     cont.innerHTML = "<p class='text-muted'>Cargando colecciones...</p>";
-
     try {
         const resp = await fetch(`${window.METAMAPA.API_COLECCIONES}`);
         const colecciones = await resp.json();
@@ -451,7 +446,6 @@ async function verHechosColeccion(idColeccion) {
     const modo = document.getElementById("modoNav").value;
     const url = `${window.METAMAPA.API_COLECCIONES}/${idColeccion}/hechos?modoNavegacion=${modo}`;
     console.log("📡 Cargando hechos:", url);
-
     try {
         const resp = await fetch(url);
         if (!resp.ok) throw new Error("Respuesta no OK del servidor");
@@ -557,7 +551,6 @@ function agregarFiltro(contexto) {
             valorCol.classList.remove("d-none");
         }
     });
-
     container.appendChild(div);
 }
 
@@ -607,6 +600,7 @@ async function aplicarFiltrosHechos() {
 }
 
 // Aplicar filtros en colecciones
+/*
 async function aplicarFiltrosColeccion() {
     if (!coleccionSeleccionada) return alert("Seleccioná una colección primero.");
     const params = construirParametrosFiltros("panelFiltrosColeccion");
@@ -626,4 +620,4 @@ async function aplicarFiltrosColeccion() {
         alert("Error al aplicar filtros de colección");
         console.error(e);
     }
-}
+}*/

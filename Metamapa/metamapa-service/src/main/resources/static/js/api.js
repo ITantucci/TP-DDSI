@@ -12,7 +12,7 @@ async function crearHecho(e) {
         latitud: parseFloat(f.latitud.value),
         longitud: parseFloat(f.longitud.value),
         fechaHecho: f.fechaHecho?.value || new Date().toISOString().split("T")[0],
-        idUsuario: parseInt(f.idUsuario.value),
+        idUsuario: parseInt(f.idUsuario.value), //TODO: obtener del login
         fuenteId: parseInt(f.idFuente.value),
         anonimo: f.anonimo.checked
     };
@@ -52,7 +52,6 @@ async function crearHecho(e) {
         const modal = bootstrap.Modal.getInstance(document.getElementById("modalHecho"));
         modal.hide();
         limpiarFormularioHecho();
-
     } else {
         const errorTxt = await resp.text();
         res.innerHTML = `Error al crear el hecho: ${errorTxt}`;
@@ -73,46 +72,38 @@ async function obtenerHechosDeColeccion(id) {
     return resp.ok ? resp.json() : [];
 }
 
+// Helper para armar un criterio desde un div
+function armarCriterio(div) {
+    const get = n => div.querySelector(`[name="${n}"]`)?.value?.trim() || null;
+    const num = n => parseFloat(get(n));
+
+    return {
+        tipo: get("tipo"),
+        valor: get("valor"),
+        inclusion: get("inclusion") === "true",
+        ...(get("fechaDesde") && { fechaDesde: get("fechaDesde") }),
+        ...(get("fechaHasta") && { fechaHasta: get("fechaHasta") }),
+        ...(get("idFuenteDeDatos") && { idFuenteDeDatos: parseInt(get("idFuenteDeDatos")) }),
+        ...(num("latitud") && { latitud: num("latitud") }),
+        ...(num("longitud") && { longitud: num("longitud") }),
+        ...(num("radio") && { radio: num("radio") }),
+        ...(get("tipoMultimedia") && { tipoMultimedia: get("tipoMultimedia") })
+    };
+}
+
 // Crear o actualizar colección
 async function crearColeccion(e) {
     e.preventDefault();
     const f = e.target;
 
     // --- recolectar criterios ---
-    const criterios = [];
-    document.querySelectorAll("#criteriosContainer .criterio-box").forEach(div => {
-        const criterio = {
-            tipo: div.querySelector('[name="tipo"]').value,
-            valor: div.querySelector('[name="valor"]').value || null,
-            inclusion: div.querySelector('[name="inclusion"]').value === "true"
-        };
-
-        const fd = div.querySelector('[name="fechaDesde"]')?.value;
-        const fh = div.querySelector('[name="fechaHasta"]')?.value;
-        if (fd) criterio.fechaDesde = fd;
-        if (fh) criterio.fechaHasta = fh;
-
-        const idFuente = div.querySelector('[name="idFuenteDeDatos"]')?.value;
-        if (idFuente) criterio.idFuenteDeDatos = parseInt(idFuente);
-
-        const lat = div.querySelector('[name="latitud"]')?.value;
-        const lon = div.querySelector('[name="longitud"]')?.value;
-        const radio = div.querySelector('[name="radio"]')?.value;
-        if (radio) criterio.radio = parseFloat(radio);
-        if (lat) criterio.latitud = parseFloat(lat);
-        if (lon) criterio.longitud = parseFloat(lon);
-
-        const tm = div.querySelector('[name="tipoMultimedia"]')?.value;
-        if (tm) criterio.tipoMultimedia = tm;
-
-        criterios.push(criterio);
-    });
+    const criterios = [...document.querySelectorAll("#criteriosContainer .criterio-box")].map(armarCriterio);
 
     const data = {
         titulo: f.titulo.value.trim(),
         descripcion: f.descripcion.value.trim(),
         consenso: f.consenso.value,
-        criterios: criterios
+        criterios
     };
 
     const id = f.idColeccion.value;
@@ -138,7 +129,7 @@ async function crearColeccion(e) {
         const modal = bootstrap.Modal.getInstance(document.getElementById("modalColeccion"));
         modal.hide();
         limpiarFormularioColeccion();
-        mostrar("colecciones");
+        await mostrar("colecciones");
     } else {
         const txt = await resp.text();
         res.innerHTML = `Error: ${txt}`;

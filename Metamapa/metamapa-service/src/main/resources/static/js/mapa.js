@@ -272,8 +272,6 @@ function confirmarUbicacion() {
 
 
 // Confirmar selección de ubicación
-
-
 function inicializarMapaUbicacion() {
     if (!mapaUbicacion) {
         mapaUbicacion = L.map("mapaUbicacion").setView([-34.61, -58.38], 11);
@@ -330,4 +328,3 @@ function actualizarCirculoUbicacion(lat, lng) {
 
     mapaUbicacion.setView([lat, lng], 12);
 }
-

@@ -1,15 +1,5 @@
 package Agregador.Service;
-import Agregador.DTO.FiltrosHechosDTO;
-import Agregador.business.Colecciones.Criterio;
-import Agregador.business.Colecciones.CriterioCategoria;
-import Agregador.business.Colecciones.CriterioDescripcion;
-import Agregador.business.Colecciones.CriterioFecha;
-import Agregador.business.Colecciones.CriterioFechaReportaje;
-import Agregador.business.Colecciones.CriterioMultimedia;
-import Agregador.business.Colecciones.CriterioTitulo;
-import Agregador.business.Colecciones.CriterioUbicacion;
 import Agregador.business.Hechos.Hecho;
-import Agregador.business.Hechos.TipoMultimedia;
 import Agregador.persistencia.RepositorioHechos;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,7 +15,7 @@ public class ServiceAgregador {
 
   // Devuelve el nombre de la categoría con más hechos reportados
   public String categoriaMasReportada() {
-    var hechos = repo.findAll();                      // List<Hecho>
+    List<Hecho> hechos = repo.findAll();
     if (hechos.isEmpty()) return null;
     return hechos.stream()
             .map(Hecho::getCategoria)

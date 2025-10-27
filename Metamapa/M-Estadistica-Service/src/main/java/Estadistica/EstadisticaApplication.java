@@ -17,10 +17,8 @@ public class EstadisticaApplication {
     SpringApplication app = new SpringApplication(EstadisticaApplication.class);
     // si querés fijar el puerto por código (mejor en application.properties):
     app.setDefaultProperties(Collections.singletonMap("server.port", "9008"));
-    //var context = app.run(args);
+    app.run(args);
     //context.close();
-
-
   }
 
   @Bean

@@ -90,7 +90,6 @@ public class ControllerEstadistica {
             : ResponseEntity.ok(categoria);
   }
 
-
   //TODO: ¿En qué provincia se presenta la mayor cantidad de hechos de una cierta categoría?
   @Operation(
       summary = "En qué provincia se presenta la mayor cantidad de hechos de una cierta categoría?",
@@ -157,5 +156,4 @@ public class ControllerEstadistica {
         .contentLength(bytes.length)
         .body(bytes);
   }
-
 }
