@@ -1,111 +1,114 @@
 console.log("ui.js cargado correctamente");
 const cont = document.getElementById("contenido");
 
-async function mostrar(seccion) {
-    cont.innerHTML = ""; // limpiar contenido
+const vistas = {
+    hechos: mostrarHechosView,
+    colecciones: mostrarColeccionesView,
+    fuentes: mostrarFuentesView,
+    solicitudes: mostrarSolicitudesView
+};
 
-    if (seccion === "hechos") await mostrarHechosView();
-    else if (seccion === "colecciones") await mostrarColeccionesView();
-    else if (seccion === "fuentes") await mostrarFuentesView();
-    else if (seccion === "solicitudes") await mostrarSolicitudesView();
+async function mostrar(seccion) {
+    cont.innerHTML = "";
+    const fn = vistas[seccion];
+    if (fn) await fn();
+}
+
+function renderTablaSolicitudes(titulo, solicitudes, columnas, onApprove, onReject) {
+    if (!solicitudes.length) {
+        const alerta = document.createElement("div");
+        alerta.className = "alert alert-info";
+        alerta.textContent = `No hay solicitudes de ${titulo.toLowerCase()} pendientes.`;
+        return alerta;
+    }
+
+    const tableWrapper = document.createElement("div");
+    tableWrapper.innerHTML = `
+        <h3>Solicitudes de ${titulo} (${solicitudes.length})</h3>
+        <div class="table-responsive mb-4">
+          <table class="table table-striped table-hover align-middle">
+            <thead>
+              <tr>${columnas.map(c => `<th>${c.label}</th>`).join("")}<th>Acciones</th></tr>
+            </thead>
+            <tbody>
+              ${solicitudes.map(s => `
+                <tr>
+                  ${columnas.map(c => `<td>${s[c.key] ?? "-"}</td>`).join("")}
+                  <td>
+                    <button class="btn btn-sm btn-success me-1 aprobar" data-id="${s.id}" data-estado="${s.estado}">Aprobar</button>
+                    <button class="btn btn-sm btn-danger rechazar" data-id="${s.id}" data-estado="${s.estado}">Rechazar</button>
+                  </td>
+                </tr>`).join("")}
+            </tbody>
+          </table>
+        </div>
+    `;
+
+    tableWrapper.querySelectorAll(".aprobar").forEach(b =>
+        b.addEventListener("click", () => {
+            if (b.dataset.estado !== "PENDIENTE") {
+                mostrarModal("Esta solicitud ya fue procesada y no se puede modificar.");
+                return;
+            }
+            onApprove(b.dataset.id);
+        })
+    );
+    tableWrapper.querySelectorAll(".rechazar").forEach(b =>
+        b.addEventListener("click", () => {
+            if (b.dataset.estado !== "PENDIENTE") {
+                mostrarModal("Esta solicitud ya fue procesada y no se puede modificar.");
+                return;
+            }
+            onReject(b.dataset.id);
+        })
+    );
+
+    return tableWrapper;
 }
 
 async function mostrarSolicitudesView() {
     cont.innerHTML = "<p>Cargando solicitudes...</p>";
 
-    // Obtener solicitudes de eliminación y edición en paralelo
-    const [solicitudesEliminacion, solicitudesEdicion] = await Promise.all([
+    const [elim, edic] = await Promise.all([
         obtenerSolicitudesEliminacion(),
         obtenerSolicitudesEdicion()
     ]);
 
-    let html = "";
-
-    // === Solicitudes de eliminación ===
-    if (!solicitudesEliminacion.length) {
-        html += `<div class="alert alert-info">No hay solicitudes de eliminación pendientes.</div>`;
-    } else {
-        const filasEliminacion = solicitudesEliminacion.map(s => `
-            <tr>
-                <td>${s.id}</td>
-                <td>${s.hechoAfectado}</td>
-                <td>${s.motivo}</td>
-                <td>${s.estado}</td>
-                <td>
-                    <button class="btn btn-sm btn-success me-1" onclick="procesarSolicitudEliminacion(${s.id}, true)">Aprobar</button>
-                    <button class="btn btn-sm btn-danger" onclick="procesarSolicitudEliminacion(${s.id}, false)">Rechazar</button>
-                </td>
-            </tr>
-        `).join("");
-
-        html += `
-            <h3>Solicitudes de eliminación (${solicitudesEliminacion.length})</h3>
-            <div class="table-responsive mb-4">
-                <table class="table table-striped table-hover align-middle">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Hecho afectado</th>
-                            <th>Motivo</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>${filasEliminacion}</tbody>
-                </table>
-            </div>
-        `;
-    }
-
-    // === Solicitudes de edición ===
-    if (!solicitudesEdicion.length) {
-        html += `<div class="alert alert-info">No hay solicitudes de edición pendientes.</div>`;
-    } else {
-        const filasEdicion = solicitudesEdicion.map(s => `
-            <tr>
-                <td>${s.id}</td>
-                <td>${s.hechoAfectado}</td>
-                <td>${s.tituloMod || '-'}</td>
-                <td>${s.descMod || '-'}</td>
-                <td>${s.categoriaMod || '-'}</td>
-                <td>${s.latitudMod ?? '-'}</td>
-                <td>${s.longitudMod ?? '-'}</td>
-                <td>${s.fechaHechoMod || '-'}</td>
-                <td>${s.sugerencia || '-'}</td>
-                <td>${s.estado}</td>
-                <td>
-                    <button class="btn btn-sm btn-success me-1" onclick="procesarSolicitudEdicion(${s.id}, true)">Aprobar</button>
-                    <button class="btn btn-sm btn-danger" onclick="procesarSolicitudEdicion(${s.id}, false)">Rechazar</button>
-                </td>
-            </tr>
-        `).join("");
-
-        html += `
-            <h3>Solicitudes de edición (${solicitudesEdicion.length})</h3>
-            <div class="table-responsive">
-                <table class="table table-striped table-hover align-middle">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Hecho afectado</th>
-                            <th>Título</th>
-                            <th>Descripción</th>
-                            <th>Categoría</th>
-                            <th>Latitud</th>
-                            <th>Longitud</th>
-                            <th>Fecha</th>
-                            <th>Sugerencia</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>${filasEdicion}</tbody>
-                </table>
-            </div>
-        `;
-    }
-
-    cont.innerHTML = html;
+    cont.innerHTML = ""; // limpiamos
+    cont.appendChild(
+        renderTablaSolicitudes(
+            "Eliminación",
+            elim,
+            [
+                {key: "id", label: "ID"},
+                {key: "hechoAfectado", label: "Hecho afectado"},
+                {key: "motivo", label: "Motivo"},
+                {key: "estado", label: "Estado"}
+            ],
+            procesarSolicitudEliminacion.bind(null, true),
+            procesarSolicitudEliminacion.bind(null, false)
+        )
+    );
+    cont.appendChild(
+        renderTablaSolicitudes(
+            "Edición",
+            edic,
+            [
+                {key: "id", label: "ID"},
+                {key: "hechoAfectado", label: "Hecho afectado"},
+                {key: "tituloMod", label: "Título"},
+                {key: "descMod", label: "Descripción"},
+                {key: "categoriaMod", label: "Categoría"},
+                {key: "latitudMod", label: "Latitud"},
+                {key: "longitudMod", label: "Longitud"},
+                {key: "fechaHechoMod", label: "Fecha"},
+                {key: "sugerencia", label: "Sugerencia"},
+                {key: "estado", label: "Estado"}
+            ],
+            procesarSolicitudEdicion.bind(null, true),
+            procesarSolicitudEdicion.bind(null, false)
+        )
+    );
 }
 
 async function mostrarHechosView() {
@@ -413,9 +416,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-// Limpiar marcador cuando se cierra el modal
-modalHecho.addEventListener("hidden.bs.modal", limpiarMapaSeleccion);
-
 function limpiarFormularioHecho() {
     const form = document.getElementById("formHecho");
     if (!form) return;
@@ -584,22 +584,18 @@ async function cambiarConsenso(id) {
     `;
     overlay.appendChild(div);
     document.body.appendChild(overlay);
+    // Manejo de eventos
     document.getElementById("cancelarCambio").onclick = () => overlay.remove();
     document.getElementById("confirmarCambio").onclick = async () => {
         const nuevoConsenso = document.getElementById("selectorConsenso").value;
         overlay.remove();
         try {
-            const resp = await fetch(`${window.METAMAPA.API_COLECCIONES}/${id}`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ consenso: nuevoConsenso })
-            });
-            if (resp.ok) {
+            const ok = await modificarConsensoColeccion(id, nuevoConsenso);
+            if (ok) {
                 alert("✅ Consenso actualizado correctamente");
                 await mostrarColecciones();
             } else {
-                const error = await resp.text();
-                alert("❌ Error al cambiar el consenso:\n" + error);
+                alert("❌ Error al cambiar el consenso en el servidor");
             }
         } catch (err) {
             console.error(err);
@@ -764,6 +760,66 @@ async function aplicarFiltrosHechos() {
         alert("Error al aplicar filtros");
         console.error(e);
     }
+}
+function mostrarAlerta(mensaje, tipo = "warning", duracion = 3000) {
+    // Revisar si ya existe el contenedor, si no, crearlo
+    let cont = document.getElementById("alert-container");
+    if (!cont) {
+        cont = document.createElement("div");
+        cont.id = "alert-container";
+        cont.style.position = "fixed";
+        cont.style.top = "20px";
+        cont.style.right = "20px";
+        cont.style.zIndex = 1050;
+        document.body.appendChild(cont);
+    }
+
+    const alerta = document.createElement("div");
+    alerta.className = `alert alert-${tipo} alert-dismissible fade show`;
+    alerta.role = "alert";
+    alerta.style.minWidth = "250px"; // opcional para que no se vea muy estrecho
+    alerta.innerHTML = `
+        ${mensaje}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    cont.appendChild(alerta);
+
+    setTimeout(() => {
+        alerta.classList.remove("show");
+        alerta.classList.add("hide");
+        setTimeout(() => alerta.remove(), 300);
+    }, duracion);
+}
+
+function mostrarModal(mensaje, titulo = "Atención") {
+    // Crear el modal
+    const modal = document.createElement("div");
+    modal.className = "modal fade";
+    modal.tabIndex = -1;
+    modal.innerHTML = `
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">${titulo}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <p>${mensaje}</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+    `;
+    document.body.appendChild(modal);
+
+    // Inicializar el modal con Bootstrap
+    const bootstrapModal = new bootstrap.Modal(modal);
+    bootstrapModal.show();
+
+    // Eliminar el modal del DOM cuando se cierre
+    modal.addEventListener("hidden.bs.modal", () => modal.remove());
 }
 
 // Aplicar filtros en colecciones

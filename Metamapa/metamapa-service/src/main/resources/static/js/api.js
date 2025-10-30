@@ -137,6 +137,16 @@ async function obtenerColecciones() {
     return resp.ok ? resp.json() : [];
 }
 
+// Modificar consenso de una colección
+async function modificarConsensoColeccion(id, consenso) {
+    const resp = await fetch(`${window.METAMAPA.API_COLECCIONES}/${id}/consenso`, {
+        method: "PATCH",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({consenso})
+    });
+    return resp.ok;
+}
+
 // Obtener todas las fuentes registradas en el agregador
 async function obtenerFuentes() {
     const resp = await fetch(`${window.METAMAPA.API_AGREGADOR}/fuenteDeDatos`);
@@ -182,17 +192,62 @@ async function enviarSolicitudEliminacion(solicitud) {
 }
 
 //Procesar solicitud de eliminación (aprobar/rechazar)
-async function procesarSolicitudEliminacion(id, aprobar) {
+async function procesarSolicitudEliminacion(aprobada, id) {
+    const accion = aprobada ? "APROBAR" : "RECHAZAR";
     const resp = await fetch(`${window.METAMAPA.API_SOLICITUDES}/solicitudesEliminacion/${id}`, {
         method: "PATCH",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({aprobar})
+        body: JSON.stringify({ accion })
     });
-    return resp.ok;
+    if (resp.ok) {
+        alert(`Solicitud ${accion} procesada correctamente ✅`);
+        await mostrarSolicitudesView(); // refresca la vista
+    } else {
+        const err = await resp.text();
+        alert(`❌ Error al procesar solicitud: ${err}`);
+    }
+}
+
+// Procesar solicitud de edición (aprobar/rechazar)
+async function procesarSolicitudEdicion(aprobada, id) {
+    // Definir el nuevo estado según la acción
+    const estado = aprobada ? "APROBADA" : "RECHAZADA";
+    try {
+        const resp = await fetch(`${window.METAMAPA.API_SOLICITUDES}/solicitudesEdicion/${id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ estado })
+        });
+        if (resp.ok) {
+            alert(`Solicitud de edición ${estado.toLowerCase()} correctamente ✅`);
+            await mostrarSolicitudesView(); // refresca la lista
+        } else {
+            const err = await resp.text();
+            alert(`❌ Error al actualizar el estado de la solicitud:\n${err}`);
+        }
+    } catch (error) {
+        console.error("Error de red al procesar solicitud de edición:", error);
+        alert("❌ Error de red al procesar solicitud de edición");
+    }
 }
 
 // Obtener solicitudes de edición
 async function obtenerSolicitudesEdicion() {
     const resp = await fetch(`${window.METAMAPA.API_SOLICITUDES}/solicitudesEdicion`);
     return resp.ok ? resp.json() : [];
+}
+
+// Registrar un nuevo usuario
+async function registrarUsuario(usuario) {
+    const resp = await fetch('http://localhost:9001/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(usuario)
+    });
+    // Devolvemos un objeto con éxito y posible mensaje de error
+    if (!resp.ok) {
+        const error = await resp.json().catch(() => ({}));
+        return { ok: false, mensaje: error.mensaje || resp.statusText };
+    }
+    return { ok: true };
 }

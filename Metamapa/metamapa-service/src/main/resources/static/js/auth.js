@@ -60,27 +60,22 @@ formRegistro.addEventListener('submit', async e => {
     if (!email || !password || !nombre || !apellido || !edad || !rol) return;
 
     try {
-        const response = await fetch('http://localhost:9001/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                email,
-                contrasenia: password,
-                nombre,
-                apellido,
-                edad,
-                roles: [rol]  // siempre en lista
-            })
+        const resultado = await registrarUsuario({
+            email,
+            contrasenia: password,
+            nombre,
+            apellido,
+            edad,
+            roles: [rol] // siempre lista
         });
-        if (!response.ok) {
-            const error = await response.json();
-            alert('Error: ' + (error.mensaje || response.statusText));
+        if (!resultado.ok) {
+            alert('❌ Error: ' + resultado.mensaje);
             return;
         }
-        alert('Usuario registrado correctamente');
+        alert('✅ Usuario reistrado correctamente');
         window.location.href = 'login.html';
     } catch (err) {
         console.error(err);
-        alert('Error al registrarse');
+        alert('❌ Error de red al registrarse');
     }
 });
