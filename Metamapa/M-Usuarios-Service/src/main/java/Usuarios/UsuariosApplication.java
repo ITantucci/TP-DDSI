@@ -3,6 +3,9 @@ package Usuarios;
 import java.util.Collections;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
 public class UsuariosApplication {
@@ -13,5 +16,9 @@ public class UsuariosApplication {
     var context = app.run(args);
     // para cerrar la app, comentar cuando se prueben cosas
     //context.close();
+  }
+  @Bean // 👈 PEGA EL BEAN AQUÍ
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
   }
 }

@@ -42,13 +42,6 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Tu módulo de entidades -->
-        <dependency>
-            <groupId>Metamapa</groupId>
-            <artifactId>Domain-Model</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-
         <!-- Lombok (solo compile-time) -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -63,24 +56,10 @@
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.5.0</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-oauth2-jose</artifactId>
-        </dependency>
-            <!-- Web + Seguridad -->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-web</artifactId>
-            </dependency>
+
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-security</artifactId>
-            </dependency>
-
-            <!-- JPA y DB -->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-data-jpa</artifactId>
             </dependency>
 
             <!-- Password hashing -->
@@ -96,8 +75,23 @@
             </dependency>
         <!-- Spring Boot OAuth2 Authorization Server -->
         <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-authorization-server</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-oauth2-authorization-server</artifactId>
+            <artifactId>spring-boot-starter-oauth2-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.nimbusds</groupId>
+            <artifactId>nimbus-jose-jwt</artifactId>
+            <version>9.31</version>
         </dependency>
 
         <!-- Tests -->
