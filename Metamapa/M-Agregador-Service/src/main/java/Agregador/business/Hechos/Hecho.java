@@ -13,6 +13,7 @@ public class Hecho {
   @Id
   private BigInteger id;
   private String titulo;
+  @Column(length = 1000)
   private String descripcion;
   private String categoria;
   private Float latitud;

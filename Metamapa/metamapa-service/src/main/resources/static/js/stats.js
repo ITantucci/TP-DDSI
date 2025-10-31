@@ -19,9 +19,10 @@ const crearChart = (id, type, label, data, extraOptions = {}) => {
 // De una colección, ¿en qué provincia se agrupan la mayor cantidad de hechos reportados?
 async function obtenerProvinciaMasReportadaColeccion(uuid) {
     try {
-        const response = await fetch(`${BASE_URL}/coleccion/${uuid}/provincia-mas-reportada`);
+        const response = await fetch(`${window.METAMAPA.API_ESTADISTICA}/coleccion/${uuid}/provincia-mas-reportada`);
         if (response.status === 204) return null; // No hay datos
-        return await response.text(); // devuelve el nombre de la provincia
+        const data = await response.json();
+        return data.provincia;
     } catch (error) {
         console.error("Error al obtener la provincia más reportada de la colección:", error);
         return null;
@@ -31,9 +32,10 @@ async function obtenerProvinciaMasReportadaColeccion(uuid) {
 // ¿Cuál es la categoría con mayor cantidad de hechos reportados?
 async function obtenerCategoriaMasReportada() {
     try {
-        const response = await fetch(`${BASE_URL}/categoria`);
-        if (response.status === 204) return null; // No hay datos
-        return await response.text(); // devuelve el nombre de la categoría
+        const response = await fetch(`${window.METAMAPA.API_ESTADISTICA}/categoria`);
+        if (response.status === 204) return null;
+        const data = await response.json();
+        return data.categoria;
     } catch (error) {
         console.error("Error al obtener la categoría más reportada:", error);
         return null;
@@ -44,9 +46,10 @@ async function obtenerCategoriaMasReportada() {
 async function obtenerProvinciaMasReportadaPorCategoria(categoria) {
     try {
         const params = new URLSearchParams({ categoria });
-        const response = await fetch(`${BASE_URL}/hechos/provincia-mas-reportada?${params}`);
+        const response = await fetch(`${window.METAMAPA.API_ESTADISTICA}/hechos/provincia-mas-reportada?${params}`);
         if (response.status === 204) return null; // No hay datos
-        return await response.text();
+        const data = await response.json();
+        return data.provincia;
     } catch (error) {
         console.error("Error al obtener la provincia más reportada por categoría:", error);
         return null;
@@ -57,10 +60,10 @@ async function obtenerProvinciaMasReportadaPorCategoria(categoria) {
 async function obtenerHoraMasReportadaPorCategoria(categoria) {
     try {
         const params = new URLSearchParams({ categoria });
-        const response = await fetch(`${BASE_URL}/hechos/hora?${params}`);
-        if (response.status === 204) return null; // No hay datos
-         // devuelve un número (0-23)
-        return await response.json();
+        const response = await fetch(`${window.METAMAPA.API_ESTADISTICA}/hechos/hora?${params}`);
+        if (response.status === 204) return null;
+        const data = await response.json();
+        return parseInt(data.hora, 10);
     } catch (error) {
         console.error("Error al obtener la hora más reportada por categoría:", error);
         return null;
@@ -70,10 +73,10 @@ async function obtenerHoraMasReportadaPorCategoria(categoria) {
 // ¿Cuántas solicitudes de eliminación son spam?
 async function obtenerCantidadSolicitudesSpam() {
     try {
-        const response = await fetch(`${BASE_URL}/spam`);
+        const response = await fetch(`${window.METAMAPA.API_ESTADISTICA}/spam`);
         if (!response.ok) throw new Error("Error al obtener solicitudes spam");
-        const cantidad = await response.json(); // devuelve un número
-        return cantidad;
+        const data = await response.json();
+        return parseInt(data.cantidad) || 0;
     } catch (error) {
         console.error("Error al contar solicitudes spam:", error);
         return 0;
