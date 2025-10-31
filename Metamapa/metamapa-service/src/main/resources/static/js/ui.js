@@ -249,52 +249,150 @@ async function mostrarFuentesView() {
 
 // Mostrar detalle
 function mostrarDetalleHecho(h) {
-    const modal = new bootstrap.Modal(document.getElementById("modalDetalle"));
-
-    // Armar HTML detallado con todos los campos
-    document.getElementById("detalleHecho").innerHTML = `
-    <div class="container-fluid">
-      <h4 class="mb-3">${h.titulo}</h4>
-
-      <div class="row">
-        <div class="col-md-6">
-          <p><b>Descripción:</b> ${h.descripcion || "-"}</p>
-          <p><b>Categoría:</b> ${h.categoria || "-"}</p>
-          <p><b>Anonimo:</b> ${h.anonimo ? "Sí" : "No"}</p>
-          <p><b>Eliminado:</b> ${h.eliminado ? "Sí" : "No"}</p>
+    const modalEl = document.getElementById("modalDetalle");
+    const modal = new bootstrap.Modal(modalEl);
+    const contenedor = document.getElementById("detalleHecho");
+    // Función para renderizar el contenido principal del hecho
+    function renderDetalle() {
+        contenedor.innerHTML = `
+        <div class="container-fluid">
+          <h4 class="mb-3">${h.titulo}</h4>
+          <div class="row">
+            <div class="col-md-6">
+              <p><b>Descripción:</b> ${h.descripcion || "-"}</p>
+              <p><b>Categoría:</b> ${h.categoria || "-"}</p>
+              <p><b>Anonimo:</b> ${h.anonimo ? "Sí" : "No"}</p>
+              <p><b>Eliminado:</b> ${h.eliminado ? "Sí" : "No"}</p>
+            </div>
+            <div class="col-md-6">
+              <p><b>Latitud:</b> ${h.latitud ?? "-"}</p>
+              <p><b>Longitud:</b> ${h.longitud ?? "-"}</p>
+              <p><b>ID Fuente:</b> ${h.idFuente ?? "-"}</p>
+              <p><b>ID:</b> ${h.id}</p>
+            </div>
+          </div>
+          <hr>
+          <h6>Fechas</h6>
+          <p><b>Fecha del hecho:</b> ${h.fechaHecho || "-"}</p>
+          <p><b>Fecha de carga:</b> ${h.fechaCarga || "-"}</p>
+          <p><b>Fecha de modificación:</b> ${h.fechaModificacion || "-"}</p>
+          <hr>
+          <h6>Datos internos</h6>
+          <p><b>Perfil:</b> ${h.perfil || "<i>Sin perfil</i>"}</p>
+          <p><b>Consensos:</b> ${h.consensos && h.consensos.length ? h.consensos.join(", ") : "<i>Ninguno</i>"}</p>
+          <pre class="bg-light p-2 rounded"><b>Metadata:</b>\n${JSON.stringify(h.metadata || {}, null, 2)}</pre>
+          <hr>
+          <h6>Multimedia</h6>
+          ${!h.multimedia?.length
+            ? "<p><i>Sin archivos multimedia</i></p>"
+            : h.multimedia.map(m =>
+                `<div class="mb-2">
+                  <b>${m.tipoMultimedia || "Archivo"}</b>: 
+                  <a href="${m.path}" target="_blank">${m.path}</a>
+                </div>`
+            ).join("")}
+          <hr>
+          <div class="d-flex justify-content-end gap-2 mt-3">
+            <button id="btnSolicitarEdicion" class="btn btn-warning">Solicitar edición</button>
+            <button id="btnSolicitarEliminacion" class="btn btn-danger">Solicitar eliminación</button>
+          </div>
         </div>
-        <div class="col-md-6">
-          <p><b>Latitud:</b> ${h.latitud ?? "-"}</p>
-          <p><b>Longitud:</b> ${h.longitud ?? "-"}</p>
-          <p><b>ID Fuente:</b> ${h.idFuente ?? "-"}</p>
-          <p><b>ID:</b> ${h.id}</p>
+        `;
+
+        // Eventos de los botones
+        document.getElementById("btnSolicitarEliminacion").addEventListener("click", mostrarFormularioEliminacion);
+        document.getElementById("btnSolicitarEdicion").addEventListener("click", mostrarFormularioEdicion);
+    }
+
+    // --- FORMULARIO ELIMINACIÓN ---
+    function mostrarFormularioEliminacion() {
+        contenedor.innerHTML = `
+        <div class="container-fluid">
+          <h5 class="text-danger mb-3">Solicitud de eliminación del hecho #${h.id}</h5>
+          <div class="mb-3">
+            <label class="form-label"><b>Motivo de la solicitud</b></label>
+            <textarea id="motivoEliminacion" class="form-control" rows="3" placeholder="Explique brevemente el motivo..."></textarea>
+          </div>
+          <div class="d-flex justify-content-end gap-2">
+            <button id="btnCancelar" class="btn btn-secondary">Cancelar</button>
+            <button id="btnEnviarEliminacion" class="btn btn-danger">Enviar solicitud</button>
+          </div>
         </div>
-      </div>
-
-      <hr>
-      <h6>Fechas</h6>
-      <p><b>Fecha del hecho:</b> ${h.fechaHecho || "-"}</p>
-      <p><b>Fecha de carga:</b> ${h.fechaCarga || "-"}</p>
-      <p><b>Fecha de modificación:</b> ${h.fechaModificacion || "-"}</p>
-
-      <hr>
-      <h6>Datos internos</h6>
-      <p><b>Perfil:</b> ${h.perfil || "<i>Sin perfil</i>"}</p>
-      <p><b>Consensos:</b> ${h.consensos && h.consensos.length ? h.consensos.join(", ") : "<i>Ninguno</i>"}</p>
-      <pre class="bg-light p-2 rounded"><b>Metadata:</b>\n${JSON.stringify(h.metadata || {}, null, 2)}</pre>
-
-      <hr>
-      <h6>Multimedia</h6>
-      ${!h.multimedia?.length
-        ? "<p><i>Sin archivos multimedia</i></p>"
-        : h.multimedia.map(m =>
-            `<div class="mb-2">
-              <b>${m.tipoMultimedia || "Archivo"}</b>: 
-              <a href="${m.path}" target="_blank">${m.path}</a>
-            </div>`
-        ).join("")}
-    </div>
-  `;
+        `;
+        document.getElementById("btnCancelar").addEventListener("click", renderDetalle);
+        document.getElementById("btnEnviarEliminacion").addEventListener("click", async () => {
+            const motivo = document.getElementById("motivoEliminacion").value.trim();
+            if (!motivo) return alert("Debe ingresar un motivo.");
+            const solicitud = {
+                motivo,
+                hechoAfectado: h.id
+            };
+            const ok = await enviarSolicitudEliminacion(solicitud);
+            alert(ok ? "✅ Solicitud de eliminación enviada con éxito." : "❌ Error al enviar la solicitud.");
+            renderDetalle();
+        });
+    }
+    // --- FORMULARIO EDICIÓN ---
+    function mostrarFormularioEdicion() {
+        contenedor.innerHTML = `
+        <div class="container-fluid">
+          <h5 class="text-warning mb-3">Solicitud de edición del hecho #${h.id}</h5>
+          <div class="mb-2">
+            <label class="form-label"><b>Título</b></label>
+            <input id="tituloMod" class="form-control" value="${h.titulo || ''}">
+          </div>
+          <div class="mb-2">
+            <label class="form-label"><b>Descripción</b></label>
+            <textarea id="descMod" class="form-control" rows="3">${h.descripcion || ''}</textarea>
+          </div>
+          <div class="mb-2">
+            <label class="form-label"><b>Categoría</b></label>
+            <input id="categoriaMod" class="form-control" value="${h.categoria || ''}">
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-2">
+              <label class="form-label"><b>Latitud</b></label>
+              <input id="latitudMod" type="number" step="any" class="form-control" value="${h.latitud ?? ''}">
+            </div>
+            <div class="col-md-6 mb-2">
+              <label class="form-label"><b>Longitud</b></label>
+              <input id="longitudMod" type="number" step="any" class="form-control" value="${h.longitud ?? ''}">
+            </div>
+          </div>
+          <div class="mb-2">
+            <label class="form-label"><b>Fecha del hecho</b></label>
+            <input id="fechaHechoMod" type="datetime-local" class="form-control" value="${h.fechaHecho ? h.fechaHecho.substring(0,16) : ''}">
+          </div>
+          <div class="mb-2">
+            <label class="form-label"><b>Sugerencia adicional</b></label>
+            <textarea id="sugerencia" class="form-control" rows="2" placeholder="Opcional"></textarea>
+          </div>
+          <div class="d-flex justify-content-end gap-2">
+            <button id="btnCancelar" class="btn btn-secondary">Cancelar</button>
+            <button id="btnEnviarEdicion" class="btn btn-warning">Enviar solicitud</button>
+          </div>
+        </div>
+        `;
+        document.getElementById("btnCancelar").addEventListener("click", renderDetalle);
+        document.getElementById("btnEnviarEdicion").addEventListener("click", async () => {
+            const solicitud = {
+                tituloMod: document.getElementById("tituloMod").value.trim(),
+                descMod: document.getElementById("descMod").value.trim(),
+                categoriaMod: document.getElementById("categoriaMod").value.trim(),
+                latitudMod: parseFloat(document.getElementById("latitudMod").value) || null,
+                longitudMod: parseFloat(document.getElementById("longitudMod").value) || null,
+                fechaHechoMod: document.getElementById("fechaHechoMod").value || null,
+                multimediaMod: h.multimedia || [],
+                sugerencia: document.getElementById("sugerencia").value.trim(),
+                hechoAfectado: h.id
+            };
+            const ok = await enviarSolicitudEdicion(solicitud);
+            alert(ok ? "✅ Solicitud de edición enviada con éxito." : "❌ Error al enviar la solicitud.");
+            renderDetalle();
+        });
+    }
+    // Render inicial
+    renderDetalle();
     modal.show();
 }
 
