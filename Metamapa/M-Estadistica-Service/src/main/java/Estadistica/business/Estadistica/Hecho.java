@@ -19,11 +19,9 @@ import java.util.Map;
 )
 @Getter @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Hecho {
 
     @Id
-    // Si preferís BigInteger: cambiá a BigInteger y agregá precision=19, scale=0 en @Column
     @Column(name = "id", nullable = false)
     private BigInteger id;
 

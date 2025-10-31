@@ -34,7 +34,7 @@ public List<Hecho> getHechosAgregador(String urlBase){
 
 }
   private Hecho jsonToHecho(Map<String,Object> json) {
-    BigInteger id = i(json.get("id"));
+    BigInteger id = BigInteger.valueOf(bi(json.get("id")));
     String titulo = str(json.get("titulo"));
     String descripcion = str(json.get("descripcion"));
     String categoria = str(json.get("categoria"));
@@ -122,7 +122,7 @@ public List<Hecho> getHechosAgregador(String urlBase){
 
   private static String str(Object o)        { return o == null ? null : String.valueOf(o); }
   private static Integer i(Object o)         { try { return o == null ? null : Integer.valueOf(String.valueOf(o)); } catch(Exception e){ return null; } }
-  private static BigIntegerI bi(Object o)         { try { return o == null ? null : Integer.valueOf(String.valueOf(o)); } catch(Exception e){ return null; } }
+  private static Long bi(Object o)         { try { return o == null ? null : Long.valueOf(String.valueOf(o)); } catch(Exception e){ return null; } }
   private static Float f(Object o)           { try { return o == null ? null : Float.valueOf(String.valueOf(o)); } catch(Exception e){ return null; } }
   private static Boolean bool(Object o)      { return o == null ? null : Boolean.valueOf(String.valueOf(o)); }
   private static LocalDateTime date(Object o)    { try { return o == null ? null : LocalDateTime.parse(String.valueOf(o)); } catch(Exception e){ return null; } }

@@ -5,14 +5,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.criteria.*;
 import lombok.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 
 @Entity
 @Getter @Setter
 public class CriterioFechaReportaje extends Criterio {
-  private LocalDate desde;
-  private LocalDate hasta;
+  private LocalDateTime desde;
+  private LocalDateTime hasta;
 
-  public CriterioFechaReportaje(LocalDate desde, LocalDate hasta,boolean inclusion) {
+  public CriterioFechaReportaje(LocalDateTime desde, LocalDateTime hasta,boolean inclusion) {
     this.desde = desde;
     this.hasta = hasta;
     this.inclusion = inclusion;
@@ -21,7 +23,7 @@ public class CriterioFechaReportaje extends Criterio {
   public CriterioFechaReportaje() {}
 
   public boolean cumple(Hecho hecho) {
-    LocalDate fecha = hecho.getFechaCarga();
+    LocalDateTime fecha = hecho.getFechaCarga();
     return  inclusion == ((desde == null || !fecha.isBefore(this.getDesde())) &&
         (hasta == null || !fecha.isAfter(this.getHasta())));
   }
