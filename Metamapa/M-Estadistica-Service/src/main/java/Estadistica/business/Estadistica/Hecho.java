@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Map;
 
 @Entity
@@ -58,17 +59,8 @@ public class Hecho {
     @Column(name = "eliminado")
     private Boolean eliminado;
 
-    // ---------- MAPAS EMBEBIDOS ----------
-    // Ej.: multimedia: path -> tipo (o la estructura que necesites)
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(
-            name = "hecho_multimedia",
-            schema = "dbo",
-            joinColumns = @JoinColumn(name = "hecho_id")
-    )
-    @MapKeyColumn(name = "clave")
-    @Column(name = "valor")
-    private Map<String, String> multimedia;
+
+    private ArrayList<Multimedia> multimedia;
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(
@@ -97,7 +89,7 @@ public class Hecho {
             Integer perfilId,
             Boolean anonimo,
             Boolean eliminado,
-            Map<String,String> multimedia,
+            ArrayList<Multimedia> multimedia,
             Map<String,String> metadata,
             Integer idFuente
     ) {

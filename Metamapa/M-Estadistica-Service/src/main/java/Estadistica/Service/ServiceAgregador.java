@@ -1,18 +1,12 @@
 package Estadistica.Service;
-
-import Estadistica.business.Estadistica.Coleccion;
-import Estadistica.business.Estadistica.Hecho;
-import Estadistica.business.Estadistica.SolicitudEliminacion;
+import Estadistica.business.Estadistica.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import Estadistica.business.Estadistica.Criterios.Criterio;
-
 import java.math.BigInteger;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -46,7 +40,7 @@ public List<Hecho> getHechosAgregador(String urlBase){
     Integer perfilId = i(json.get("perfil"));
     Boolean anonimo = bool(json.get("anonimo"));
     Boolean eliminado = bool(json.get("eliminado"));
-    Map<String,String> multimedia = (Map<String,String>) json.get("multimedia");
+    ArrayList<Multimedia> multimedia = new ArrayList((List<Multimedia>) json.get("multimedia"));
     Map<String,String> metadata = (Map<String,String>) json.get("metadata");
     Integer idFuente = i(json.get("idFuente"));
 
@@ -71,8 +65,7 @@ public List<Hecho> getHechosAgregador(String urlBase){
     return h;
   }
 
-  public Coleccion JsonToColeccion(Map<String, Object> Json)
-  {
+  public Coleccion JsonToColeccion(Map<String, Object> Json) {
     String nombre = str(Json.get("nombre"));
     String descripcion = str(Json.get("descripcion"));
     ArrayList<Criterio> criterios = new ArrayList((List<Criterio>) Json.get("criterio"));
@@ -86,7 +79,7 @@ public List<Hecho> getHechosAgregador(String urlBase){
     return c;
   }
   public List<Coleccion> getColeccionesAgregador(String urlBase){
-    String url = urlBase + "/api-colecciones/colecciones";
+    String url = urlBase + "/api-colecciones/";
     ResponseEntity<List<Map<String, Object>>> resp = restTemplate.exchange(
             url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {}
     );

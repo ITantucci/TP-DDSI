@@ -1,5 +1,4 @@
 package Estadistica.Service;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -7,36 +6,37 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 import Estadistica.persistencia.*;
-import Estadistica.business.Estadistica.Hecho;
 import Estadistica.business.Estadistica.Coleccion;
-import Estadistica.DTO.HechoGeoDTO;
 
 @Service
 public class ServiceEstadistica {
     private final RestTemplate restTemplate;
     private final String baseUrl;
-    private final GeocodingService geocodingService; // Servicio de geocodificación
+    private final GeocodingService geocodingService;
     private final RepositorioHechos repositorioHechos;
     private final RepositorioSolicitudesEliminacion repositorioSolicitudesEliminacion;
     private final RepositorioColecciones repositorioColecciones;
+    private final ServiceAgregador serviceAgregador;
 
     public ServiceEstadistica(RestTemplate restTemplate,
                             @Value("${M.Agregador.Service.url}") String baseUrl, GeocodingService geocodingService,
                             RepositorioHechos repositorioHechos,
                             RepositorioSolicitudesEliminacion repositorioSolicitudesEliminacion,
-                            RepositorioColecciones repositorioColecciones) {
+                            RepositorioColecciones repositorioColecciones, ServiceAgregador serviceAgregador) {
         this.restTemplate = restTemplate;
         this.baseUrl = baseUrl;
         this.geocodingService = geocodingService;
         this.repositorioHechos = repositorioHechos;
         this.repositorioSolicitudesEliminacion = repositorioSolicitudesEliminacion;
         this.repositorioColecciones = repositorioColecciones;
+        this.serviceAgregador = serviceAgregador;
     }
 
     public void actualizar(){
-        //cronjob
+        repositorioHechos.saveAll(serviceAgregador.getHechosAgregador(this.baseUrl));
+        repositorioColecciones.saveAll(serviceAgregador.getColeccionesAgregador(this.baseUrl));
+        repositorioSolicitudesEliminacion.saveAll(serviceAgregador.getSolicitudesEliminacionAgregador(this.baseUrl));
     }
 
     public void actualizarDashboards(){

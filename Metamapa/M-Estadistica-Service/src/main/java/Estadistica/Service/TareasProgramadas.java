@@ -1,3 +1,4 @@
+/*
 package Estadistica.Service;
 import Estadistica.business.Estadistica.*;
 import Estadistica.persistencia.*;
@@ -69,4 +70,4 @@ public class TareasProgramadas {
          controllerEstadistica.actualizarEstadisticaUI();
        }
      }
-}
+}*/

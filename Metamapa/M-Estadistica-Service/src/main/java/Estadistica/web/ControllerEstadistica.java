@@ -1,29 +1,26 @@
 package Estadistica.web;
 
 import Estadistica.Service.ServiceEstadistica;
-import Estadistica.Service.TareasProgramadas;
+//import Estadistica.Service.TareasProgramadas;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.*;
 import io.swagger.v3.oas.annotations.responses.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.boot.web.context.WebServerInitializedEvent;
-import org.springframework.context.event.EventListener;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 import java.nio.charset.StandardCharsets;
 
 @Controller
 @Tag(name = "Servicio de Estadísticas", description = "Consultas y exportación de estadísticas")
+@RequiredArgsConstructor
 @RequestMapping("/estadistica")
 public class ControllerEstadistica {
   private final ServiceEstadistica estadisticaService;
-  private final TareasProgramadas tareasProgramadas;
+  //private final TareasProgramadas tareasProgramadas;
 
   private List<Map<String,String>> agregadores = new ArrayList<Map<String,String>>();
 
@@ -43,7 +40,7 @@ public class ControllerEstadistica {
     }
   }
 
-  @Scheduled(fixedRate = 30 * 60 * 1000)
+  /*@Scheduled(fixedRate = 30 * 60 * 1000)
   public void actualizarHechosySolicitudes() {
     try {
       agregadores.forEach(agregador -> tareasProgramadas.actualizarEstadisticas(agregador.get("UrlBase") + agregador.get("endpointHechos"),
@@ -52,12 +49,12 @@ public class ControllerEstadistica {
     } catch (Exception e) {
       //no se que hacer aca
     }
-  }
+  }*/
 
-  public ControllerEstadistica(ServiceEstadistica estadisticaService, TareasProgramadas tareasProgramadas, ServiceEstadistica serviceEstadistica) {
+  /*public ControllerEstadistica(ServiceEstadistica estadisticaService, TareasProgramadas tareasProgramadas, ServiceEstadistica serviceEstadistica) {
     this.estadisticaService = estadisticaService;
     this.tareasProgramadas = tareasProgramadas;
-  }
+  }*/
 
   @PostMapping("/actualizar")
   public ResponseEntity<Void> actualizarEstadisticas() {

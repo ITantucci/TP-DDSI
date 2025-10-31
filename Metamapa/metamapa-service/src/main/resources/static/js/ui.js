@@ -97,6 +97,11 @@ async function mostrarEstadisticasView() {
                 <h3>🚫 Solicitudes de eliminación marcadas como spam</h3>
                 <p id="cantidadSpam">Cargando...</p>
             </div>
+
+            <hr>
+            <div class="text-end mt-4">
+                <button id="btnExportarCSV" class="btn btn-success">⬇️ Exportar CSV</button>
+            </div>
         </div>
     `;
 
@@ -131,6 +136,32 @@ async function mostrarEstadisticasView() {
         const hora = await obtenerHoraMasReportadaPorCategoria(cat);
         document.getElementById("horaCategoria").textContent =
             hora !== null ? `${hora}:00 hs` : "No hay datos disponibles";
+    });
+
+    // 🔹 Botón Exportar CSV
+    document.getElementById("btnExportarCSV").addEventListener("click", () => {
+        // Recolectar datos visibles
+        const datos = [
+            ["Estadística", "Valor"],
+            ["Provincia con más hechos por Colección", document.getElementById("provinciaColeccion").textContent.trim()],
+            ["Categoría más reportada", document.getElementById("categoriaMasReportada").textContent.trim()],
+            ["Provincia con más hechos de una categoría", document.getElementById("provinciaCategoria").textContent.trim()],
+            ["Hora del día con más hechos (por categoría)", document.getElementById("horaCategoria").textContent.trim()],
+            ["Solicitudes de eliminación marcadas como spam", document.getElementById("cantidadSpam").textContent.trim()]
+        ];
+
+        // Convertir a CSV
+        const csv = datos.map(fila => fila.map(v => `"${v.replace(/"/g, '""')}"`).join(",")).join("\n");
+        // Crear blob y disparar descarga
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `estadisticas_${new Date().toISOString().split("T")[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
     });
 }
 

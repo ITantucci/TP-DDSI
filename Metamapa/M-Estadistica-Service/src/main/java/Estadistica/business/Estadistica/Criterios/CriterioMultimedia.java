@@ -19,7 +19,7 @@ public class CriterioMultimedia extends Criterio {
 
   @Override
   public boolean cumple(Hecho hecho) {
-    return inclusion == hecho.getMultimedia().values().stream().anyMatch(m-> getTipoMultimedia() == this.getTipoMultimedia());
+    return inclusion == hecho.getMultimedia().stream().anyMatch(m-> getTipoMultimedia() == this.getTipoMultimedia());
   }
 
   public Predicate toPredicate(Root<Hecho> root, CriteriaBuilder cb) {
