@@ -1,6 +1,8 @@
 package Estadistica.DTO;
+import lombok.*;
 import java.util.Map;
 
+@Getter @Setter
 public class EstadisticaDTO {
   // Categoría más reportada
   private String categoriaMasReportada;

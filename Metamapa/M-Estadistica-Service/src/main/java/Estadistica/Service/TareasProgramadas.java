@@ -1,63 +1,63 @@
 package Estadistica.Service;
-
-import Estadistica.business.*;
-import Estadistica.persistencia.RepositoroHechos;
+import Estadistica.business.Estadistica.*;
+import Estadistica.persistencia.*;
 import Estadistica.web.ControllerEstadistica;
 import io.micrometer.core.instrument.*;
-import io.micrometer.core.instrument.distribution.DistributionStatisticConfig;
-import io.micrometer.core.instrument.distribution.pause.PauseDetector;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigInteger;
 import java.time.LocalTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-import java.util.function.ToDoubleFunction;
-import java.util.function.ToLongFunction;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-   public class TareasProgramadas {
+public class TareasProgramadas {
      private final ControllerEstadistica controllerEstadistica;
-     private final RepositoroHechos repositoroHechos;
+     private final RepositorioHechos repositorioHechos;
      private final MeterRegistry registry;
      private final RestTemplate restTemplate = new RestTemplate();
-
-
-     private Hecho JsonToHecho(Map<String, Object> json) {
-       Categoria categoria = new Categoria((String)json.get("categoria"));
-       //todo pasar de long y lat a provincia
-       Provincia provincia = new Provincia((String)json.get("provincia"));
-       Hora hora = new Hora((LocalTime)json.get("hora"));
-       //todo ver como mandar esto, si directamente el bool o la soli entera
-       List<SolicitudEliminacion> solicitudesEliminacion = ((List<Boolean>)json.get("solicitudesEliminacion")).stream().map(s -> new SolicitudEliminacion(s)).toList();
-       List<Coleccion> colecciones = ((List<String>)json.get("solicitudesEliminacion")).stream().map(c -> new Coleccion(c)).toList();
-
-       return new Hecho(provincia,categoria,colecciones,solicitudesEliminacion,hora);
-     }
-
-     public void actualizarEstadisticas(String UrlHechos,String UrlSolEliminacion) {
-       //Hechos
-       ResponseEntity<List<Map<String, Object>>> resp = restTemplate.exchange(
-               UrlHechos, HttpMethod.GET, null, new ParameterizedTypeReference<>() {}
-       );
-       List<Map<String, Object>> raw = Optional.ofNullable(resp.getBody()).orElseGet(List::of);
-       // imprimir raw para debug
-       //System.out.println("Hechos raw de la fuente " + urlBase + ": " + raw);
-       List<Hecho> hechos = raw.stream()
-               .map(json -> JsonToHecho(json))
-               .toList();
-       repositoroHechos.saveAll(hechos);
-
-       //por ahi no hace falta hacer el de solicitudes y lo podemos hacer all junto en uno
+  //descomentar si hacemos BI
+//     private Hecho JsonToHecho(Map<String, Object> json,String ColeccionId) {
+//       Optional<Hecho> hechoExistente = repositorioHechos.findById((BigInteger) json.get("Id"));
+//       Hecho hecho = hechoExistente.orElse(
+//               new Hecho((BigInteger) json.get("id"),
+//                       new Provincia((String)json.get("provincia")),
+//                       new Categoria((String)json.get("categoria"))
+//                       ,new ArrayList<>(),
+//                       ((List<Boolean>)json.get("solicitudesEliminacion")).stream().map(s -> new SolicitudEliminacion(s)).toList(),
+//                       new Hora((LocalTime)json.get("hora"))));
+//      hecho.addColeccion(new Coleccion(ColeccionId));
+//      return hecho;
+//     }
+//
+//     void guardarHechosPorColeccion(List<Map<String, Object>> raw,String UrlBase)
+//     {
+//       for (Map<String, Object> jsonColeccion : raw) {
+//           String coleccionId = (String)jsonColeccion.get("id");
+//           String urlColeccion = UrlBase + "/" + coleccionId + "/hechos";
+//           ResponseEntity<Map> response = restTemplate.getForEntity(urlColeccion, Map.class);
+//           if (response.getStatusCode() == HttpStatus.OK) {
+//             List<Map<String, Object>> hechosRaw = (List<Map<String, Object>>)response.getBody();
+//             List<Hecho> hechos = hechosRaw.stream()
+//                     .map(json -> JsonToHecho(json,coleccionId))
+//                     .toList();
+//             repositorioHechos.saveAll(hechos);
+//           }
+//       }
+//     }
+     public void actualizarEstadisticas(String UrlBase,String UrlSolEliminacion,String UrlColecciones) {
+//       //Hechos
+//       ResponseEntity<List<Map<String, Object>>> resp = restTemplate.exchange(
+//               UrlColecciones, HttpMethod.GET, null, new ParameterizedTypeReference<>() {}
+//       );
+//       List<Map<String, Object>> raw = Optional.ofNullable(resp.getBody()).orElseGet(List::of);
+//
+//       guardarHechosPorColeccion(raw,UrlBase);
      }
 
 

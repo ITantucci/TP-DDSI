@@ -1,17 +1,12 @@
-package Agregador.persistencia;
+package Estadistica.persistencia;
 
-import Agregador.DTO.FiltrosHechosDTO;
-import Agregador.business.Colecciones.*;
-import Agregador.business.Consenso.Consenso;
-import Agregador.business.Hechos.*;
-import jakarta.persistence.*;
+import Estadistica.DTO.FiltrosHechosDTO;
+import Estadistica.business.Consenso.Consenso;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.*;
-import java.util.*;
 import org.springframework.stereotype.Repository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import jakarta.persistence.TypedQuery; // Necesario para la consulta paginada
+import java.util.*;
 
 @Repository
 public class RepositorioHechosImpl implements RepositorioHechosCustom {
@@ -69,59 +64,5 @@ public class RepositorioHechosImpl implements RepositorioHechosCustom {
       if (filtros.getTipoMultimediaNP() != null) criterios.add(new CriterioMultimedia(TipoMultimedia.valueOf(filtros.getTipoMultimediaNP()), false));
     }
     return criterios;
-  }
-
-  @Override
-  public List<Hecho> buscarPorTextoLibre(String textoBusqueda) {
-    if (textoBusqueda == null || textoBusqueda.isBlank()) {
-      return Collections.emptyList();
-    }
-
-    CriteriaBuilder cb = em.getCriteriaBuilder();
-    CriteriaQuery<Hecho> query = cb.createQuery(Hecho.class);
-    Root<Hecho> root = query.from(Hecho.class);
-
-    // Convertir el texto a un patrón LIKE (ej: "%incendio%")
-    String patronBusqueda = "%" + textoBusqueda.toLowerCase() + "%";
-
-    // Crear la condición OR: (titulo LIKE %texto%) OR (descripcion LIKE %texto%)
-    Predicate busquedaPredicate = cb.or(
-            // Buscar en título (ignorando mayúsculas/minúsculas)
-            cb.like(cb.lower(root.get("titulo")), patronBusqueda),
-            // Buscar en descripción (ignorando mayúsculas/minúsculas)
-            cb.like(cb.lower(root.get("descripcion")), patronBusqueda)
-    );
-
-    // Aplicar la condición a la consulta
-    query.select(root).where(busquedaPredicate);
-
-    return em.createQuery(query).getResultList();
-  }
-  @Override
-  public Page<Hecho> findAll(Pageable pageable) {
-    // 1. Crear el CriteriaBuilder
-    CriteriaBuilder cb = em.getCriteriaBuilder();
-
-    // 2. Consulta para obtener los Hechos (con LIMIT y OFFSET)
-    CriteriaQuery<Hecho> query = cb.createQuery(Hecho.class);
-    Root<Hecho> root = query.from(Hecho.class);
-    query.select(root);
-
-    TypedQuery<Hecho> typedQuery = em.createQuery(query);
-
-    // Aplicar el OFFSET (setFirstResult) y el LIMIT (setMaxResults)
-    typedQuery.setFirstResult((int) pageable.getOffset());
-    typedQuery.setMaxResults(pageable.getPageSize());
-
-    List<Hecho> content = typedQuery.getResultList();
-
-    // 3. Consulta para obtener el TOTAL (Necesario para el objeto Page)
-    // Se usa una consulta separada para contar todos los registros sin límite/offset
-    CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
-    countQuery.select(cb.count(countQuery.from(Hecho.class)));
-    Long total = em.createQuery(countQuery).getSingleResult();
-
-    // 4. Devolver la página de Spring Data con el contenido limitado
-    return new PageImpl<>(content, pageable, total);
   }
 }

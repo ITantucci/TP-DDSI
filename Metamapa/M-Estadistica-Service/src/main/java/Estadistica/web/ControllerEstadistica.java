@@ -6,10 +6,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.*;
 import io.swagger.v3.oas.annotations.responses.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.boot.web.context.WebServerInitializedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
@@ -23,36 +26,30 @@ public class ControllerEstadistica {
   private final TareasProgramadas tareasProgramadas;
 
   private List<Map<String,String>> agregadores = new ArrayList<Map<String,String>>();
-  //TODO: tendra repositorio? no dice nada la consigna
-
 
   @PostMapping("/agregador")
-  public ResponseEntity<Object> registrarAgregador(@RequestBody Map<String, Object> body)
-  {
-    try{
-        Map<String,String> agregador = new HashMap<>();
-        agregador.put("UrlBase",(String) body.get("UrlBase"));
-        agregador.put("endpointSolicitudesEliminacion",(String) body.get("endpointSolicitudesEliminacion"));
-        agregador.put("enpointHechos",(String) body.get("enpointHechos"));
+  public ResponseEntity<Object> registrarAgregador(@RequestBody Map<String, Object> body) {
+    try {
+      Map<String, String> agregador = new HashMap<>();
+      agregador.put("UrlBase", (String) body.get("UrlBase"));
+      agregador.put("endpointSolicitudesEliminacion", (String) body.get("endpointSolicitudesEliminacion"));
+      agregador.put("endpointHechos", (String) body.get("endpointHechos"));
+      agregador.put("endpointColecciones", (String) body.get("endpointColecciones"));
 
-        agregadores.add(agregador);
-        return ResponseEntity.ok().body(agregador);
-    }
-    catch(Exception e)
-    {
+      agregadores.add(agregador);
+      return ResponseEntity.ok().body(agregador);
+    } catch (Exception e) {
       return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
   }
 
   @Scheduled(fixedRate = 30 * 60 * 1000)
-  public void actualizarHechosySolicitudes()
-  {
-    try
-    {
-      agregadores.forEach(agregador -> tareasProgramadas.actualizarEstadisticas(agregador.get("UrlBase") + agregador.get("endpointHechos"),agregador.get("UrlBase") + agregador.get("endpointSolicitudesEliminacion")));
-    }
-    catch(Exception e)
-    {
+  public void actualizarHechosySolicitudes() {
+    try {
+      agregadores.forEach(agregador -> tareasProgramadas.actualizarEstadisticas(agregador.get("UrlBase") + agregador.get("endpointHechos"),
+              agregador.get("UrlBase") + agregador.get("endpointSolicitudesEliminacion"),
+              agregador.get("endpointColecciones")));
+    } catch (Exception e) {
       //no se que hacer aca
     }
   }
@@ -76,7 +73,7 @@ public class ControllerEstadistica {
   // Se elimina creo
   public void generarEstadisticas() {}
 
-  //TODO: De una colección, ¿en qué provincia se agrupan la mayor cantidad de hechos reportados? 
+  //De una colección, ¿en qué provincia se agrupan la mayor cantidad de hechos reportados? 
   @Operation(
       summary = "Provincia con mayor cantidad de hechos reportados de una coleccion",
       description = "Devuelve el nombre de la provincia que posee la mayor cantidad de hechos registrados de la coleccion indicada."
@@ -97,12 +94,12 @@ public class ControllerEstadistica {
       )
   })
   @GetMapping("/coleccion/{uuid}/provincia-mas-reportada")
-  public ResponseEntity<String> provinciaMasReportada(@PathVariable UUID uuid) {
-    String provinica = estadisticaService.provinciaMasReportadaDeColeccion(uuid);
+  public ResponseEntity<Map<String,String>> estadisticaColeccionProvincia(@PathVariable UUID uuid) {
+    Map<String,String> provinica = estadisticaService.estadisticaColeccionProvincia(uuid);
     return (provinica == null) ? ResponseEntity.noContent().build() : ResponseEntity.ok(provinica);
   }
 
-  //TODO revisar:¿Cuál es la categoría con mayor cantidad de hechos reportados?
+  //¿Cuál es la categoría con mayor cantidad de hechos reportados?
   @Operation(
           summary = "Categoría con mayor cantidad de hechos reportados",
           description = "Devuelve el nombre de la categoría que posee la mayor cantidad de hechos registrados en el sistema."
@@ -123,14 +120,14 @@ public class ControllerEstadistica {
           )
   })
   @GetMapping("/categoria")
-  public ResponseEntity<String> obtenerCategoriaMasReportada() {
-    String categoria = estadisticaService.obtenerCategoriaMasReportada();
-    return (categoria == null || categoria.isBlank())
+  public ResponseEntity<Map<String, String>> obtenerCategoriaMasReportada() {
+    Map<String, String> categoria = estadisticaService.estadisticaCategoriaMasReportada();
+    return (categoria == null)
             ? ResponseEntity.noContent().build()
             : ResponseEntity.ok(categoria);
   }
 
-  //TODO: ¿En qué provincia se presenta la mayor cantidad de hechos de una cierta categoría?
+  // ¿En qué provincia se presenta la mayor cantidad de hechos de una cierta categoría?
   @Operation(
       summary = "En qué provincia se presenta la mayor cantidad de hechos de una cierta categoría?",
       description = "Devuelve la provincia con la mayor cantidad de hechos de la categoria indicada."
@@ -140,12 +137,12 @@ public class ControllerEstadistica {
       @ApiResponse(responseCode = "204", description = "Sin datos con provincia disponible")
   })
   @GetMapping("/hechos/provincia-mas-reportada")
-  public ResponseEntity<String> provinciaMasReportada(@RequestParam String categoria) {
-    String provinica = estadisticaService.provinciaMasReportada(categoria);
+  public ResponseEntity<Map<String,String>> provinciaMasReportada(@RequestParam String categoria) {
+    Map<String,String> provinica = estadisticaService.estadisticaProvinciaCategoria(categoria);
     return (provinica == null) ? ResponseEntity.noContent().build() : ResponseEntity.ok(provinica);
   }
 
-  //TODO: ¿A qué hora del día ocurren la mayor cantidad de hechos de una cierta categoría?
+  // ¿A qué hora del día ocurren la mayor cantidad de hechos de una cierta categoría?
   @Operation(
           summary = "Hora del día con más hechos para una categoría",
           description = "Devuelve la hora (0–23) en la que se registran más hechos de la categoría indicada."
@@ -155,12 +152,12 @@ public class ControllerEstadistica {
           @ApiResponse(responseCode = "204", description = "Sin datos con hora disponible")
   })
   @GetMapping("/hechos/hora")
-  public ResponseEntity<Integer> horaMasReportada(@RequestParam String categoria) {
-    Integer hora = estadisticaService.horaMasReportada(categoria);
+  public ResponseEntity<Map<String,String>> horaMasReportada(@RequestParam String categoria) {
+    Map<String,String> hora = estadisticaService.estadisticaHoraCategoria(categoria);
     return (hora == null) ? ResponseEntity.noContent().build() : ResponseEntity.ok(hora);
   }
 
-  //TODO revisar: ¿Cuántas solicitudes de eliminación son spam?
+  // ¿Cuántas solicitudes de eliminación son spam?
   @Operation(
           summary = "Cantidad de solicitudes de eliminación que son spam",
           description = "Devuelve el número total de solicitudes de eliminación marcadas como spam"
@@ -173,16 +170,16 @@ public class ControllerEstadistica {
                   content = @Content)
   })
   @GetMapping("/spam")
-  public ResponseEntity<Long> contarSolicitudesSpam() {
+  public ResponseEntity<Map<String,String>> contarSolicitudesSpam() {
     try {
-      long cantidad = estadisticaService.getSolicitudesSpam();
+      Map<String,String> cantidad = estadisticaService.estadisticaSpam();
       return ResponseEntity.ok(cantidad);
     } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(0L);
+      return ResponseEntity.noContent().build();
     }
   }
 
-  //TODO: Se deberá implementar la exportación de las estadísticas en formato CSV.
+  // Se deberá implementar la exportación de las estadísticas en formato CSV.
   @Operation(summary = "Exportación CSV genérica")
   @ApiResponse(responseCode = "200", description = "CSV",
           content = @Content(mediaType = "text/csv"))
@@ -190,10 +187,13 @@ public class ControllerEstadistica {
   public ResponseEntity<byte[]> exportarDatos(){
     String csv = estadisticaService.exportarCsv();
     byte[] bytes = csv.getBytes(StandardCharsets.UTF_8);
+    // 💡 Aquí se define el nombre del archivo para la descarga
+    String filename = "metamapa_estadisticas.csv";
+
     return ResponseEntity.ok()
-        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + ".csv\"")
-        .contentType(MediaType.valueOf("text/csv"))
-        .contentLength(bytes.length)
-        .body(bytes);
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+            .contentType(MediaType.valueOf("text/csv"))
+            .contentLength(bytes.length)
+            .body(bytes);
   }
 }

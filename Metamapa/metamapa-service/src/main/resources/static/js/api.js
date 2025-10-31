@@ -208,6 +208,16 @@ async function procesarSolicitudEliminacion(aprobada, id) {
     }
 }
 
+//Enviar solicitud de edicion
+async function enviarSolicitudEdicion(solicitud) {
+    const resp = await fetch(`${window.METAMAPA.API_SOLICITUDES}/solicitudesEdicion`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(solicitud)
+    });
+    return resp.ok;
+}
+
 // Procesar solicitud de edición (aprobar/rechazar)
 async function procesarSolicitudEdicion(aprobada, id) {
     // Definir el nuevo estado según la acción

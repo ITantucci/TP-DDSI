@@ -19,7 +19,6 @@ public class ServiceColecciones {
   private final RepositorioConsenso repositorioConsenso;
 
 
-
   public List<Hecho> getHechosFiltrados(UUID id, ModosDeNavegacion modoNavegacion, FiltrosHechosDTO filtros) {
     Coleccion coleccion = repositorioColecciones.getColeccion(id)
         .orElseThrow(() -> new IllegalArgumentException("Colección no encontrada: " + id));

@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api-colecciones")
 public class ControllerColecciones {
   private final ServiceColecciones serviceColecciones;
-  private final RepositorioColecciones repositorioColecciones;
 
   @GetMapping("/{id}/hechos")
   public ResponseEntity<?> getHechosColeccion(

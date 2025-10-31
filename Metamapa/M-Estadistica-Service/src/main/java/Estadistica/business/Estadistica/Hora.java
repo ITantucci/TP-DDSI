@@ -1,4 +1,6 @@
-package Estadistica.business;
+package Estadistica.business.Estadistica;
+import java.time.LocalTime;
+
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import lombok.*;
@@ -6,16 +8,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
 @Entity
-
-public class SolicitudEliminacion {
-    @Getter
-    boolean spam;
+public class Hora {
     @Getter @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     int ID;
+    @Getter
+    LocalTime hora;
 
-    public SolicitudEliminacion() {}
-    public SolicitudEliminacion(boolean spam) {
-        this.spam = spam;
+    public Hora() {}
+    public Hora(LocalTime hora) {
+        this.hora = hora;
     }
 
 }

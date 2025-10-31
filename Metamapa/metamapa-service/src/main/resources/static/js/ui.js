@@ -5,7 +5,8 @@ const vistas = {
     hechos: mostrarHechosView,
     colecciones: mostrarColeccionesView,
     fuentes: mostrarFuentesView,
-    solicitudes: mostrarSolicitudesView
+    solicitudes: mostrarSolicitudesView,
+    estadisticas: mostrarEstadisticasView
 };
 
 async function mostrar(seccion) {
@@ -59,6 +60,78 @@ function renderTablaSolicitudes(titulo, solicitudes, columnas, onApprove, onReje
         else if (btn.classList.contains("rechazar")) onReject(id);
     });
     return tableWrapper;
+}
+
+async function mostrarEstadisticasView() {
+    cont.innerHTML = `
+        <h2>📊 Estadísticas del sistema</h2>
+        <div id="estadisticas-container" class="estadisticas">
+            
+            <div class="stat">
+                <h3>📁 Provincia con más hechos por Colección</h3>
+                <input type="text" id="coleccionInput" placeholder="Ingrese UUID de colección..." />
+                <button id="btnBuscarProvinciaColeccion">Buscar</button>
+                <p id="provinciaColeccion">—</p>
+            </div>
+
+            <div class="stat">
+                <h3>🏷️ Categoría más reportada</h3>
+                <p id="categoriaMasReportada">Cargando...</p>
+            </div>
+
+            <div class="stat">
+                <h3>🌎 Provincia con más hechos de una categoría</h3>
+                <input type="text" id="categoriaInput" placeholder="Ingrese una categoría..." />
+                <button id="btnBuscarProvinciaCat">Buscar</button>
+                <p id="provinciaCategoria">—</p>
+            </div>
+
+            <div class="stat">
+                <h3>🕓 Hora del día con más hechos (por categoría)</h3>
+                <input type="text" id="categoriaHoraInput" placeholder="Ingrese una categoría..." />
+                <button id="btnBuscarHoraCat">Buscar</button>
+                <p id="horaCategoria">—</p>
+            </div>
+
+            <div class="stat">
+                <h3>🚫 Solicitudes de eliminación marcadas como spam</h3>
+                <p id="cantidadSpam">Cargando...</p>
+            </div>
+        </div>
+    `;
+
+    // 🔹 Llamados iniciales (estadísticas generales)
+    const categoriaMasReportada = await obtenerCategoriaMasReportada();
+    document.getElementById("categoriaMasReportada").textContent =
+        categoriaMasReportada || "No hay datos";
+
+    const cantidadSpam = await obtenerCantidadSolicitudesSpam();
+    document.getElementById("cantidadSpam").textContent = cantidadSpam;
+
+    // 🔹 Eventos dinámicos
+    document.getElementById("btnBuscarProvinciaColeccion").addEventListener("click", async () => {
+        const uuid = document.getElementById("coleccionInput").value.trim();
+        if (!uuid) return alert("Ingrese un UUID de colección");
+        const provincia = await obtenerProvinciaMasReportadaColeccion(uuid);
+        document.getElementById("provinciaColeccion").textContent =
+            provincia || "No hay datos disponibles";
+    });
+
+    document.getElementById("btnBuscarProvinciaCat").addEventListener("click", async () => {
+        const cat = document.getElementById("categoriaInput").value.trim();
+        if (!cat) return alert("Ingrese una categoría");
+        const prov = await obtenerProvinciaMasReportadaPorCategoria(cat);
+        document.getElementById("provinciaCategoria").textContent =
+            prov || "No hay datos disponibles";
+    });
+
+    document.getElementById("btnBuscarHoraCat").addEventListener("click", async () => {
+        const cat = document.getElementById("categoriaHoraInput").value.trim();
+        if (!cat) return alert("Ingrese una categoría");
+        const hora = await obtenerHoraMasReportadaPorCategoria(cat);
+        document.getElementById("horaCategoria").textContent =
+            hora !== null ? `${hora}:00 hs` : "No hay datos disponibles";
+    });
 }
 
 async function mostrarSolicitudesView() {
@@ -614,13 +687,9 @@ async function aplicarFiltrosColeccion() {
     if (!coleccionSeleccionada) return alert("Seleccioná una colección primero.");
 
     const modo = document.getElementById("modoNav").value;
-    const params = new URLSearchParams();
+    const params = construirParametrosFiltros("panelFiltrosColeccion");
 
-    const tituloNP = document.getElementById("tituloNP").value.trim();
-    const categoriaP = document.getElementById("categoriaP").value.trim();
-    if (tituloNP) params.append("tituloNP", tituloNP);
-    if (categoriaP) params.append("categoriaP", categoriaP);
-    params.append("modoNav", modo);
+    params.append("modoNavegacion", modo);
 
     const url = `${window.METAMAPA.API_COLECCIONES}/${coleccionSeleccionada}/hechos?${params.toString()}`;
     console.log("📡 Aplicando filtros:", url);
@@ -630,8 +699,9 @@ async function aplicarFiltrosColeccion() {
         if (!resp.ok) throw new Error("Respuesta no OK del servidor");
         const hechos = await resp.json();
 
-        setTimeout(() => mostrarHechosEnMapa(hechos), 100);
-        setTimeout(() => inicializarMapa("mapaColeccion"), 300);
+        inicializarMapa();
+        mostrarHechosEnMapa(hechos);
+        //document.getElementById("tablaHechos").innerHTML = renderTablaHechos("Hechos filtrados", hechos);
     } catch (e) {
         alert("Error al aplicar filtros");
         console.error(e);

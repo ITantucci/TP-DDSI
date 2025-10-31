@@ -1,10 +1,7 @@
 package Estadistica.DTO;
+import lombok.*;
 
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
+@Getter @Setter
 public class HechoGeoDTO {
   private Float latitud;
   private Float longitud;

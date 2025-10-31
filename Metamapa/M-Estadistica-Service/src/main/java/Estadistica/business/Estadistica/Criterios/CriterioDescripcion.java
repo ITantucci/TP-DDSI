@@ -1,0 +1,28 @@
+package Estadistica.business.Estadistica.Criterios;
+import Estadistica.business.Estadistica.Hecho;
+import jakarta.persistence.Entity;
+import jakarta.persistence.criteria.*;
+import lombok.Getter;
+
+@Entity
+public class CriterioDescripcion extends Criterio {
+  @Getter
+  private String descripcion;
+
+  public CriterioDescripcion(String descripcion, boolean inclusion) {
+    this.descripcion = descripcion;
+    this.inclusion = inclusion;
+  }
+
+  public CriterioDescripcion() {}
+
+  @Override
+  public boolean cumple(Hecho hechoAValidar){
+    String descripcionAValidar = hechoAValidar.getDescripcion();
+    return inclusion == this.descripcion.equals(descripcionAValidar);
+  }
+  public Predicate toPredicate(Root<Hecho> root, CriteriaBuilder cb) {
+    Predicate igual = cb.equal(root.get("descripcion"), descripcion);
+    return inclusion ? igual : cb.not(igual);
+  }
+}

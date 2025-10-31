@@ -1,5 +1,4 @@
 package Agregador;
-/*
 import Agregador.Service.ServiceSolicitudes;
 import Agregador.Service.ServiceSolicitudes.Result;
 import Agregador.DTO.*;
@@ -167,5 +166,3 @@ class ControllerSolicitudesTests {
     assertEquals(BigInteger.valueOf(12), response.getBody().getHechoAfectado());
   }
 }
-
- */

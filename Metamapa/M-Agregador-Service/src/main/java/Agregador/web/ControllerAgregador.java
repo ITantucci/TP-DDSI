@@ -7,9 +7,14 @@ import java.util.*;
 import Agregador.Service.ServiceFuenteDeDatos;
 import Agregador.persistencia.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.web.context.WebServerInitializedEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import Agregador.Service.ServiceConsenso;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 @RestController
 @RequiredArgsConstructor
@@ -84,5 +89,7 @@ public class ControllerAgregador {
       return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
     }
   }
+
+
 
 }

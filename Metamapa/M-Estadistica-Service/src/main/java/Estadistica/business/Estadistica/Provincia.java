@@ -1,4 +1,4 @@
-package Estadistica.business;
+package Estadistica.business.Estadistica;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import lombok.*;
@@ -6,15 +6,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
 @Entity
-public class Categoria {
+public class Provincia {
     @Getter @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     int ID;
     @Getter
-    String Descripcion;
+    String Nombre;
 
-    public Categoria(){}
-
-    public Categoria(String descripcion) {
-        this.Descripcion = descripcion;
+    public Provincia() {}
+    public Provincia(String Nombre) {
+        this.Nombre = Nombre;
     }
 }
