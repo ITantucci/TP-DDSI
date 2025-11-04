@@ -277,3 +277,14 @@ function actualizarCirculoUbicacion(lat, lng) {
 
     mapaUbicacion.setView([lat, lng], 12);
 }
+
+// Helper que reemplaza setTimeouts dispersos para inicializar mapa
+function ensureMapaInit(mapId = "mapa", delay = 100) {
+    return new Promise((resolve) => {
+        // si `inicializarMapa` acepta un id, se le pasa; si no, la llamada sigue funcionando
+        setTimeout(() => {
+            try { inicializarMapa(mapId); } catch (e) { /* no bloquear */ }
+            resolve();
+        }, delay);
+    });
+}

@@ -23,7 +23,6 @@ function renderTablaSolicitudes(titulo, solicitudes, columnas, onApprove, onReje
         alerta.textContent = `No hay solicitudes de ${titulo.toLowerCase()} pendientes.`;
         return alerta;
     }
-
     const tableWrapper = document.createElement("div");
     tableWrapper.innerHTML = `
         <h3>Solicitudes de ${titulo} (${solicitudes.length})</h3>
@@ -45,7 +44,6 @@ function renderTablaSolicitudes(titulo, solicitudes, columnas, onApprove, onReje
           </table>
         </div>
     `;
-
     // Delegación de eventos: un listener para todo el wrapper
     tableWrapper.addEventListener("click", (ev) => {
         const btn = ev.target.closest(".aprobar, .rechazar");
@@ -99,13 +97,10 @@ async function mostrarEstadisticasView() {
             </div>
         </div>
     `;
-
     // 🔹 Llamados iniciales (estadísticas generales)
     const categoriaMasReportada = await obtenerCategoriaMasReportada();
     document.getElementById("categoriaMasReportada").textContent = categoriaMasReportada || "No hay datos";
-
     document.getElementById("cantidadSpam").textContent = await obtenerCantidadSolicitudesSpam();
-
     // 🔹 Eventos dinámicos
     document.getElementById("btnBuscarProvinciaColeccion").addEventListener("click", async () => {
         const uuid = document.getElementById("coleccionInput").value.trim();
@@ -114,7 +109,6 @@ async function mostrarEstadisticasView() {
         document.getElementById("provinciaColeccion").textContent =
             provincia || "No hay datos disponibles";
     });
-
     document.getElementById("btnBuscarProvinciaCat").addEventListener("click", async () => {
         const cat = document.getElementById("categoriaInput").value.trim();
         if (!cat) return alert("Ingrese una categoría");
@@ -122,7 +116,6 @@ async function mostrarEstadisticasView() {
         document.getElementById("provinciaCategoria").textContent =
             prov || "No hay datos disponibles";
     });
-
     document.getElementById("btnBuscarHoraCat").addEventListener("click", async () => {
         const cat = document.getElementById("categoriaHoraInput").value.trim();
         if (!cat) return alert("Ingrese una categoría");
@@ -130,7 +123,6 @@ async function mostrarEstadisticasView() {
         document.getElementById("horaCategoria").textContent =
             hora !== null ? `${hora}:00 hs` : "No hay datos disponibles";
     });
-
     // 🔹 Botón Exportar CSV
     document.getElementById("btnExportarCSV").addEventListener("click", () => {
         // Recolectar datos visibles
@@ -142,9 +134,7 @@ async function mostrarEstadisticasView() {
             ["Hora del dia con mas hechos (por categoria)", document.getElementById("horaCategoria").textContent.trim()],
             ["Solicitudes de eliminacion marcadas como spam", document.getElementById("cantidadSpam").textContent.trim()]
         ];
-
         // Convertir a CSV
-// Usar punto y coma para compatibilidad regional con Excel
         const csv = datos.map(fila => fila.map(v => `"${v.replace(/"/g, '""')}"`).join(";")).join("\r\n");
         // Crear blob y disparar descarga
         const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
@@ -204,10 +194,12 @@ async function mostrarHechosView() {
       <div id="panelFiltrosHechos" class="border p-3 rounded bg-light mb-3">
         <div class="d-flex justify-content-between align-items-center mb-2">
           <h6 class="mb-0">Filtros dinámicos</h6>
-          <button class="btn btn-sm btn-outline-secondary" onclick="agregarFiltro('panelFiltrosHechos')">+ Agregar filtro</button>
+          <button class="btn btn-sm btn-outline-secondary" id="btnAgregarFiltro" onclick="agregarFiltro('panelFiltrosHechos')">+ Agregar filtro</button>
         </div>
         <div id="filtrosContainerHechos"></div>
-        <button class="btn btn-sm btn-success mt-2" onclick="aplicarFiltrosHechos()">Aplicar filtros</button>
+        <button id="btnAplicarFiltrosHechos" class="btn btn-sm btn-success mt-2" onclick="aplicarFiltrosHechos()" disabled>
+          Aplicar filtros
+        </button>
       </div>
       <div id="mapa" class="mapa"></div>
       <div id="tablaHechos" class="mt-3"></div>
@@ -216,6 +208,15 @@ async function mostrarHechosView() {
     await ensureMapaInit("mapa");
     mostrarHechosEnMapa(hechos);
     document.getElementById("tablaHechos").innerHTML = renderTablaHechos("Hechos curados", hechos);
+    // Activar/desactivar el botón según haya filtros
+    const contFiltros = document.getElementById("filtrosContainerHechos");
+    const btnAplicar = document.getElementById("btnAplicarFiltrosHechos");
+    // Observa los cambios en el contenedor de filtros
+    const observer = new MutationObserver(() => {
+        const tieneFiltros = contFiltros.children.length > 0;
+        btnAplicar.disabled = !tieneFiltros;
+    });
+    observer.observe(contFiltros, { childList: true });
 }
 
 async function mostrarColeccionesView() {
@@ -235,10 +236,14 @@ async function mostrarColeccionesView() {
         <div id="panelFiltrosColeccion" class="border p-3 rounded bg-light mb-3">
           <div class="d-flex justify-content-between align-items-center mb-2">
             <h6 class="mb-0">Filtros dinámicos</h6>
-            <button class="btn btn-sm btn-outline-secondary" onclick="agregarFiltro('panelFiltrosColeccion')">+ Agregar filtro</button>
+            <button id="btnAgregarFiltroColeccion" class="btn btn-sm btn-outline-secondary" onclick="agregarFiltro('panelFiltrosColeccion')">
+              + Agregar filtro
+            </button>
           </div>
           <div id="filtrosContainerColeccion"></div>
-          <button class="btn btn-sm btn-success mt-2" onclick="aplicarFiltrosColeccion()">Aplicar filtros</button>
+          <button id="btnAplicarFiltrosColeccion" class="btn btn-sm btn-success mt-2" onclick="aplicarFiltrosColeccion()" disabled>
+            Aplicar filtros
+          </button>
         </div>
         <div id="listaColecciones" class="mb-3"></div>
         <div id="mapaColeccion" class="mapa"></div>
@@ -246,6 +251,15 @@ async function mostrarColeccionesView() {
     `;
     await ensureMapaInit("mapaColeccion");
     await mostrarColecciones();
+    // Habilitar / deshabilitar botón según haya filtros
+    const contFiltros = document.getElementById("filtrosContainerColeccion");
+    const btnAplicar = document.getElementById("btnAplicarFiltrosColeccion");
+    // Observa los cambios en los hijos del contenedor
+    const observer = new MutationObserver(() => {
+        const tieneFiltros = contFiltros.children.length > 0;
+        btnAplicar.disabled = !tieneFiltros;
+    });
+    observer.observe(contFiltros, { childList: true });
 }
 
 async function mostrarFuentesView() {
@@ -323,12 +337,10 @@ function mostrarDetalleHecho(h) {
           </div>
         </div>
         `;
-
         // Eventos de los botones
         document.getElementById("btnSolicitarEliminacion").addEventListener("click", mostrarFormularioEliminacion);
         document.getElementById("btnSolicitarEdicion").addEventListener("click", mostrarFormularioEdicion);
     }
-
     // --- FORMULARIO ELIMINACIÓN ---
     function mostrarFormularioEliminacion() {
         contenedor.innerHTML = `
@@ -461,7 +473,6 @@ function agregarCriterio(criterioExistente = null) {
     const container = document.getElementById("criteriosContainer");
     const div = document.createElement("div");
     div.className = "criterio-box p-2 border rounded mb-2";
-
     div.innerHTML = `
     <div class="row mb-2">
       <div class="col-md-4">
@@ -537,10 +548,8 @@ function agregarCriterio(criterioExistente = null) {
       </div>
     </div>
   `;
-
     const tipoSelect = div.querySelector(".tipo-criterio");
     tipoSelect.addEventListener("change", () => actualizarCamposCriterio(div, tipoSelect.value));
-
     // Si es un criterio cargado desde una colección existente
     if (criterioExistente) {
         tipoSelect.value = criterioExistente.tipo;
@@ -558,66 +567,63 @@ function agregarCriterio(criterioExistente = null) {
 }
 
 function actualizarCamposCriterio(div, tipo) {
-    div.querySelectorAll(".campos-fecha, .campos-fuente, .campos-ubicacion, .campos-multimedia")
-        .forEach(el => el.classList.add("d-none"));
-
-    if (tipo === "fecha" || tipo === "fechareportaje")
-        div.querySelector(".campos-fecha").classList.remove("d-none");
-    if (tipo === "fuente")
-        div.querySelector(".campos-fuente").classList.remove("d-none");
-    if (tipo === "ubicacion")
-        div.querySelector(".campos-ubicacion").classList.remove("d-none");
-    if (tipo === "multimedia")
-        div.querySelector(".campos-multimedia").classList.remove("d-none");
+    const camposMap = {
+        'fecha': '.campos-fecha', 'fechareportaje': '.campos-fecha', 'fuente': '.campos-fuente',
+        'ubicacion': '.campos-ubicacion', 'multimedia': '.campos-multimedia'
+    };
+    // Oculta todos los campos específicos
+    Object.values(camposMap).forEach(selector => {
+        const el = div.querySelector(selector);
+        if (el) el.classList.add('d-none');
+    });
+    // Muestra el campo correcto
+    const selectorAMostrar = camposMap[tipo];
+    if (selectorAMostrar) div.querySelector(selectorAMostrar).classList.remove('d-none');
 }
 
-
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+    console.log("Iniciando MetaMapa...");
+    // Obtener todos los elementos
     const formHecho = document.getElementById("formHecho");
     const formColeccion = document.getElementById("formColeccion");
     const modalHecho = document.getElementById("modalHecho");
-
-    // Enlazar formularios
-    if (formHecho) formHecho.addEventListener("submit", crearHecho);
-    if (formColeccion) formColeccion.addEventListener("submit", crearColeccion);
-
-    // Iniciar mapa cuando se abre el modal
-    modalHecho.addEventListener("shown.bs.modal", () => {
-        setTimeout(inicializarMapaSeleccion, 300);
-    });
-
-    // Limpiar marcador y campos cuando se cierra el modal
-    modalHecho.addEventListener("hidden.bs.modal", () => {
-        limpiarMapaSeleccion();
-        limpiarFormularioHecho();
-    });
+    const modalColeccion = document.getElementById("modalColeccion");
+    // Enlazar formularios (con chequeos de existencia)
+    if (formHecho)
+        formHecho.addEventListener("submit", crearHecho);
+    if (formColeccion)
+        formColeccion.addEventListener("submit", crearColeccion);
+    // Enlazar eventos de Modales
+    if (modalHecho) {
+        modalHecho.addEventListener("shown.bs.modal", () => {
+            setTimeout(inicializarMapaSeleccion, 300);
+        });
+        modalHecho.addEventListener("hidden.bs.modal", () => {
+            limpiarMapaSeleccion();
+            limpiarFormularioHecho();
+        });
+    }
+    if (modalColeccion)
+        modalColeccion.addEventListener("hidden.bs.modal", limpiarFormularioColeccion);
+    // Lógica de arranque
+    const vista = sessionStorage.getItem("vistaActual") || "hechos";
+    await mostrar(vista);
 });
 
 function limpiarFormularioHecho() {
     const form = document.getElementById("formHecho");
     if (!form) return;
-
     form.reset(); // limpia los inputs normales
-
     // limpia campos manuales de lat/long
     document.getElementById("latitud").value = "";
     document.getElementById("longitud").value = "";
-
     // limpiar input de archivos, sin borrar el contenedor
     const input = document.getElementById("inputMultimedia");
     if (input) input.value = "";
-
     // limpiar resultado de estado
     const res = document.getElementById("resultadoHecho");
     if (res) res.innerHTML = "";
 }
-
-document.addEventListener("DOMContentLoaded", () => {
-    const modalColeccion = document.getElementById("modalColeccion");
-    if (modalColeccion) {
-        modalColeccion.addEventListener("hidden.bs.modal", limpiarFormularioColeccion);
-    }
-});
 
 function limpiarFormularioColeccion() {
     const form = document.getElementById("formColeccion");
@@ -629,15 +635,6 @@ function limpiarFormularioColeccion() {
     if (res) res.innerHTML = "";
 }
 
-// ==========================
-// Inicialización al cargar
-// ==========================
-document.addEventListener("DOMContentLoaded", async () => {
-    console.log("Iniciando MetaMapa...");
-    const vista = sessionStorage.getItem("vistaActual") || "hechos"; // fallback
-    await mostrar(vista);
-});
-
 // ==================================================
 // Gestión dinámica de categorías
 // ==================================================
@@ -648,13 +645,11 @@ async function cargarCategoriasExistentes() {
     try {
         const guardadas = JSON.parse(localStorage.getItem("categoriasMetaMapa") || "[]");
         guardadas.forEach(c => categoriasDisponibles.add(c));
-
         const hechos = await obtenerHechos();
         categoriasDisponibles.clear();
         hechos.forEach(h => {
             if (h.categoria) categoriasDisponibles.add(h.categoria);
         });
-
         const select = document.getElementById("categoriaSelect");
         select.innerHTML = "";
         categoriasDisponibles.forEach(cat => {
@@ -663,7 +658,6 @@ async function cargarCategoriasExistentes() {
             opt.textContent = cat;
             select.appendChild(opt);
         });
-
         // Si no hay categorías, agregamos una por defecto
         if (categoriasDisponibles.size === 0) {
             const opt = document.createElement("option");
@@ -690,18 +684,14 @@ function guardarNuevaCategoria() {
     const input = document.getElementById("nuevaCategoriaInput");
     const nueva = input.value.trim();
     if (!nueva) return alert("Debe escribir una categoría válida.");
-
     categoriasDisponibles.add(nueva);
-
     const select = document.getElementById("categoriaSelect");
     const opt = document.createElement("option");
     opt.value = nueva;
     opt.textContent = nueva;
     select.appendChild(opt);
     select.value = nueva; // seleccionarla automáticamente
-
     localStorage.setItem("categoriasMetaMapa", JSON.stringify([...categoriasDisponibles]));
-
     bootstrap.Modal.getInstance(document.getElementById("modalCategoria")).hide();
 }
 let coleccionSeleccionada = null;
@@ -783,20 +773,15 @@ async function cambiarConsenso(id) {
     };
 }
 
-// Ver hechos de una colección seleccionada
+// Mostrar los hechos en el mapa
 async function verHechosColeccion(idColeccion) {
     coleccionSeleccionada = idColeccion;
     const modo = document.getElementById("modoNav").value;
-    const url = `${window.METAMAPA.API_COLECCIONES}/${idColeccion}/hechos?modoNavegacion=${modo}`;
-    console.log("📡 Cargando hechos:", url);
+    const params = new URLSearchParams({ modoNavegacion: modo });
     try {
-        const resp = await fetch(url);
-        if (!resp.ok) throw new Error("Respuesta no OK del servidor");
-        const hechos = await resp.json();
-
-        // Mostrar en mapa
-        setTimeout(() => inicializarMapa("mapaColeccion"), 100);
-        setTimeout(() => mostrarHechosEnMapa(hechos), 300);
+        const hechos = await obtenerHechosColeccionFiltrados(idColeccion, params);
+        inicializarMapa("mapaColeccion");
+        mostrarHechosEnMapa(hechos);
     } catch (e) {
         alert("Error al obtener hechos de la colección");
         console.error(e);
@@ -806,20 +791,12 @@ async function verHechosColeccion(idColeccion) {
 // Aplicar filtros temporales sin guardar en BD
 async function aplicarFiltrosColeccion() {
     if (!coleccionSeleccionada) return alert("Seleccioná una colección primero.");
-
     const modo = document.getElementById("modoNav").value;
     const params = construirParametrosFiltros("panelFiltrosColeccion");
-
     params.append("modoNavegacion", modo);
-
-    const url = `${window.METAMAPA.API_COLECCIONES}/${coleccionSeleccionada}/hechos?${params.toString()}`;
-    console.log("📡 Aplicando filtros:", url);
-
+    console.log("📡 Aplicando filtros:", params.toString());
     try {
-        const resp = await fetch(url);
-        if (!resp.ok) throw new Error("Respuesta no OK del servidor");
-        const hechos = await resp.json();
-
+        const hechos = await obtenerHechosColeccionFiltrados(coleccionSeleccionada, params);
         inicializarMapa();
         mostrarHechosEnMapa(hechos);
         //document.getElementById("tablaHechos").innerHTML = renderTablaHechos("Hechos filtrados", hechos);
@@ -836,7 +813,6 @@ function agregarFiltro(contexto) {
     const container = document.getElementById(containerId);
     const div = document.createElement("div");
     div.className = "p-2 border rounded mb-2";
-
     div.innerHTML = `
     <div class="row g-2 align-items-end">
       <div class="col-md-3">
@@ -874,7 +850,6 @@ function agregarFiltro(contexto) {
       <div class="col-md-3"><button class="btn btn-sm btn-outline-success w-100" onclick="abrirMapaUbicacion(this)">Seleccionar</button></div>
     </div>
   `;
-
     const campo = div.querySelector(".campoFiltro");
     campo.addEventListener("change", () => {
         const camposUbicacion = div.querySelector(".camposUbicacion");
@@ -895,7 +870,6 @@ function construirParametrosFiltros(contexto) {
     const containerId = contexto === "panelFiltrosHechos" ? "filtrosContainerHechos" : "filtrosContainerColeccion";
     const filtros = document.querySelectorAll(`#${containerId} > div`);
     const params = new URLSearchParams();
-
     filtros.forEach(f => {
         const campo = f.querySelector(".campoFiltro").value;
         const tipo = f.querySelector(".tipoFiltro").value;
@@ -903,7 +877,6 @@ function construirParametrosFiltros(contexto) {
         const lat = f.querySelector(".latitud")?.value;
         const lon = f.querySelector(".longitud")?.value;
         const radio = f.querySelector(".radio")?.value;
-
         if (campo === "ubicacion" && lat && lon) {
             params.append(`latitud${tipo}`, lat);
             params.append(`longitud${tipo}`, lon);
@@ -918,13 +891,9 @@ function construirParametrosFiltros(contexto) {
 // Aplicar filtros a hechos
 async function aplicarFiltrosHechos() {
     const params = construirParametrosFiltros("panelFiltrosHechos");
-    const url = `${window.METAMAPA.API_AGREGADOR}/hechos?${params.toString()}`;
-    console.log("📡 Aplicando filtros hechos:", url);
-
+    console.log("📡 Aplicando filtros hechos:", params.toString());
     try {
-        const resp = await fetch(url);
-        if (!resp.ok) throw new Error("Error al aplicar filtros");
-        const hechos = await resp.json();
+        const hechos = await obtenerHechos(params);
         inicializarMapa();
         mostrarHechosEnMapa(hechos);
         document.getElementById("tablaHechos").innerHTML = renderTablaHechos("Hechos filtrados", hechos);
@@ -933,6 +902,7 @@ async function aplicarFiltrosHechos() {
         console.error(e);
     }
 }
+
 function mostrarAlerta(mensaje, tipo = "warning", duracion = 3000) {
     // Revisar si ya existe el contenedor, si no, crearlo
     let cont = document.getElementById("alert-container");
@@ -945,7 +915,6 @@ function mostrarAlerta(mensaje, tipo = "warning", duracion = 3000) {
         cont.style.zIndex = 1050;
         document.body.appendChild(cont);
     }
-
     const alerta = document.createElement("div");
     alerta.className = `alert alert-${tipo} alert-dismissible fade show`;
     alerta.role = "alert";
@@ -955,7 +924,6 @@ function mostrarAlerta(mensaje, tipo = "warning", duracion = 3000) {
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     `;
     cont.appendChild(alerta);
-
     setTimeout(() => {
         alerta.classList.remove("show");
         alerta.classList.add("hide");
@@ -984,47 +952,12 @@ function mostrarModal(mensaje, titulo = "Atención", recargar = false) {
     </div>
     `;
     document.body.appendChild(modal);
-
     // Inicializar el modal con Bootstrap
     const bootstrapModal = new bootstrap.Modal(modal);
     bootstrapModal.show();
-
     // Cuando se cierre, limpiar y (si aplica) recargar
     modal.addEventListener("hidden.bs.modal", () => {
         modal.remove();
         if (recargar) location.reload();
     });
 }
-
-// helper que reemplaza setTimeouts dispersos para inicializar mapa
-function ensureMapaInit(mapId = "mapa", delay = 100) {
-    return new Promise((resolve) => {
-        // si `inicializarMapa` acepta un id, se le pasa; si no, la llamada sigue funcionando
-        setTimeout(() => {
-            try { inicializarMapa(mapId); } catch (e) { /* no bloquear */ }
-            resolve();
-        }, delay);
-    });
-}
-// Aplicar filtros en colecciones
-/*
-async function aplicarFiltrosColeccion() {
-    if (!coleccionSeleccionada) return alert("Seleccioná una colección primero.");
-    const params = construirParametrosFiltros("panelFiltrosColeccion");
-    const modo = document.getElementById("modoNav").value;
-    params.append("modoNav", modo);
-
-    const url = `${window.METAMAPA.API_COLECCIONES}/${coleccionSeleccionada}/hechos?${params.toString()}`;
-    console.log("📡 Aplicando filtros colección:", url);
-
-    try {
-        const resp = await fetch(url);
-        if (!resp.ok) throw new Error("Error al aplicar filtros");
-        const hechos = await resp.json();
-        inicializarMapa("mapaColeccion");
-        mostrarHechosEnMapa(hechos);
-    } catch (e) {
-        alert("Error al aplicar filtros de colección");
-        console.error(e);
-    }
-}*/

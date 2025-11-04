@@ -69,15 +69,17 @@ async function crearHecho(e) {
 }
 
 // Obtener todos los hechos curados del agregador
-async function obtenerHechos() {
-    const resp = await fetch(`${window.METAMAPA.API_AGREGADOR}/hechos`);
-    return resp.ok ? resp.json() : [];
-}
+async function obtenerHechos(params = new URLSearchParams()) {
+    try {
+        const url = `${window.METAMAPA.API_AGREGADOR}/hechos?${params.toString()}`;
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error("Error al obtener hechos");
 
-// Obtener hechos específicos de una colección
-async function obtenerHechosDeColeccion(id) {
-    const resp = await fetch(`${window.METAMAPA.API_COLECCIONES}/${id}/hechos`);
-    return resp.ok ? resp.json() : [];
+        return await resp.json();
+    } catch (e) {
+        console.error("❌ Error en obtenerHechos:", e);
+        return [];
+    }
 }
 
 // Pedir al agregador que actualice los hechos desde las fuentes

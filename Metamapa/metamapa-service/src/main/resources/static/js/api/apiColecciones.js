@@ -46,6 +46,20 @@ async function obtenerColecciones() {
     return resp.ok ? resp.json() : [];
 }
 
+// Obtener hechos de una colección con filtros opcionales
+async function obtenerHechosColeccionFiltrados(idColeccion, params) {
+    const query = params?.toString();
+    const url = `${window.METAMAPA.API_COLECCIONES}/${idColeccion}/hechos${query ? "?" + query : ""}`;
+    try {
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error("Respuesta no OK del servidor");
+        return await resp.json();
+    } catch (e) {
+        console.error("Error al obtener hechos filtrados de la colección:", e);
+        throw e;
+    }
+}
+
 // Modificar consenso de una colección
 async function modificarConsensoColeccion(id, consenso) {
     const resp = await fetch(`${window.METAMAPA.API_COLECCIONES}/${id}`, {
@@ -54,6 +68,25 @@ async function modificarConsensoColeccion(id, consenso) {
         body: JSON.stringify({consenso})
     });
     return resp.ok;
+}
+
+// Actualizar una colección
+async function actualizarColeccion(id, coleccionDTO) {
+    try {
+        const resp = await fetch(`${window.METAMAPA.API_COLECCIONES}/${id}`, {
+            method: "PUT",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(coleccionDTO)
+        });
+        if (!resp.ok) {
+            const errorText = await resp.text();
+            throw new Error(`Error al actualizar la colección: ${errorText}`);
+        }
+        return await resp.json(); // Devuelve la colección actualizada
+    } catch (error) {
+        console.error("❌ Error en actualizarColeccion:", error);
+        throw error;
+    }
 }
 
 // Helper para armar un criterio desde un div
