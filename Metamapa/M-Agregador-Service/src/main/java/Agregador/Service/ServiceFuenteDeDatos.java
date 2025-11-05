@@ -1,6 +1,5 @@
 package Agregador.Service;
 import Agregador.business.Hechos.Hecho;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import Agregador.business.Consenso.Consenso;
@@ -19,7 +18,7 @@ public class ServiceFuenteDeDatos {
   private final Normalizador normalizador;
   private static final int FACTOR_TIPO = 1_000_000;
 
-  // ==== Rutas (cambiá acá si loaders exponen distinto) ====
+  // ==== Rutas ====
   //private static final String PATH_HECHOS_POR_FUENTE = "%s/fuentesDeDatos/%d/hechos"; // o "%s/%d/hechos"
   private static final String PATH_LISTAR_FUENTES    = "%s/fuentesDeDatos";           // o "%s/"
 
