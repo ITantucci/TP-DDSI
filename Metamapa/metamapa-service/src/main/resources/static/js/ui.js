@@ -190,33 +190,60 @@ async function mostrarSolicitudesView() {
 
 async function mostrarHechosView() {
     cont.innerHTML = `
-      <h3>Hechos curados</h3>
-      <div id="panelFiltrosHechos" class="border p-3 rounded bg-light mb-3">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <h6 class="mb-0">Filtros dinámicos</h6>
-          <button class="btn btn-sm btn-outline-secondary" id="btnAgregarFiltro" onclick="agregarFiltro('panelFiltrosHechos')">+ Agregar filtro</button>
-        </div>
-        <div id="filtrosContainerHechos"></div>
-        <button id="btnAplicarFiltrosHechos" class="btn btn-sm btn-success mt-2" onclick="aplicarFiltrosHechos()" disabled>
-          Aplicar filtros
-        </button>
+    <h3>Hechos curados</h3>
+    <div id="panelFiltrosHechos" class="border p-3 rounded bg-light mb-3">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h6 class="mb-0">Filtros dinámicos</h6>
+        <button class="btn btn-sm btn-outline-secondary" id="btnAgregarFiltro" onclick="agregarFiltro('panelFiltrosHechos')">+ Agregar filtro</button>
       </div>
-      <div id="mapa" class="mapa"></div>
-      <div id="tablaHechos" class="mt-3"></div>
-    `;
+      <div id="filtrosContainerHechos"></div>
+      <button id="btnAplicarFiltrosHechos" class="btn btn-sm btn-success mt-2" onclick="aplicarFiltrosHechos()" disabled>
+        Aplicar filtros
+      </button>
+    </div>
+    <div id="mapa" class="mapa"></div>
+    <div id="tablaHechos" class="mt-3">
+      ${crearSkeletonTablaHechos(8)} <!-- 8 filas de skeleton -->
+    </div>
+  `;
+    // Forzar repintado para que el skeleton se anime antes de cargar
+    await new Promise(r => setTimeout(r, 0));
+    // Cargar hechos
     const hechos = await obtenerHechos();
+    // Iniciar mapa (sin skeleton)
     await ensureMapaInit("mapa");
     mostrarHechosEnMapa(hechos);
+    // Reemplazar skeleton por la tabla real
     document.getElementById("tablaHechos").innerHTML = renderTablaHechos("Hechos curados", hechos);
-    // Activar/desactivar el botón según haya filtros
+    // Observador de filtros (para habilitar botón)
     const contFiltros = document.getElementById("filtrosContainerHechos");
     const btnAplicar = document.getElementById("btnAplicarFiltrosHechos");
-    // Observa los cambios en el contenedor de filtros
     const observer = new MutationObserver(() => {
-        const tieneFiltros = contFiltros.children.length > 0;
-        btnAplicar.disabled = !tieneFiltros;
+        btnAplicar.disabled = contFiltros.children.length === 0;
     });
     observer.observe(contFiltros, { childList: true });
+}
+
+// --- Skeleton con la misma estructura que la tabla ---
+function crearSkeletonTablaHechos(filas = 6) {
+    return `
+    <h4>Hechos curados</h4>
+    <table class="table table-striped table-sm">
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Categoría</th>
+          <th>Fuente</th>
+          <th>id</th>
+          <th>Fecha</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        ${'<tr>' + '<td><div class="skeleton-cell"></div></td>'.repeat(6) + '</tr>'.repeat(filas)}
+      </tbody>
+    </table>
+  `;
 }
 
 async function mostrarColeccionesView() {
@@ -963,34 +990,6 @@ async function aplicarFiltrosHechos() {
         alert("Error al aplicar filtros");
         console.error(e);
     }
-}
-
-function mostrarAlerta(mensaje, tipo = "warning", duracion = 3000) {
-    // Revisar si ya existe el contenedor, si no, crearlo
-    let cont = document.getElementById("alert-container");
-    if (!cont) {
-        cont = document.createElement("div");
-        cont.id = "alert-container";
-        cont.style.position = "fixed";
-        cont.style.top = "20px";
-        cont.style.right = "20px";
-        cont.style.zIndex = 1050;
-        document.body.appendChild(cont);
-    }
-    const alerta = document.createElement("div");
-    alerta.className = `alert alert-${tipo} alert-dismissible fade show`;
-    alerta.role = "alert";
-    alerta.style.minWidth = "250px"; // opcional para que no se vea muy estrecho
-    alerta.innerHTML = `
-        ${mensaje}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    `;
-    cont.appendChild(alerta);
-    setTimeout(() => {
-        alerta.classList.remove("show");
-        alerta.classList.add("hide");
-        setTimeout(() => alerta.remove(), 300);
-    }, duracion);
 }
 
 function mostrarModal(mensaje, titulo = "Atención", recargar = false) {

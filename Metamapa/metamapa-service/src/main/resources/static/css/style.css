@@ -55,3 +55,22 @@ canvas {
     color: #198754;
     margin-left: 10px;
 }
+/* Animación de carga */
+@keyframes skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Skeleton para cada celda de la tabla */
+.skeleton-cell {
+    height: 18px;               /* Altura similar al contenido real */
+    border-radius: 4px;         /* Bordes suaves */
+    background: linear-gradient(
+            90deg,
+            #e0e0e0 25%,
+            #f5f5f5 50%,
+            #e0e0e0 75%
+    );                           /* Degradado animado */
+    background-size: 400% 100%;  /* Para la animación */
+    animation: skeleton-loading 1.2s linear infinite; /* Animación continua */
+}
