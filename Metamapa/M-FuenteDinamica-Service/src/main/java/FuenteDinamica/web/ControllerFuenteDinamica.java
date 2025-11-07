@@ -1,11 +1,8 @@
 package FuenteDinamica.web;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.time.LocalDate;
+import java.io.*;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.util.*;
 import FuenteDinamica.DTO.*;
@@ -13,7 +10,7 @@ import FuenteDinamica.persistencia.*;
 import FuenteDinamica.business.Hechos.*;
 import FuenteDinamica.business.FuentesDeDatos.FuenteDinamica;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.validation.Valid;
+import org.springframework.core.io.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -125,6 +122,29 @@ public class ControllerFuenteDinamica {
               .body(Map.of("error", "Error interno: " + e.getMessage()));
     }
   }
+
+  @GetMapping("/archivos/{nombreArchivo:.+}")
+  public ResponseEntity<Resource> servirArchivo(@PathVariable String nombreArchivo) {
+    try {
+      String nombreDecodificado = URLDecoder.decode(nombreArchivo, StandardCharsets.UTF_8);
+      Path ruta = Paths.get("Metamapa/M-FuenteDinamica-Service/src/main/resources/archivos")
+              .resolve(nombreDecodificado)
+              .normalize();
+      if (!Files.exists(ruta)) {
+        return ResponseEntity.notFound().build();
+      }
+      Resource recurso = new UrlResource(ruta.toUri());
+      String tipo = Files.probeContentType(ruta);
+      return ResponseEntity.ok()
+              .contentType(MediaType.parseMediaType(
+                      tipo != null ? tipo : "application/octet-stream"))
+              .body(recurso);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return ResponseEntity.badRequest().build();
+    }
+  }
+
   private TipoMultimedia deducirTipo(String contentType) {
     if (contentType.startsWith("image")) return TipoMultimedia.FOTO;
     if (contentType.startsWith("video")) return TipoMultimedia.VIDEO;

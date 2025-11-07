@@ -10,9 +10,6 @@ public class Multimedia {
   private Integer id;
   public TipoMultimedia tipoMultimedia;
   public String path;
-  @ManyToOne
-  @JoinColumn(name = "hecho_id")
-  private Hecho hecho;
 
   public Multimedia(){}
 

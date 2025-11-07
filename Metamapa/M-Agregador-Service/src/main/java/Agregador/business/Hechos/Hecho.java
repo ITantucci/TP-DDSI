@@ -25,7 +25,9 @@ public class Hecho {
   private Usuario perfil;
   private Boolean anonimo;
   private Boolean eliminado;
-  private ArrayList<Multimedia> multimedia;
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+  @JoinColumn(name = "hecho_id")
+  private List<Multimedia> multimedia = new ArrayList<>();
   @Getter
   @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
   @JoinTable(

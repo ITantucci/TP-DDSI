@@ -1,5 +1,5 @@
 package Agregador.Service;
-import Agregador.business.Hechos.Hecho;
+import Agregador.business.Hechos.*;
 import java.time.LocalDateTime;
 import java.util.*;
 import Agregador.business.Consenso.Consenso;
@@ -31,7 +31,7 @@ public class ServiceFuenteDeDatos {
     );
     List<Map<String, Object>> raw = Optional.ofNullable(resp.getBody()).orElseGet(List::of);
     // imprimir raw para debug
-    //System.out.println("Hechos raw de la fuente " + urlBase + ": " + raw);
+    System.out.println("Hechos raw de la fuente " + urlBase + ": " + raw);
     return raw.stream()
             .map(json -> {
               Object fuenteIdRaw = json.get("fuenteId");
@@ -98,7 +98,6 @@ public class ServiceFuenteDeDatos {
     // id del hecho dentro de la fuente (aceptamos "id" o "hechoId")
     Integer hechoId     = i(json.containsKey("id") ? json.get("id") : json.get("hechoId"));
     Boolean anonimo     = bool(json.get("anonimo"));
-    // Si tu remoto lo manda:
     Boolean eliminado   = bool(json.get("eliminado"));
     LocalDateTime fechaCarga = date(json.get("fechaCarga"));
     LocalDateTime fechaMod  = date(json.get("fechaModificacion"));
@@ -114,6 +113,26 @@ public class ServiceFuenteDeDatos {
     if (fechaCarga != null) h.setFechaCarga(fechaCarga);
     if (fechaMod != null)   h.setFechaModificacion(fechaMod);
     if (eliminado != null)  h.setEliminado(eliminado);
+    Object multimediaObj = json.get("multimedia");
+    if (multimediaObj instanceof List<?> lista) {
+      List<Multimedia> medios = lista.stream()
+              .filter(Map.class::isInstance)
+              .map(o -> (Map<String, Object>) o)
+              .map(archivo -> {
+                String tipoStr = (String) archivo.get("tipoMultimedia");
+                String path = (String) archivo.get("path");
+                if (path == null) return null;
+                Multimedia medio = new Multimedia();
+                try {
+                  medio.setTipoMultimedia(TipoMultimedia.valueOf(tipoStr));
+                } catch (Exception ignored) {}
+                medio.setPath(path);
+                return medio;
+              })
+              .filter(Objects::nonNull)
+              .toList();
+      h.setMultimedia(medios);
+    }
     // metadata (si viene anidada)
     Map<String,Object> meta = (Map<String,Object>) json.get("metadata");
     if (meta != null) {

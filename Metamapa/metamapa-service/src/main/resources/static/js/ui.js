@@ -320,11 +320,31 @@ function mostrarDetalleHecho(h) {
     const contenedor = document.getElementById("detalleHecho");
     // Función para renderizar el contenido principal del hecho
     function renderDetalle() {
+        const media = h.multimedia?.[0];
+        let mediaHTML = "";
+        if (media) {
+            const fileUrl = `http://localhost:9001/api-fuentesDeDatos/archivos/${encodeURIComponent(media.path)}`;
+            if (media.tipoMultimedia === "FOTO") {
+                mediaHTML = `
+      <img src="${fileUrl}" alt="Imagen principal"
+           class="img-fluid mb-3 rounded">`;
+            } else if (media.tipoMultimedia === "VIDEO") {
+                mediaHTML = `
+      <video controls class="img-fluid mb-3 rounded">
+        <source src="${fileUrl}" type="video/mp4">
+        Tu navegador no soporta la reproducción de video.
+      </video>`;
+            } else {
+                mediaHTML = `
+      <a href="${fileUrl}" target="_blank">Ver archivo</a>`;
+            }
+        }
         contenedor.innerHTML = `
         <div class="container-fluid">
           <h4 class="mb-3">${h.titulo}</h4>
           <div class="row">
             <div class="col-md-6">
+                ${mediaHTML}
               <p><b>Descripción:</b> ${h.descripcion || "-"}</p>
               <p><b>Categoría:</b> ${h.categoria || "-"}</p>
               <p><b>Anonimo:</b> ${h.anonimo ? "Sí" : "No"}</p>
