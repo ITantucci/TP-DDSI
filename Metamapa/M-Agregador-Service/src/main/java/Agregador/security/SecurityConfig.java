@@ -31,7 +31,6 @@ public class SecurityConfig {
 
   private JwtAuthenticationConverter jwtAuthenticationConverter() {
     JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
-    // si querés mapear roles de claims → authorities
     return converter;
   }
 
