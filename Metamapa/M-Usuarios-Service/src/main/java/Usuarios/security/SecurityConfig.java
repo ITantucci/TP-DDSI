@@ -24,28 +24,18 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource; // 💡 Imp
 @Configuration
 public class SecurityConfig {
 
-  // -------------------------------------------------------------------
-  // 💡 BEAN DE CONFIGURACIÓN DE CONTRASEÑAS (SOLUCIÓN AL ERROR)
-  // -------------------------------------------------------------------
-
   @Bean
   public PasswordEncoder passwordEncoder() {
     String encodingId = "bcrypt";
 
     Map<String, PasswordEncoder> encoders = new HashMap<>();
 
-    // Permite usar {noop} para pruebas (solución al error anterior)
     encoders.put("noop", org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance());
 
-    // Codificador de producción
     encoders.put(encodingId, new BCryptPasswordEncoder());
 
     return new DelegatingPasswordEncoder(encodingId, encoders);
   }
-
-  // -------------------------------------------------------------------
-  // 💡 CADENA DE SEGURIDAD PRINCIPAL (Web App Security)
-  // -------------------------------------------------------------------
 
   @Bean
   @Order(2)
@@ -54,7 +44,7 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
                     // Permite el acceso a endpoints públicos y el flujo de autenticación
-                    .requestMatchers("/api-auth/**", "/login", "/.well-known/**", "/oauth2/**", "/error").permitAll()
+                    .requestMatchers("/actuator/**","/api-auth/**", "/login", "/.well-known/**", "/oauth2/**", "/error").permitAll()
                     .anyRequest().authenticated())
 
             .formLogin(form -> form
@@ -82,10 +72,6 @@ public class SecurityConfig {
     return http.build();
   }
 
-  // -------------------------------------------------------------------
-  // 💡 BEAN AuthenticationManager
-  // -------------------------------------------------------------------
-
   @Bean
   public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
     return config.getAuthenticationManager();
@@ -95,7 +81,7 @@ public class SecurityConfig {
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
 
-    // 🚨 PERMITIR ACCESO DESDE EL CLIENTE LIVIANO (PUERTO 9000)
+    // PERMITIR ACCESO DESDE EL CLIENTE LIVIANO (PUERTO 9000)
     configuration.setAllowedOrigins(Arrays.asList("http://localhost:9000"));
 
     // Permitir credenciales (cookies, tokens)

@@ -1,0 +1,43 @@
+global:
+  scrape_interval: 10s
+
+scrape_configs:
+  - job_name: "metamapa-service"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["host.docker.internal:9000"]
+
+  - job_name: "m-fuentedinamica-service"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["host.docker.internal:9001"]
+
+  - job_name: "m-fuenteestatica-service"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["host.docker.internal:9002"]
+
+  - job_name: "m-usuarios-service"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["host.docker.internal:9005"]
+
+  - job_name: "m-fuentedemo-service"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["host.docker.internal:9006"]
+
+  - job_name: "m-fuentemetamapa-service"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["host.docker.internal:9007"]
+
+  - job_name: "m-estadistica-service"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["host.docker.internal:9008"]
+
+  - job_name: "m-agregador-service"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets: ["host.docker.internal:8080"]

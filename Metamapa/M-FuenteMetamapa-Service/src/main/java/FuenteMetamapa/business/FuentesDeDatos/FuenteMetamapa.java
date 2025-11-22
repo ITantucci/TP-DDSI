@@ -95,7 +95,7 @@ public class FuenteMetamapa {
           (String) datos.get("categoria"),
           (Float) datos.get("latitud"),
           (Float) datos.get("longitud"),
-          (LocalDate) datos.get("fechaHecho"),
+          (LocalDateTime) datos.get("fechaHecho"),
           this
       );
 
