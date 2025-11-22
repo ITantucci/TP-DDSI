@@ -2,8 +2,7 @@ package Estadistica.persistencia;
 
 import Estadistica.business.Estadistica.Criterios.Criterio;
 import Estadistica.business.Estadistica.Hecho;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.*;
 import jakarta.persistence.criteria.*;
 import org.springframework.stereotype.Repository;
 import java.util.*;

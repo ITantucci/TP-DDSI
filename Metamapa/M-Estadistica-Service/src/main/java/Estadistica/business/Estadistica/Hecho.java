@@ -1,12 +1,9 @@
 package Estadistica.business.Estadistica;
-
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Map;
+import java.util.*;
 
 @Entity
 @Table(
@@ -21,7 +18,6 @@ import java.util.Map;
 @Getter @Setter
 @NoArgsConstructor
 public class Hecho {
-
     @Id
     @Column(name = "id", nullable = false)
     private BigInteger id;
@@ -59,7 +55,6 @@ public class Hecho {
     @Column(name = "eliminado")
     private Boolean eliminado;
 
-
     private ArrayList<Multimedia> multimedia;
 
     @ElementCollection(fetch = FetchType.LAZY)
@@ -75,7 +70,6 @@ public class Hecho {
     @Column(name = "id_fuente")
     private Integer idFuente;
 
-    // Constructor de conveniencia (opcional)
     public Hecho(
             BigInteger id,
             String titulo,
@@ -91,8 +85,7 @@ public class Hecho {
             Boolean eliminado,
             ArrayList<Multimedia> multimedia,
             Map<String,String> metadata,
-            Integer idFuente
-    ) {
+            Integer idFuente) {
         this.id = id;
         this.titulo = titulo;
         this.descripcion = descripcion;

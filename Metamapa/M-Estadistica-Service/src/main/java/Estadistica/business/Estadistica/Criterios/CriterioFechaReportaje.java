@@ -1,12 +1,9 @@
 package Estadistica.business.Estadistica.Criterios;
-
 import Estadistica.business.Estadistica.Hecho;
 import jakarta.persistence.Entity;
 import jakarta.persistence.criteria.*;
 import lombok.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-
 
 @Entity
 @Getter @Setter

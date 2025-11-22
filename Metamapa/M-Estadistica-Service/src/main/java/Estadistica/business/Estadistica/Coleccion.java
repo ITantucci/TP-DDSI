@@ -1,10 +1,8 @@
 package Estadistica.business.Estadistica;
 import jakarta.persistence.*;
 import java.util.*;
-import java.util.stream.Collectors;
 import lombok.*;
 import Estadistica.business.Estadistica.Criterios.Criterio;
-
 
 @Entity
 @Getter @Setter
@@ -16,7 +14,7 @@ public class Coleccion {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Criterio> criterios = new ArrayList<>();
 
-    public Coleccion(String titulo, String desc, ArrayList<Criterio> criterios){
+    public Coleccion(String titulo, String desc, ArrayList<Criterio> criterios) {
         this.titulo = titulo;
         this.descripcion = desc;
         this.criterios = criterios;
@@ -51,5 +49,4 @@ public class Coleccion {
 //    public ArrayList<Hecho> curarHechos(ArrayList<Hecho> hechos){
 //        return hechos.stream().filter(h -> consenso.esConsensuado(h)).collect(Collectors.toCollection(ArrayList::new));
 //    }
-
 }

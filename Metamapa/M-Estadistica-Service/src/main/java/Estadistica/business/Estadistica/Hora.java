@@ -1,11 +1,7 @@
 package Estadistica.business.Estadistica;
 import java.time.LocalTime;
-
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.*;
 import lombok.*;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 
 @Entity
 public class Hora {
@@ -18,5 +14,4 @@ public class Hora {
     public Hora(LocalTime hora) {
         this.hora = hora;
     }
-
 }

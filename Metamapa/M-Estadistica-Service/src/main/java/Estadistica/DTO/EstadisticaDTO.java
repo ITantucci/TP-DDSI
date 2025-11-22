@@ -21,30 +21,4 @@ public class EstadisticaDTO {
 
   // Cantidad de solicitudes de eliminación que son spam
   private long cantidadSolicitudesSpam;
-
-  // Getters y Setters
-  public String getCategoriaMasReportada() { return categoriaMasReportada; }
-  public void setCategoriaMasReportada(String categoriaMasReportada) { this.categoriaMasReportada = categoriaMasReportada; }
-
-  public long getCantidadCategoriaMasReportada() { return cantidadCategoriaMasReportada; }
-  public void setCantidadCategoriaMasReportada(long cantidadCategoriaMasReportada) { this.cantidadCategoriaMasReportada = cantidadCategoriaMasReportada; }
-
-  public String getProvinciaMasReportada() { return provinciaMasReportada; }
-  public void setProvinciaMasReportada(String provinciaMasReportada) { this.provinciaMasReportada = provinciaMasReportada; }
-
-  public long getCantidadProvinciaMasReportada() { return cantidadProvinciaMasReportada; }
-  public void setCantidadProvinciaMasReportada(long cantidadProvinciaMasReportada) { this.cantidadProvinciaMasReportada = cantidadProvinciaMasReportada; }
-
-  public String getProvinciaPorCategoria() { return provinciaPorCategoria; }
-  public void setProvinciaPorCategoria(String provinciaPorCategoria) { this.provinciaPorCategoria = provinciaPorCategoria; }
-
-  public long getCantidadProvinciaPorCategoria() { return cantidadProvinciaPorCategoria; }
-  public void setCantidadProvinciaPorCategoria(long cantidadProvinciaPorCategoria) { this.cantidadProvinciaPorCategoria = cantidadProvinciaPorCategoria; }
-
-  public Map<Integer, Long> getHechosPorHoraCategoria() { return hechosPorHoraCategoria; }
-  public void setHechosPorHoraCategoria(Map<Integer, Long> hechosPorHoraCategoria) { this.hechosPorHoraCategoria = hechosPorHoraCategoria; }
-
-  public long getCantidadSolicitudesSpam() { return cantidadSolicitudesSpam; }
-  public void setCantidadSolicitudesSpam(long cantidadSolicitudesSpam) { this.cantidadSolicitudesSpam = cantidadSolicitudesSpam; }
-
 }

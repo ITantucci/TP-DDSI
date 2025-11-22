@@ -3,7 +3,6 @@ import Estadistica.business.Estadistica.Hecho;
 import jakarta.persistence.Entity;
 import jakarta.persistence.criteria.*;
 import lombok.Getter;
-
 import java.util.Objects;
 
 @Entity

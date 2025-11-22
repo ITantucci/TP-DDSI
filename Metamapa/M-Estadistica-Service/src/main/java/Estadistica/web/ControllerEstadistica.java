@@ -1,5 +1,4 @@
 package Estadistica.web;
-
 import Estadistica.Service.ServiceEstadistica;
 //import Estadistica.Service.TareasProgramadas;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.*;
 import java.nio.charset.StandardCharsets;
 
@@ -21,8 +19,7 @@ import java.nio.charset.StandardCharsets;
 public class ControllerEstadistica {
   private final ServiceEstadistica estadisticaService;
   //private final TareasProgramadas tareasProgramadas;
-
-  private List<Map<String,String>> agregadores = new ArrayList<Map<String,String>>();
+  private List<Map<String, String>> agregadores = new ArrayList<>();
 
   @PostMapping("/agregador")
   public ResponseEntity<Object> registrarAgregador(@RequestBody Map<String, Object> body) {
@@ -32,7 +29,6 @@ public class ControllerEstadistica {
       agregador.put("endpointSolicitudesEliminacion", (String) body.get("endpointSolicitudesEliminacion"));
       agregador.put("endpointHechos", (String) body.get("endpointHechos"));
       agregador.put("endpointColecciones", (String) body.get("endpointColecciones"));
-
       agregadores.add(agregador);
       return ResponseEntity.ok().body(agregador);
     } catch (Exception e) {
@@ -51,11 +47,6 @@ public class ControllerEstadistica {
     }
   }*/
 
-  /*public ControllerEstadistica(ServiceEstadistica estadisticaService, TareasProgramadas tareasProgramadas, ServiceEstadistica serviceEstadistica) {
-    this.estadisticaService = estadisticaService;
-    this.tareasProgramadas = tareasProgramadas;
-  }*/
-
   @PostMapping("/actualizar")
   public ResponseEntity<Void> actualizarEstadisticas() {
     estadisticaService.actualizar();
@@ -72,27 +63,27 @@ public class ControllerEstadistica {
 
   //De una colección, ¿en qué provincia se agrupan la mayor cantidad de hechos reportados? 
   @Operation(
-      summary = "Provincia con mayor cantidad de hechos reportados de una coleccion",
-      description = "Devuelve el nombre de la provincia que posee la mayor cantidad de hechos registrados de la coleccion indicada."
+          summary = "Provincia con mayor cantidad de hechos reportados de una coleccion",
+          description = "Devuelve el nombre de la provincia que posee la mayor cantidad de hechos registrados de la coleccion indicada."
   )
   @ApiResponses(value = {
-      @ApiResponse(
-          responseCode = "200",
-          description = "Provincia más reportada encontrada de una coleccion",
-          content = @Content(
-              mediaType = "application/json",
-              schema = @Schema(implementation = String.class),
-              examples = @ExampleObject(value = "\"Incendio forestal\"")
+          @ApiResponse(
+                  responseCode = "200",
+                  description = "Provincia más reportada encontrada de una coleccion",
+                  content = @Content(
+                          mediaType = "application/json",
+                          schema = @Schema(implementation = String.class),
+                          examples = @ExampleObject(value = "\"Incendio forestal\"")
+                  )
+          ),
+          @ApiResponse(
+                  responseCode = "204",
+                  description = "No se encontraron hechos para calcular la estadística"
           )
-      ),
-      @ApiResponse(
-          responseCode = "204",
-          description = "No se encontraron hechos para calcular la estadística"
-      )
   })
   @GetMapping("/coleccion/{uuid}/provincia-mas-reportada")
-  public ResponseEntity<Map<String,String>> estadisticaColeccionProvincia(@PathVariable UUID uuid) {
-    Map<String,String> provinica = estadisticaService.estadisticaColeccionProvincia(uuid);
+  public ResponseEntity<Map<String, String>> estadisticaColeccionProvincia(@PathVariable UUID uuid) {
+    Map<String, String> provinica = estadisticaService.estadisticaColeccionProvincia(uuid);
     return (provinica == null) ? ResponseEntity.noContent().build() : ResponseEntity.ok(provinica);
   }
 
@@ -111,10 +102,7 @@ public class ControllerEstadistica {
                           examples = @ExampleObject(value = "\"Incendio forestal\"")
                   )
           ),
-          @ApiResponse(
-                  responseCode = "204",
-                  description = "No se encontraron hechos para calcular la estadística"
-          )
+          @ApiResponse(responseCode = "204", description = "No se encontraron hechos para calcular la estadística")
   })
   @GetMapping("/categoria")
   public ResponseEntity<Map<String, String>> obtenerCategoriaMasReportada() {
@@ -126,16 +114,16 @@ public class ControllerEstadistica {
 
   // ¿En qué provincia se presenta la mayor cantidad de hechos de una cierta categoría?
   @Operation(
-      summary = "En qué provincia se presenta la mayor cantidad de hechos de una cierta categoría?",
-      description = "Devuelve la provincia con la mayor cantidad de hechos de la categoria indicada."
+          summary = "En qué provincia se presenta la mayor cantidad de hechos de una cierta categoría?",
+          description = "Devuelve la provincia con la mayor cantidad de hechos de la categoria indicada."
   )
   @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "OK"),
-      @ApiResponse(responseCode = "204", description = "Sin datos con provincia disponible")
+          @ApiResponse(responseCode = "200", description = "OK"),
+          @ApiResponse(responseCode = "204", description = "Sin datos con provincia disponible")
   })
   @GetMapping("/hechos/provincia-mas-reportada")
-  public ResponseEntity<Map<String,String>> provinciaMasReportada(@RequestParam String categoria) {
-    Map<String,String> provinica = estadisticaService.estadisticaProvinciaCategoria(categoria);
+  public ResponseEntity<Map<String, String>> provinciaMasReportada(@RequestParam String categoria) {
+    Map<String, String> provinica = estadisticaService.estadisticaProvinciaCategoria(categoria);
     return (provinica == null) ? ResponseEntity.noContent().build() : ResponseEntity.ok(provinica);
   }
 
@@ -149,8 +137,8 @@ public class ControllerEstadistica {
           @ApiResponse(responseCode = "204", description = "Sin datos con hora disponible")
   })
   @GetMapping("/hechos/hora")
-  public ResponseEntity<Map<String,String>> horaMasReportada(@RequestParam String categoria) {
-    Map<String,String> hora = estadisticaService.estadisticaHoraCategoria(categoria);
+  public ResponseEntity<Map<String, String>> horaMasReportada(@RequestParam String categoria) {
+    Map<String, String> hora = estadisticaService.estadisticaHoraCategoria(categoria);
     return (hora == null) ? ResponseEntity.noContent().build() : ResponseEntity.ok(hora);
   }
 
@@ -161,15 +149,13 @@ public class ControllerEstadistica {
   )
   @ApiResponses(value = {
           @ApiResponse(responseCode = "200", description = "Cantidad obtenida correctamente",
-                  content = @Content(mediaType = "application/json",
-                          schema = @Schema(implementation = Long.class))),
-          @ApiResponse(responseCode = "500", description = "Error interno del servidor",
-                  content = @Content)
+                  content = @Content(mediaType = "application/json", schema = @Schema(implementation = Long.class))),
+          @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
   })
   @GetMapping("/spam")
-  public ResponseEntity<Map<String,String>> contarSolicitudesSpam() {
+  public ResponseEntity<Map<String, String>> contarSolicitudesSpam() {
     try {
-      Map<String,String> cantidad = estadisticaService.estadisticaSpam();
+      Map<String, String> cantidad = estadisticaService.estadisticaSpam();
       return ResponseEntity.ok(cantidad);
     } catch (Exception e) {
       return ResponseEntity.noContent().build();
@@ -178,15 +164,13 @@ public class ControllerEstadistica {
 
   // Se deberá implementar la exportación de las estadísticas en formato CSV.
   @Operation(summary = "Exportación CSV genérica")
-  @ApiResponse(responseCode = "200", description = "CSV",
-          content = @Content(mediaType = "text/csv"))
+  @ApiResponse(responseCode = "200", description = "CSV", content = @Content(mediaType = "text/csv"))
   @GetMapping(value = "/export", produces = "text/csv")
-  public ResponseEntity<byte[]> exportarDatos(){
+  public ResponseEntity<byte[]> exportarDatos() {
     String csv = estadisticaService.exportarCsv();
     byte[] bytes = csv.getBytes(StandardCharsets.UTF_8);
     // 💡 Aquí se define el nombre del archivo para la descarga
     String filename = "metamapa_estadisticas.csv";
-
     return ResponseEntity.ok()
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
             .contentType(MediaType.valueOf("text/csv"))
