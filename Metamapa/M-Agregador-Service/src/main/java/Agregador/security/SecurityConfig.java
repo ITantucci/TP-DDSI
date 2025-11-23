@@ -9,21 +9,23 @@ import org.springframework.security.web.context.SecurityContextPersistenceFilter
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
 import java.util.Arrays;
 
 @Configuration
 public class SecurityConfig {
   private final RateLimitingFilter rateLimitingFilter;
+  private final IpFilter ipFilter;
 
-  public SecurityConfig(RateLimitingFilter rateLimitingFilter) {
+  public SecurityConfig(RateLimitingFilter rateLimitingFilter, IpFilter ipFilter) {
     this.rateLimitingFilter = rateLimitingFilter;
+    this.ipFilter = ipFilter;
   }
 
   @Bean
   public SecurityFilterChain resourceServerSecurity(HttpSecurity http) throws Exception {
     http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .addFilterBefore(ipFilter, SecurityContextPersistenceFilter.class)
             .addFilterBefore(rateLimitingFilter, SecurityContextPersistenceFilter.class)
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/actuator/**", "/swagger-ui/**", "/v3/api-docs/**", "/api-agregador/fuenteDeDatos").permitAll()
