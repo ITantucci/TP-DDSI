@@ -28,7 +28,7 @@ public class SecurityConfig {
             .addFilterBefore(ipFilter, SecurityContextPersistenceFilter.class)
             .addFilterBefore(rateLimitingFilter, SecurityContextPersistenceFilter.class)
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/actuator/**", "/swagger-ui/**", "/v3/api-docs/**", "/api-agregador/fuenteDeDatos",
+                    .requestMatchers("/actuator/**", "/swagger-ui/**",  "/prometheus","/v3/api-docs/**", "/api-agregador/fuenteDeDatos",
                             "/graphql",
                             "/graphiql").permitAll()
                     .anyRequest().authenticated())

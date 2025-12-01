@@ -1,0 +1,49 @@
+services:
+  # --- 1. TU APLICACIÓN JAVA ---
+  m-agregador:
+    build: .
+    container_name: m-agregador
+    ports:
+      - "9004:9004"     # Puerto de Negocio
+      - "8080:8080"     # Puerto de Actuator para Prometheus
+    restart: on-failure # ✅ CUMPLE REQUISITO: Política de Autorestart
+    depends_on:
+      - zipkin
+    # Permite al contenedor encontrar el SQL Server en tu máquina Windows
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      # Las propiedades de conexión de trazas y BDD se recogen del application.properties
+      - SPRING_PROFILES_ACTIVE=docker # Perfil opcional si quieres configuraciones específicas
+
+  # --- 2. TRAZAS (Zipkin) ---
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    ports:
+      - "9411:9411"
+
+  # --- 3. MÉTRICAS (Prometheus) ---
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command: --config.file=/etc/prometheus/prometheus.yml --web.listen-address=:9090
+    depends_on:
+      - m-agregador     # OPCIONAL pero recomendable
+
+  # --- 4. VISUALIZACIÓN (Grafana) ---
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+      - zipkin
