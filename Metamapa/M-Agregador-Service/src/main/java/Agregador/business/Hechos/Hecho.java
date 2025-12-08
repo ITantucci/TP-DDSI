@@ -82,7 +82,7 @@ public class Hecho {
   }
 
   public Boolean tieneEtiqueta(String key, String value) {
-    return getMetadata().get(key).equals(value);
+    return value != null && value.equals(metadata.get(key));
   }
 
   public void agregarConsenso(Consenso consenso) {
@@ -90,8 +90,7 @@ public class Hecho {
   }
 
   public boolean estaConsensuado(Consenso consenso) {
-    //todo hacerlo por id
-    return consensos.stream().anyMatch(c -> c.getClass() == consenso.getClass());
+    return consensos.stream().anyMatch(c -> c.getId().equals(consenso.getId()));
   }
 
   public void editarHecho(String titulo, String descripcion, String categoria, Float latitud, Float longitud, LocalDateTime fechaHecho, Boolean anonimidad, ArrayList<Multimedia> multimedia) {

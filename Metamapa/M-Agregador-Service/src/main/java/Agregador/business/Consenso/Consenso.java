@@ -1,7 +1,7 @@
 package Agregador.business.Consenso;
 import Agregador.business.Hechos.Hecho;
 import jakarta.persistence.*;
-import java.util.ArrayList;
+import java.util.List;
 import lombok.*;
 
 @Entity
@@ -12,10 +12,9 @@ public abstract class Consenso {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Getter
   public Integer id;
-  @Column(unique = true)
-  @Setter
-  @Getter
-  private String nombreTipo;  // <- este campo
+  @Column
+  @Setter @Getter
+  private String nombreTipo;
 
   public Consenso() {}
 
@@ -23,9 +22,7 @@ public abstract class Consenso {
     this.nombreTipo = nombreTipo;
   }
 
-  public boolean esConsensuado(Hecho hecho, ArrayList<Hecho> hechos) {
-    return true;
-  }
+  public abstract boolean esConsensuado(Hecho hecho, List<Hecho> hechos, int cantFuentes);
 
   public static String toString(Consenso c) {
     if (c == null) return null;
@@ -45,27 +42,14 @@ public abstract class Consenso {
     };
   }
 
-  public static Boolean sonIguales(Hecho hecho1, Hecho hecho2) {
-    return hecho1.getFechaHecho() == hecho2.getFechaHecho() &&
-            Math.abs(hecho1.getLatitud() - hecho2.getLatitud()) < 10 &&
-            Math.abs(hecho1.getLongitud() - hecho2.getLongitud()) < 10 &&
-            hecho1.getTitulo().equalsIgnoreCase(hecho2.getTitulo()) &&
-            hecho1.getTitulo().equals(hecho2.getTitulo());
+  public static boolean sonIguales(Hecho h1, Hecho h2) {
+    if (h1 == null || h2 == null) return false;
+    boolean mismaFecha = h1.getFechaHecho().equals(h2.getFechaHecho());
+    boolean latitudCercana = Math.abs(h1.getLatitud() - h2.getLatitud()) < 0.001;  // ~100 metros
+    boolean longitudCercana = Math.abs(h1.getLongitud() - h2.getLongitud()) < 0.001;
+    boolean mismoTitulo = h1.getTitulo().equalsIgnoreCase(h2.getTitulo());
+    return mismaFecha && latitudCercana && longitudCercana && mismoTitulo;
   }
-
-
-  static public int contarFuentesDeDatos(ArrayList<Hecho> hechos) {
-    ArrayList<Integer> fuentes = new ArrayList<>();
-    int contador = 0;
-    for (Hecho hecho : hechos) {
-      if (!fuentes.contains(hecho.getIdFuente())) {
-        contador++;
-        fuentes.add(hecho.getIdFuente());
-      }
-    }
-    return contador;
-  }
-
 
   //ABSOLUTA
   // "SELECT * FROM hechos as Hecho1 where (select count(distinct left(Hechos1.hechos_id,4)) from hechos) = (select count(distinct left(hechos_id,4)) from hechos as Hecho2 where equals(Hecho1,Hecho2))"

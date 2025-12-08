@@ -2,11 +2,11 @@ package Agregador.Service;
 import Agregador.business.Hechos.Hecho;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.apache.commons.text.similarity.JaroWinklerSimilarity;
 import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-import org.apache.commons.text.similarity.JaroWinklerSimilarity;
 /**
  * Normaliza y unifica hechos antes de persistir:
  * - Mapea categorías a un canon (sinónimos -> canonical)
@@ -224,7 +224,8 @@ public class Normalizador {
     String formatCoords = String.format("%%.%df", decimalesCoordenadas);
     String lat = h.getLatitud()  == null ? "null" : String.format(Locale.ROOT, formatCoords, h.getLatitud());
     String lon = h.getLongitud() == null ? "null" : String.format(Locale.ROOT, formatCoords, h.getLongitud());
-    return String.join("|", tituloCmp, fecha, lat, lon);
+    String fuente = Optional.ofNullable(h.getIdFuente()).map(Object::toString).orElse("null");
+    return String.join("|", tituloCmp, fecha, lat, lon, fuente);
   }
 
   /** === Merge de dos hechos duplicados === */

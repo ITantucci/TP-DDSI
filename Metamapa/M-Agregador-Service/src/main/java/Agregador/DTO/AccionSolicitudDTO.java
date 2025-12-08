@@ -1,5 +1,4 @@
 package Agregador.DTO;
-
 import lombok.*;
 
 @Getter @Setter

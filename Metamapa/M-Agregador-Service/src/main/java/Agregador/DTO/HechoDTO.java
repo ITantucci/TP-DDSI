@@ -1,5 +1,4 @@
 package Agregador.DTO;
-
 import Agregador.business.Hechos.Hecho;
 import lombok.*;
 import java.math.BigInteger;
@@ -7,8 +6,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Getter
-@Setter
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class HechoDTO {

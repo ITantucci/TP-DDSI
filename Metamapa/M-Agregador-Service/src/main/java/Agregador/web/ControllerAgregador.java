@@ -64,7 +64,6 @@ public class ControllerAgregador {
       criterios.addAll(repositorioHechos.construirCriterios(filtros, true));
       criterios.addAll(repositorioHechos.construirCriterios(filtros, false));
       if (criterios.isEmpty()) return ResponseEntity.ok(repositorioHechos.findAll());
-
       List<Hecho> filtrados = repositorioHechos.filtrarPorCriterios(criterios, null);
       return ResponseEntity.ok(filtrados);
     } catch (Exception e) {

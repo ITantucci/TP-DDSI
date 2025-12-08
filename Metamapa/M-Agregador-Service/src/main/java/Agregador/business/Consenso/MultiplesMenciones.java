@@ -1,6 +1,6 @@
 package Agregador.business.Consenso;
 import Agregador.business.Hechos.Hecho;
-import java.util.ArrayList;
+import java.util.List;
 import jakarta.persistence.*;
 
 @Entity
@@ -13,7 +13,7 @@ public class MultiplesMenciones extends Consenso {
   //si al menos dos fuentes contienen un mismo hecho y ninguna otra fuente
   //contiene otro de igual título pero diferentes atributos, se lo considera consensuado;
   @Override
-  public boolean esConsensuado(Hecho hecho, ArrayList<Hecho> hechos) {
+  public boolean esConsensuado(Hecho hecho, List<Hecho> hechos, int cantFuentes) {
     int aparicionesExactas = 0;
     boolean hayConflictos = false;
     for (Hecho h : hechos) {

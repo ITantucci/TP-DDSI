@@ -10,7 +10,7 @@ public class SolicitudEliminacion extends Solicitud {
 
   public SolicitudEliminacion(Hecho hechoAfectado, String motivo) {
     super(hechoAfectado, EstadoSolicitud.PENDIENTE); //por defecto se inicializan pendientes
-    Boolean esSpam;
+    boolean esSpam;
     try {
       esSpam = DetectorDeSpam.esSpam(motivo);
     } catch (Exception e) {

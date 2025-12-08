@@ -16,14 +16,20 @@ public class ServiceConsenso {
 
   @Transactional
   public void consensuarHechos() {
-    ArrayList<Hecho> hechos = (ArrayList<Hecho>) repositorioHechos.findAll();
+    List<Hecho> hechos = repositorioHechos.findAll();
     List<Consenso> consensos = repositorioConsenso.findAll();
-
+    // Contar fuentes una sola vez
+    int cantFuentes = (int) hechos.stream().map(Hecho::getIdFuente).distinct().count();
+    // Agrupar hechos por "clave de igualdad" para reducir iteraciones
+    Map<String, List<Hecho>> hechosPorClave = hechos.stream()
+            .collect(Collectors.groupingBy(this::claveHecho));
     for (Hecho hecho : hechos) {
-      // Filtra solo los consensos que aún no están aplicados y son válidos
-      Set<Consenso> nuevosConsensos = consensos.stream()
-              .filter(c -> !estaConsensuadoPorNombre(hecho, c) && c.esConsensuado(hecho, hechos))
-              .collect(Collectors.toSet());
+      List<Hecho> posiblesIguales = hechosPorClave.getOrDefault(claveHecho(hecho), List.of());
+      Set<Consenso> nuevosConsensos = new HashSet<>();
+      for (Consenso c : consensos) {
+        if (!estaConsensuadoPorNombre(hecho, c) && c.esConsensuado(hecho, posiblesIguales, cantFuentes))
+          nuevosConsensos.add(c);
+      }
       if (!nuevosConsensos.isEmpty()) {
         hecho.getConsensos().addAll(nuevosConsensos);
         System.out.println("Hecho ID " + hecho.getId() + " -> Consensos agregados: " +
@@ -37,5 +43,11 @@ public class ServiceConsenso {
   private boolean estaConsensuadoPorNombre(Hecho hecho, Consenso consenso) {
     return hecho.getConsensos().stream()
             .anyMatch(c -> c.getNombreTipo().equals(consenso.getNombreTipo()));
+  }
+
+  private String claveHecho(Hecho h) {
+    String lat = h.getLatitud() != null ? String.format("%.3f", h.getLatitud()) : "null";
+    String lon = h.getLongitud() != null ? String.format("%.3f", h.getLongitud()) : "null";
+    return h.getTitulo().toLowerCase() + "|" + h.getFechaHecho() + "|" + lat + "|" + lon;
   }
 }

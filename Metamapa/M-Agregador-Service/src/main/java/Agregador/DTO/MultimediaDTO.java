@@ -1,11 +1,8 @@
 package Agregador.DTO;
-
-
 import Agregador.business.Hechos.Multimedia;
 import lombok.*;
 
-@Getter
-@Setter
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class MultimediaDTO {

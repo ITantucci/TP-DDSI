@@ -5,6 +5,7 @@ import Agregador.persistencia.RepositorioHechos;
 import java.time.LocalDateTime;
 import java.util.*;
 import lombok.*;
+import org.slf4j.*;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -16,9 +17,8 @@ public class ServiceFuenteDeDatos {
   private final RestTemplate restTemplate;
   private final RepositorioHechos repositorioHechos;
   private final Normalizador normalizador;
-  private static final int FACTOR_TIPO = 1_000_000;
-  //private static final String PATH_HECHOS_POR_FUENTE = "%s/fuentesDeDatos/%d/hechos";
-  private static final String PATH_LISTAR_FUENTES    = "%s/fuentesDeDatos";
+  private static final String PATH_LISTAR_FUENTES = "%s/fuentesDeDatos";
+  private static final Logger log = LoggerFactory.getLogger(ServiceFuenteDeDatos.class);
 
   // ================== API ==================
   /** Trae hechos de UNA fuente (sin filtros) y los mapea a tu dominio. */
@@ -45,24 +45,8 @@ public class ServiceFuenteDeDatos {
     List<Hecho> hechos = getHechosDeFuente(url);
     // Normalizar y persistir
     repositorioHechos.saveAll(normalizador.normalizarYUnificar(hechos));
-    System.out.println("Total hechos guardados: " + repositorioHechos.findAll().size());
+    log.info("Total hechos guardados: {}", repositorioHechos.findAll().size());
   }
-
-  /** Trae hechos de UNA fuente aplicando filtros (query params). */
-  //Arreglar
-//  public List<Hecho> getHechosDeFuente(int idFuente, Map<String, ?> filtros) {
-//    UriComponentsBuilder b = UriComponentsBuilder.fromHttpUrl(hechosUrl(idFuente));
-//    if (filtros != null) filtros.forEach((k, v) -> {
-//      if (v == null) return;
-//      if (v instanceof Collection<?> c) c.forEach(it -> b.queryParam(k, String.valueOf(it)));
-//      else b.queryParam(k, String.valueOf(v));
-//    });
-//    ResponseEntity<List<Map<String,Object>>> resp = restTemplate.exchange(
-//            b.build(true).toUri(), HttpMethod.GET, null, new ParameterizedTypeReference<>() {}
-//    );
-//    List<Map<String,Object>> raw = Optional.ofNullable(resp.getBody()).orElseGet(List::of);
-//    return raw.stream().map(json -> jsonToHecho(json, idFuente)).toList();
-//  }
 
   /** Lista todas las fuentes (dinámicas+estáticas+proxy). */
   private List<FuenteInfoDTO> fetchFuentes(String base) {
@@ -132,10 +116,10 @@ public class ServiceFuenteDeDatos {
       h.setMultimedia(medios);
     }
     // metadata (si viene anidada)
-    Map<String,Object> meta = (Map<String,Object>) json.get("metadata");
+    Map<String, Object> meta = (Map<String, Object>) json.get("metadata");
     if (meta != null) {
-      HashMap<String,String> md = new HashMap<>();
-      meta.forEach((k,v) -> md.put(k, String.valueOf(v)));
+      HashMap<String, String> md = new HashMap<>();
+      meta.forEach((k, v) -> md.put(k, String.valueOf(v)));
       h.setMetadata(md);
     }
     return h;

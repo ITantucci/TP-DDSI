@@ -2,7 +2,7 @@ package Agregador.business.Consenso;
 
 import Agregador.business.Hechos.Hecho;
 import jakarta.persistence.*;
-import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @DiscriminatorValue("ABSOLUTO")
@@ -13,14 +13,11 @@ public class Absoluto extends Consenso {
 
   // si todas las fuentes contienen el mismo, se lo considera consensuado.
   @Override
-  public boolean esConsensuado(Hecho hecho, ArrayList<Hecho> hechos) {
+  public boolean esConsensuado(Hecho hecho, List<Hecho> hechos, int cantFuentes) {
     int apariciones = 0;
-    int cantFuentes = Consenso.contarFuentesDeDatos(hechos);
     for (Hecho h : hechos) {
-      if (Consenso.sonIguales(hecho, h)) {
+      if (Consenso.sonIguales(hecho, h))
         apariciones++;
-        break;
-      }
     }
     return apariciones >= cantFuentes;
   }

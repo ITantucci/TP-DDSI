@@ -22,7 +22,6 @@ public class RepositorioColeccionesImpl implements RepositorioColeccionesCustom 
             """, Coleccion.class)
           .setParameter("id", id)
           .getSingleResult();
-
       return Optional.of(coleccion);
     } catch (NoResultException e) {
       return Optional.empty();
@@ -39,13 +38,9 @@ public class RepositorioColeccionesImpl implements RepositorioColeccionesCustom 
         """, Coleccion.class)
         .setParameter("id", id)
         .getSingleResult();
-
     // Construir lista de criterios (base + filtros)
     List<Criterio> criterios = new ArrayList<>();
     criterios.addAll(coleccion.getCriterios());
-
     return criterios;
   }
 }
-
-

@@ -39,6 +39,7 @@ public class RepositorioHechosImpl implements RepositorioHechosCustom {
     }
     return filtrados;
   }
+
   @Override
   public List<Criterio> construirCriterios(FiltrosHechosDTO filtros, boolean incluir) {
     List<Criterio> criterios = new ArrayList<>();
@@ -73,14 +74,11 @@ public class RepositorioHechosImpl implements RepositorioHechosCustom {
     if (textoBusqueda == null || textoBusqueda.isBlank()) {
       return Collections.emptyList();
     }
-
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery<Hecho> query = cb.createQuery(Hecho.class);
     Root<Hecho> root = query.from(Hecho.class);
-
     // Convertir el texto a un patrón LIKE (ej: "%incendio%")
     String patronBusqueda = "%" + textoBusqueda.toLowerCase() + "%";
-
     // Crear la condición OR: (titulo LIKE %texto%) OR (descripcion LIKE %texto%)
     Predicate busquedaPredicate = cb.or(
             // Buscar en título (ignorando mayúsculas/minúsculas)
@@ -88,36 +86,29 @@ public class RepositorioHechosImpl implements RepositorioHechosCustom {
             // Buscar en descripción (ignorando mayúsculas/minúsculas)
             cb.like(cb.lower(root.get("descripcion")), patronBusqueda)
     );
-
     // Aplicar la condición a la consulta
     query.select(root).where(busquedaPredicate);
-
     return em.createQuery(query).getResultList();
   }
+
   @Override
   public Page<Hecho> findAll(Pageable pageable) {
     // 1. Crear el CriteriaBuilder
     CriteriaBuilder cb = em.getCriteriaBuilder();
-
     // 2. Consulta para obtener los Hechos (con LIMIT y OFFSET)
     CriteriaQuery<Hecho> query = cb.createQuery(Hecho.class);
     Root<Hecho> root = query.from(Hecho.class);
     query.select(root);
-
     TypedQuery<Hecho> typedQuery = em.createQuery(query);
-
     // Aplicar el OFFSET (setFirstResult) y el LIMIT (setMaxResults)
     typedQuery.setFirstResult((int) pageable.getOffset());
     typedQuery.setMaxResults(pageable.getPageSize());
-
     List<Hecho> content = typedQuery.getResultList();
-
     // 3. Consulta para obtener el TOTAL (Necesario para el objeto Page)
     // Se usa una consulta separada para contar todos los registros sin límite/offset
     CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
     countQuery.select(cb.count(countQuery.from(Hecho.class)));
     Long total = em.createQuery(countQuery).getSingleResult();
-
     // 4. Devolver la página de Spring Data con el contenido limitado
     return new PageImpl<>(content, pageable, total);
   }

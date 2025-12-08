@@ -38,8 +38,6 @@ public class Usuario {
   @Builder.Default
   private Set<Rol> roles = new HashSet<>();
 
-  static public Integer contadorID = 1;
-
   @Column(name = "nombre", length = 255)
   private String nombre;
 
