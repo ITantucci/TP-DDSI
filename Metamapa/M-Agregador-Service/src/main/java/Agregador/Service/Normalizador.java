@@ -17,9 +17,12 @@ import java.util.stream.Collectors;
 @Component
 public class Normalizador {
   private final int decimalesCoordenadas;
+  private static final JaroWinklerSimilarity SIMILARITY = new JaroWinklerSimilarity();
+  private double factor;
 
   public Normalizador(@Value("${normalizador.decimales:4}") int decimalesCoordenadas) {
     this.decimalesCoordenadas = decimalesCoordenadas;
+    this.factor = Math.pow(10, decimalesCoordenadas);
   }
 
   private static final Map<String, String> PATRONES = Map.<String, String>ofEntries(
@@ -146,16 +149,14 @@ public class Normalizador {
   /** === API principal === */
   public List<Hecho> normalizarYUnificar(List<Hecho> hechos) {
     if (hechos == null || hechos.isEmpty()) return List.of();
-    // 1) normalizar campos
-    List<Hecho> normalizados = hechos.stream()
+    List<Hecho> normalizados = hechos.parallelStream()
             .map(this::normalizarHecho)
             .toList();
-    // 2) deduplicar + merge según clave compuesta
-    Map<String, Hecho> porClave = new LinkedHashMap<>();
-    for (Hecho h : normalizados) {
+    Map<String, Hecho> porClave = new HashMap<>();
+    normalizados.forEach(h -> {
       String key = clave(h);
       porClave.merge(key, h, this::mergeHechos);
-    }
+    });
     return new ArrayList<>(porClave.values());
   }
 
@@ -168,8 +169,8 @@ public class Normalizador {
     // Categoría: normalizar con diccionario
     h.setCategoria(normalizarCategoria(h.getCategoria()));
     // Lat/Lon: redondeo
-    if (h.getLatitud() != null)  h.setLatitud(redondear(h.getLatitud(), decimalesCoordenadas));
-    if (h.getLongitud() != null) h.setLongitud(redondear(h.getLongitud(), decimalesCoordenadas));
+    if (h.getLatitud() != null)  h.setLatitud(redondear(h.getLatitud()));
+    if (h.getLongitud() != null) h.setLongitud(redondear(h.getLongitud()));
     // Fechas: asegurar consistencia básica (si viene nula, no forzar)
     if (h.getFechaCarga() == null)        h.setFechaCarga(LocalDateTime.now());
     if (h.getFechaModificacion() == null) h.setFechaModificacion(LocalDateTime.now());
@@ -185,83 +186,88 @@ public class Normalizador {
   }
 
   /** === Categorías === */
+  private final Map<String, String> categoriaCache = new HashMap<>();
   public String normalizarCategoria(String categoriaCruda) {
     if (categoriaCruda == null || categoriaCruda.isBlank()) return "Desconocido";
     String clave = toComparable(categoriaCruda);
-    for (String palabra : PATRONES.keySet()) {
-      if (clave.contains(palabra))
-        return PATRONES.get(palabra);
-    }
-    JaroWinklerSimilarity similarity = new JaroWinklerSimilarity();
-    String mejor = "Desconocido";
-    double mejorScore = 0.7;
-    for (String canonKey : PATRONES.keySet()) {
-      double score = similarity.apply(clave, canonKey);
-      if (score > mejorScore) {
-        mejorScore = score;
-        mejor = PATRONES.get(canonKey);
+    if (categoriaCache.containsKey(clave)) return categoriaCache.get(clave);
+    String resultado = null;
+    resultado = PATRONES.get(clave);
+    if (resultado == null) {
+      for (Map.Entry<String, String> entrada : PATRONES.entrySet()) {
+        if (clave.contains(entrada.getKey())) {
+          resultado = entrada.getValue();
+          break; // Encontrado, salimos del bucle
+        }
       }
     }
-    if (mejor.equals("Desconocido")) {
-      String claveNorm = java.text.Normalizer
-              .normalize(categoriaCruda, java.text.Normalizer.Form.NFD)
-              .replaceAll("\\p{M}", "");
-      String resultado = Arrays.stream(claveNorm.split("\\s+"))
-              .filter(p -> !p.isBlank())
-              .sorted((a, b) -> Integer.compare(b.length(), a.length()))
-              .limit(2)
-              .collect(Collectors.joining(" "));
-      return resultado.isBlank() ? "Desconocido" : resultado;
+    if (resultado == null) resultado = buscarSimilitud(clave);
+    if ("Desconocido".equals(resultado)) resultado = generarFallback(categoriaCruda);
+    categoriaCache.put(clave, resultado);
+    return resultado;
+  }
+
+  private String buscarSimilitud(String clave) {
+    double mejorScore = 0.7;
+    String result = "Desconocido";
+    for (Map.Entry<String, String> entry : PATRONES.entrySet()) {
+      double score = SIMILARITY.apply(clave, entry.getKey());
+      if (score > mejorScore) {
+        mejorScore = score;
+        result = entry.getValue();
+      }
     }
-    return mejor;
+    return result;
+  }
+
+  private String generarFallback(String categoriaCruda) {
+    String claveNorm = java.text.Normalizer
+            .normalize(categoriaCruda, java.text.Normalizer.Form.NFD)
+            .replaceAll("\\p{M}", "");
+    String resultado = Arrays.stream(claveNorm.split("\\s+"))
+            .filter(p -> !p.isBlank())
+            .sorted((a, b) -> Integer.compare(b.length(), a.length()))
+            .limit(2)
+            .collect(Collectors.joining(" "));
+    return resultado.isBlank() ? "Desconocido" : resultado;
   }
 
   /** === Dedupe key === */
   private String clave(Hecho h) {
-    String tituloCmp = toComparable(Optional.ofNullable(h.getTitulo()).orElse(""));
-    String fecha     = Optional.ofNullable(h.getFechaHecho()).map(LocalDateTime::toString).orElse("0000-00-00");
-    // Construimos el formato correctamente y de forma segura
-    String formatCoords = String.format("%%.%df", decimalesCoordenadas);
-    String lat = h.getLatitud()  == null ? "null" : String.format(Locale.ROOT, formatCoords, h.getLatitud());
-    String lon = h.getLongitud() == null ? "null" : String.format(Locale.ROOT, formatCoords, h.getLongitud());
-    String fuente = Optional.ofNullable(h.getIdFuente()).map(Object::toString).orElse("null");
-    return String.join("|", tituloCmp, fecha, lat, lon, fuente);
+    StringBuilder keyBuilder = new StringBuilder();
+    keyBuilder.append(toComparable(Optional.ofNullable(h.getTitulo()).orElse("")));
+    keyBuilder.append("|").append(Optional.ofNullable(h.getFechaHecho()).map(LocalDateTime::toString).orElse("0000-00-00"));
+    keyBuilder.append("|").append(Optional.ofNullable(h.getLatitud()).map(lat -> String.format(Locale.ROOT, "%." + decimalesCoordenadas + "f", lat)).orElse("null"));
+    keyBuilder.append("|").append(Optional.ofNullable(h.getLongitud()).map(lon -> String.format(Locale.ROOT, "%." + decimalesCoordenadas + "f", lon)).orElse("null"));
+    keyBuilder.append("|").append(Optional.ofNullable(h.getIdFuente()).map(Object::toString).orElse("null"));
+    return keyBuilder.toString();
   }
 
   /** === Merge de dos hechos duplicados === */
   private Hecho mergeHechos(Hecho base, Hecho nuevo) {
-    // Preferir valores NO nulos; combinar colecciones; conservar fechas coherentes
-    if (isNullOrBlank(base.getDescripcion()) && !isNullOrBlank(nuevo.getDescripcion())) base.setDescripcion(nuevo.getDescripcion());
-    if ("desconocido".equalsIgnoreCase(Optional.ofNullable(base.getCategoria()).orElse("desconocido"))
-            && !isNullOrBlank(nuevo.getCategoria()))
+    // Solo actualizar cuando el valor realmente cambie
+    if (!isNullOrBlank(base.getDescripcion()) && isNullOrBlank(nuevo.getDescripcion())) base.setDescripcion(nuevo.getDescripcion());
+    if (!"desconocido".equalsIgnoreCase(Optional.ofNullable(base.getCategoria()).orElse("desconocido")) && !isNullOrBlank(nuevo.getCategoria()))
       base.setCategoria(nuevo.getCategoria());
-    if (base.getLatitud() == null && nuevo.getLatitud() != null)   base.setLatitud(nuevo.getLatitud());
+    if (base.getLatitud() == null && nuevo.getLatitud() != null) base.setLatitud(nuevo.getLatitud());
     if (base.getLongitud() == null && nuevo.getLongitud() != null) base.setLongitud(nuevo.getLongitud());
     if (base.getFechaHecho() == null && nuevo.getFechaHecho() != null) base.setFechaHecho(nuevo.getFechaHecho());
-    // anonimo / eliminado: si alguno marca true, preservar true (conservador)
     base.setAnonimo(Boolean.TRUE.equals(base.getAnonimo()) || Boolean.TRUE.equals(nuevo.getAnonimo()));
     base.setEliminado(Boolean.TRUE.equals(base.getEliminado()) || Boolean.TRUE.equals(nuevo.getEliminado()));
-    // fechas de auditoría
     if (nuevo.getFechaCarga() != null && (base.getFechaCarga() == null || nuevo.getFechaCarga().isBefore(base.getFechaCarga())))
       base.setFechaCarga(nuevo.getFechaCarga());
     if (nuevo.getFechaModificacion() != null && (base.getFechaModificacion() == null || nuevo.getFechaModificacion().isAfter(base.getFechaModificacion())))
       base.setFechaModificacion(nuevo.getFechaModificacion());
-    // multimedia: merge por (tipo+path) evitando duplicados
     if (nuevo.getMultimedia() != null && !nuevo.getMultimedia().isEmpty()) {
       if (base.getMultimedia() == null) base.setMultimedia(new ArrayList<>());
-      var existentes = base.getMultimedia();
-      var firmas = existentes.stream()
-              .map(m -> (m.getTipoMultimedia() + "|" + m.getPath()))
+      Set<String> firmas = base.getMultimedia().stream()
+              .map(m -> m.getTipoMultimedia() + "|" + m.getPath())
               .collect(Collectors.toSet());
-      nuevo.getMultimedia().forEach(m -> {
-        String f = m.getTipoMultimedia() + "|" + m.getPath();
-        if (!firmas.contains(f)) {
-          existentes.add(m);
-          firmas.add(f);
-        }
-      });
+      nuevo.getMultimedia().stream()
+              .filter(m -> !firmas.contains(m.getTipoMultimedia() + "|" + m.getPath()))
+              .forEach(m -> base.getMultimedia().add(m));
     }
-    // metadata: completar claves faltantes, no sobreescribir existentes
+    // Metadata: solo agregar claves faltantes
     if (nuevo.getMetadata() != null && !nuevo.getMetadata().isEmpty()) {
       if (base.getMetadata() == null) base.setMetadata(new HashMap<>());
       nuevo.getMetadata().forEach((k, v) -> base.getMetadata().putIfAbsent(k, v));
@@ -288,9 +294,8 @@ public class Normalizador {
     return s == null || s.isBlank();
   }
 
-  private Float redondear(Float valor, int decimales) {
+  private Float redondear(Float valor) {
     if (valor == null) return null;
-    double factor = Math.pow(10, decimales);
     return (float) (Math.round(valor * factor) / factor);
   }
 }
