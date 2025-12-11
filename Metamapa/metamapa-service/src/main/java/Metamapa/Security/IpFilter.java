@@ -12,43 +12,43 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
-@Component
-public class IpFilter extends OncePerRequestFilter {
-
-  private final List<String> allowedIps;
-  private final List<String> blockedIps;
-
-  public IpFilter(
-          @Value("#{'${security.ip.allowed:127.0.0.1}'.split(',')}") List<String> allowedIps,
-          @Value("#{'${security.ip.blocked:}'.split(',')}") List<String> blockedIps
-  ) {
-    this.allowedIps = allowedIps;
-    this.blockedIps = blockedIps;
-  }
-
-  @Override
-  protected void doFilterInternal(
-          HttpServletRequest request,
-          HttpServletResponse response,
-          FilterChain filterChain
-  ) throws ServletException, IOException {
-
-    String ip = request.getRemoteAddr();
-
-    // Lista negra
-    if (blockedIps.contains(ip)) {
-      response.setStatus(HttpStatus.FORBIDDEN.value());
-      response.getWriter().write("Forbidden - IP blocked");
-      return;
-    }
-
-    // Lista blanca
-    if (!allowedIps.contains(ip)) {
-      response.setStatus(HttpStatus.FORBIDDEN.value());
-      response.getWriter().write("Forbidden - IP not allowed");
-      return;
-    }
-
-    filterChain.doFilter(request, response);
-  }
-}
+//@Component
+//public class IpFilter extends OncePerRequestFilter {
+//
+//  private final List<String> allowedIps;
+//  private final List<String> blockedIps;
+//
+//  public IpFilter(
+//          @Value("#{'${security.ip.allowed:127.0.0.1}'.split(',')}") List<String> allowedIps,
+//          @Value("#{'${security.ip.blocked:}'.split(',')}") List<String> blockedIps
+//  ) {
+//    this.allowedIps = allowedIps;
+//    this.blockedIps = blockedIps;
+//  }
+//
+//  @Override
+//  protected void doFilterInternal(
+//          HttpServletRequest request,
+//          HttpServletResponse response,
+//          FilterChain filterChain
+//  ) throws ServletException, IOException {
+//
+//    String ip = request.getRemoteAddr();
+//
+//    // Lista negra
+//    if (blockedIps.contains(ip)) {
+//      response.setStatus(HttpStatus.FORBIDDEN.value());
+//      response.getWriter().write("Forbidden - IP blocked");
+//      return;
+//    }
+//
+//    // Lista blanca
+//    if (!allowedIps.contains(ip)) {
+//      response.setStatus(HttpStatus.FORBIDDEN.value());
+//      response.getWriter().write("Forbidden - IP not allowed");
+//      return;
+//    }
+//
+//    filterChain.doFilter(request, response);
+//  }
+//}

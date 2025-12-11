@@ -25,10 +25,12 @@ public class SecurityConfig {
             .addFilterBefore(ipFilter, SecurityContextPersistenceFilter.class)
             .addFilterBefore(rateLimitingFilter, SecurityContextPersistenceFilter.class)
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/actuator/**", "/swagger-ui/**",  "/prometheus","/v3/api-docs/**", "/api-agregador/fuenteDeDatos",
+                    .requestMatchers("/actuator/**", "/swagger-ui/**",  "/prometheus","/v3/api-docs/**",
+                            "/api-agregador/fuenteDeDatos", "/api-colecciones",
+                            "/api-agregador/hechos",
                             "/graphql",
                             "/graphiql").permitAll()
-                    .anyRequest().authenticated())
+                    .anyRequest().permitAll())
             .oauth2ResourceServer(oauth2 -> oauth2
                     .jwt(jwt -> jwt
                             .jwtAuthenticationConverter(jwtAuthenticationConverter())))
@@ -44,10 +46,10 @@ public class SecurityConfig {
   @Bean
   CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(Arrays.asList("*")); // Permite todos los encabezados
-    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    configuration.setAllowedOrigins(Arrays.asList("*"));
+    configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
     configuration.setAllowedHeaders(Arrays.asList("*")); // Permite todos los encabezados
-    configuration.setAllowCredentials(true);
+    configuration.setAllowCredentials(false);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);

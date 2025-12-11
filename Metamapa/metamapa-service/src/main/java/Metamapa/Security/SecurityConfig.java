@@ -9,13 +9,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfig {
 
-  private final RateLimitingFilter rateLimitingFilter;
-  private final IpFilter ipFilter;
 
-  public SecurityConfig(RateLimitingFilter rateLimitingFilter, IpFilter ipFilter) {
-    this.rateLimitingFilter = rateLimitingFilter;
-    this.ipFilter = ipFilter;
-  }
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -24,10 +18,7 @@ public class SecurityConfig {
                     .requestMatchers("/actuator/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                     .anyRequest().permitAll() // por ahora no pedimos login
             )
-            .csrf(csrf -> csrf.disable())
-            // primero filtro por IP, después rate limit
-            .addFilterBefore(ipFilter, UsernamePasswordAuthenticationFilter.class)
-            .addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class);
+            .csrf(csrf -> csrf.disable());
 
     return http.build();
   }

@@ -1,7 +1,6 @@
 package FuenteMetamapa.DTO;
 import FuenteMetamapa.business.Hechos.Hecho;
 import FuenteMetamapa.business.FuentesDeDatos.FuenteMetamapa;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import lombok.*;

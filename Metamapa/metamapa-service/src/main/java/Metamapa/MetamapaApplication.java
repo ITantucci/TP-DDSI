@@ -16,8 +16,6 @@ public class MetamapaApplication {
 
 	public static void main(String[] args) {
 		var context = SpringApplication.run(MetamapaApplication.class, args);
-
-		// ✅ OPCIONAL: abre automáticamente el navegador en la página principal
 		try {
 			String port = context.getEnvironment().getProperty("server.port", "9000");
 			String url = "http://localhost:" + port + "/";

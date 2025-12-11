@@ -16,18 +16,19 @@ public class UsuarioService {
   private final RepositorioUsuarios usuarioRepo;
   private final PasswordEncoder passwordEncoder;
 
-  public Usuario registrar(String email, String contrasenia, String nombre, String apellido) {
+  public Usuario registrar(String email, String contrasenia, String nombre, String apellido, Integer edad, Set<Rol> roles) {
     if (usuarioRepo.existsByEmail(email)) {
       throw new RuntimeException("Ya existe un usuario con ese email.");
     }
 
     Usuario u = Usuario.builder()
-        .email(email)
-        .contraseniaHasheada(passwordEncoder.encode(contrasenia))
-        .nombre(nombre)
-        .apellido(apellido)
-        .roles(Set.of(Rol.VISUALIZADOR))
-        .build();
+            .email(email)
+            .contraseniaHasheada(passwordEncoder.encode(contrasenia))
+            .nombre(nombre)
+            .apellido(apellido)
+            .edad(edad)
+            .roles(roles)
+            .build();
 
     return usuarioRepo.save(u);
   }

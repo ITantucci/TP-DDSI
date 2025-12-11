@@ -20,19 +20,15 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
   @Override
   public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-    // 1. Delega la obtención del usuario a Spring Security
     OAuth2User oauth2User = delegate.loadUser(userRequest);
 
-    // 2. Extrae los datos (los "claims" de Auth0)
     String email = oauth2User.getAttribute("email");
     String nombre = oauth2User.getAttribute("name");
 
-    // 3. Sincroniza con tu base de datos
     if (email != null) {
       usuarioService.sincronizarUsuarioSSO(email, nombre);
     }
 
-    // 4. Retorna el usuario autenticado por Auth0
     return oauth2User;
   }
 }

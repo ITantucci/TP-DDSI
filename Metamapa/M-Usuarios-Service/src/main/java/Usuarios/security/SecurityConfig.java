@@ -16,10 +16,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.springframework.web.cors.CorsConfiguration; // 💡 Importar esta clase
-import org.springframework.web.cors.CorsConfigurationSource; // 💡 Importar esta clase
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource; // 💡 Importar esta clase
-
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+// Import necesario si quieres filtrar por método (POST, GET, etc.)
+import org.springframework.http.HttpMethod;
 
 @Configuration
 public class SecurityConfig {
@@ -27,13 +28,9 @@ public class SecurityConfig {
   @Bean
   public PasswordEncoder passwordEncoder() {
     String encodingId = "bcrypt";
-
     Map<String, PasswordEncoder> encoders = new HashMap<>();
-
     encoders.put("noop", org.springframework.security.crypto.password.NoOpPasswordEncoder.getInstance());
-
     encoders.put(encodingId, new BCryptPasswordEncoder());
-
     return new DelegatingPasswordEncoder(encodingId, encoders);
   }
 
@@ -43,8 +40,21 @@ public class SecurityConfig {
     http
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
-                    // Permite el acceso a endpoints públicos y el flujo de autenticación
-                    .requestMatchers("/actuator/**","/api-auth/**", "/login", "/.well-known/**", "/oauth2/**", "/error").permitAll()
+                    // 1. Endpoints públicos y de autenticación (CORREGIDO)
+                    .requestMatchers(
+                            "/actuator/**",
+                            "/usuarios/api-auth/**",  // Coincide con AuthController
+                            "/usuarios",
+                            "/login",
+                            "/.well-known/**",
+                            "/oauth2/**",
+                            "/error"
+                    ).permitAll()
+
+                    // 2. Permitir creación de usuarios sin login (POST /usuarios)
+                    .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
+
+                    // 3. Todo lo demás requiere autenticación
                     .anyRequest().authenticated())
 
             .formLogin(form -> form
@@ -63,7 +73,7 @@ public class SecurityConfig {
                     .defaultSuccessUrl("/oauth2/authorize?client_id=metamapa-service&redirect_uri=http://localhost:9000/callback&scope=openid%20read&response_type=code&code_challenge=xyz&code_challenge_method=S256", true)
 
                     .userInfoEndpoint(userInfo -> userInfo
-                            .userService(customOAuth2UserService) // 🚨 Usa el parámetro inyectado
+                            .userService(customOAuth2UserService) // Usa el parámetro inyectado
                     )
             )
             // Deshabilita CSRF para desarrollo y peticiones API
@@ -99,5 +109,4 @@ public class SecurityConfig {
 
     return source;
   }
-
 }

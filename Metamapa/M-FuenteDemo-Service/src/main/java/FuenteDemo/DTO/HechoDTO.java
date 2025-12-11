@@ -1,7 +1,6 @@
 package FuenteDemo.DTO;
 import FuenteDemo.business.Hechos.Hecho;
 import FuenteDemo.business.FuentesDeDatos.FuenteDemo;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import lombok.*;

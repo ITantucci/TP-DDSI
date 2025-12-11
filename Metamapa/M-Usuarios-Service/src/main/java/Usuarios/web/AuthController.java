@@ -1,17 +1,19 @@
 package Usuarios.web;
 
+import Usuarios.business.Usuarios.Rol;
 import Usuarios.business.Usuarios.Usuario;
 import Usuarios.service.UsuarioService;
-import java.util.Optional;
+
+import java.lang.reflect.Array;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.bind.annotation.*;
-
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/usuarios/api-auth")
@@ -19,13 +21,20 @@ import java.util.Map;
 public class AuthController {
 
   private final UsuarioService usuarioService;
-  @PostMapping("/register")
-  public ResponseEntity<?> register(@RequestBody Map<String, String> body) {
+  @PostMapping("/registrar")
+  public ResponseEntity<?> register(@RequestBody Map<String, Object> body) {
+    List<String> rolesList = (List<String>) body.get("roles"); // <-- ahora sí
+    Set<Rol> roles = rolesList.stream()
+            .map(String::trim)
+            .map(Rol::valueOf)
+            .collect(Collectors.toSet());
     Usuario nuevo = usuarioService.registrar(
-        body.get("email"),
-        body.get("password"),
-        body.get("nombre"),
-        body.get("apellido")
+            (String) body.get("email"),
+            (String) body.get("password"),
+            (String) body.get("nombre"),
+            (String) body.get("apellido"),
+            (Integer) body.get("edad"),
+            roles
     );
     return ResponseEntity.ok(Map.of("mensaje", "Usuario registrado con éxito", "id", nuevo.getId()));
   }
