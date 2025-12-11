@@ -43,7 +43,7 @@ public class FuenteDemo {
               (String) datos.get("categoria"),
               (Float) datos.get("latitud"),
               (Float) datos.get("longitud"),
-              (LocalDate) datos.get("fechaHecho"),
+              (LocalDateTime) datos.get("fechaHecho"),
               this
       );
       //verifica si ya existe
@@ -54,7 +54,7 @@ public class FuenteDemo {
         hechos.add(nuevoHecho);
       // Actualizo fechaUltimaConsulta con la fecha del hecho si está disponible
       if (nuevoHecho.getFechaHecho() != null) {
-        LocalDateTime fechaHecho = nuevoHecho.getFechaHecho().atStartOfDay();
+        LocalDateTime fechaHecho = nuevoHecho.getFechaHecho();
         if (fechaHecho.isAfter(fechaUltimaConsulta)) {
           fechaUltimaConsulta = fechaHecho;
         }

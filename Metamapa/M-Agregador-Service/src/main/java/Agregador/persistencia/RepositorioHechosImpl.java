@@ -21,21 +21,48 @@ public class RepositorioHechosImpl implements RepositorioHechosCustom {
     CriteriaQuery<Hecho> query = cb.createQuery(Hecho.class);
     Root<Hecho> root = query.from(Hecho.class);
     List<Predicate> predicates = new ArrayList<>();
+    // Filtrar solo no eliminados
+    predicates.add(cb.isFalse(root.get("eliminado")));
+    // Agrego los predicados SQL
     criterios.forEach(c -> predicates.add(c.toPredicate(root, cb)));
     query.select(root)
-        .where(cb.and(predicates.toArray(new Predicate[0])));
+            .where(cb.and(predicates.toArray(new Predicate[0])));
 
     List<Hecho> filtrados = em.createQuery(query).getResultList();
-    // aplicar criterios no SQL (como CriterioFuenteDeDatos) en memoria
+    // AGRUPAR CRITERIOS NO-SQL
+    List<CriterioFuenteDeDatos> criteriosFuente = new ArrayList<>();
+    List<Criterio> otrosNoSQL = new ArrayList<>();
     for (Criterio c : criterios) {
+      if (c instanceof CriterioFuenteDeDatos f)
+        criteriosFuente.add(f);
+      else
+        otrosNoSQL.add(c);
+    }
+    // 1) Aplicar criterios NO SQL normales (AND)
+    for (Criterio c : otrosNoSQL) {
       filtrados = filtrados.stream()
-              .filter(c::cumple)
+              .filter(c::cumple)        // AND
               .toList();
     }
+    // 2) Aplicar criterios de fuente con OR
+    if (!criteriosFuente.isEmpty()) {
+      filtrados = filtrados.stream()
+              .filter(h -> {
+                // Al menos una fuente debe cumplir
+                for (CriterioFuenteDeDatos cf : criteriosFuente) {
+                  if (cf.cumple(h)) {
+                    return true; // OR
+                  }
+                }
+                return false;
+              })
+              .toList();
+    }
+    // 3) Filtrar según consenso (si corresponde)
     if (consenso != null) {
       filtrados = filtrados.stream()
-          .filter(h -> h.estaConsensuado(consenso))
-          .toList();
+              .filter(h -> h.estaConsensuado(consenso))
+              .toList();
     }
     return filtrados;
   }

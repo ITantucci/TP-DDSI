@@ -1,6 +1,8 @@
 package FuenteDemo.business.Hechos;
 import FuenteDemo.business.FuentesDeDatos.FuenteDemo;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import lombok.*;
 import jakarta.persistence.*;
 
@@ -12,8 +14,8 @@ public class Hecho {
   private String categoria;
   private Float latitud;
   private Float longitud;
-  private LocalDate fechaHecho;
-  private LocalDate fechaModificacion;
+  private LocalDateTime fechaHecho;
+  private LocalDateTime fechaModificacion;
   @Setter
   @ManyToOne
   private FuenteDemo fuente;
@@ -30,7 +32,7 @@ public class Hecho {
           String categoria,
           Float latitud,
           Float longitud,
-          LocalDate fechaHecho,
+          LocalDateTime fechaHecho,
           FuenteDemo fuente) {
     this.titulo = titulo;
     this.descripcion = descripcion;
@@ -38,11 +40,11 @@ public class Hecho {
     this.latitud = latitud;
     this.longitud = longitud;
     this.fechaHecho = fechaHecho;
-    this.fechaModificacion = LocalDate.now();
+    this.fechaModificacion = LocalDateTime.now();
     this.fuente = fuente; //AGREGO ESTE CAMPO
   }
 
-  public void editarHecho(String titulo, String descripcion, String categoria, Float latitud, Float longitud, LocalDate fechaHecho) {
+  public void editarHecho(String titulo, String descripcion, String categoria, Float latitud, Float longitud, LocalDateTime fechaHecho) {
     if (titulo != null) {
       this.titulo = titulo;
     }
@@ -59,7 +61,7 @@ public class Hecho {
     if (fechaHecho != null) {
       this.fechaHecho = fechaHecho;
     }
-    this.fechaModificacion = LocalDate.now();
+    this.fechaModificacion = LocalDateTime.now();
   }
 
 }

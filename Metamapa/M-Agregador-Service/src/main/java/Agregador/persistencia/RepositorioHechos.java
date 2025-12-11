@@ -9,5 +9,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface RepositorioHechos extends JpaRepository<Hecho, BigInteger>, RepositorioHechosCustom {
   List<Hecho> filtrarPorCriterios(List<Criterio> criterios, Consenso consenso);
   List<Hecho> findByCategoriaIgnoreCaseAndEliminadoFalse(String categoria);
-  List<Hecho> findByEliminadoFalse();  // TODO: ver hay que usar en filtrarPorCriterios
 }

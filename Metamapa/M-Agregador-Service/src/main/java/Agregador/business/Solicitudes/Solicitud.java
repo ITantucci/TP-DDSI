@@ -24,10 +24,11 @@ public abstract class Solicitud {
 
   public Solicitud() {}
 
-  public void aceptarSolicitud(){
+  public void aceptarSolicitud() {
     this.estado = EstadoSolicitud.APROBADA;
   }
 
-  public  void rechazarSolicitud(){this.estado = EstadoSolicitud.RECHAZADA;
+  public void rechazarSolicitud() {
+    this.estado = EstadoSolicitud.RECHAZADA;
   }
 }
