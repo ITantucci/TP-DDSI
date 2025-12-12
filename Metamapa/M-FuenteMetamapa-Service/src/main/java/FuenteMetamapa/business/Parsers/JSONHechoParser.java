@@ -4,8 +4,7 @@ import FuenteMetamapa.business.Hechos.Hecho;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import java.io.File;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 
 public class JSONHechoParser implements HechoParser {

@@ -63,7 +63,7 @@ public class ControllerFuenteDinamica {
   }
 
   // este me parece que no se usa, ya que el agregador se actualiza solo por ahi esta para otra cosa
-  @GetMapping("/{idFuenteDeDatos}/hechos")
+/*  @GetMapping("/{idFuenteDeDatos}/hechos")
   public ResponseEntity<List<HechoDTO>> getHechosFuenteDeDatos(@PathVariable Integer idFuenteDeDatos) {
     return repositorioFuentes.findById(idFuenteDeDatos)
             .map(fuente -> ResponseEntity.ok(
@@ -72,7 +72,7 @@ public class ControllerFuenteDinamica {
                             .toList()
             ))
             .orElse(ResponseEntity.notFound().build());
-  }
+  }*/
 
   // Cargar un hecho a una fuente
   @PostMapping(value = "/{idFuenteDeDatos}/hechos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -81,30 +81,9 @@ public class ControllerFuenteDinamica {
     try {
       FuenteDinamica fuente = repositorioFuentes.findById(idFuenteDeDatos)
               .orElseThrow(() -> new IllegalArgumentException("Fuente no encontrada: " + idFuenteDeDatos));
-      HechoDTO hechoDTO = new ObjectMapper().readValue(hechoJson, HechoDTO.class);
-      Hecho hecho = hechoDTO.toDomain(fuente);
-      hecho.setFechaCarga(LocalDateTime.now());
-      hecho.setFechaModificacion(LocalDateTime.now());
-      // 2️⃣ Guardar archivos en resources/archivos
-      String uploadDir = "Metamapa/M-FuenteDinamica-Service/src/main/resources/archivos/";
-      File directorio = new File(uploadDir);
-      if (!directorio.exists())
-        directorio.mkdirs();
-      if (archivos != null) {
-        for (MultipartFile archivo : archivos) {
-          if (!archivo.isEmpty()) {
-            String nombreArchivo = System.currentTimeMillis() + "_" + archivo.getOriginalFilename();
-            Path rutaArchivo = Paths.get(uploadDir + nombreArchivo);
-            Files.copy(archivo.getInputStream(), rutaArchivo);
-            // 🧩 Crear entidad Multimedia y asociarla al Hecho
-            Multimedia mm = new Multimedia();
-            mm.setPath(nombreArchivo);
-            mm.setTipoMultimedia(deducirTipo(Objects.requireNonNull(archivo.getContentType())));
-            mm.setHecho(hecho);
-            hecho.agregarMultimedia(mm);
-          }
-        }
-      }
+      Hecho hecho = crearHechoDesdeJson(hechoJson, fuente);
+      if (archivos != null && !archivos.isEmpty())
+        procesarArchivos(archivos, hecho);
       repositorioHechos.save(hecho);
       return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("id", hecho.getId()));
     } catch (IllegalArgumentException e) {
@@ -115,7 +94,30 @@ public class ControllerFuenteDinamica {
     }
   }
 
-  // 🔹 Método privado para guardar el archivo físicamente en la ruta original
+  // Método para convertir el JSON en un objeto Hecho y asignarle las fechas
+  private Hecho crearHechoDesdeJson(String hechoJson, FuenteDinamica fuente) throws IOException {
+    HechoDTO hechoDTO = new ObjectMapper().readValue(hechoJson, HechoDTO.class);
+    Hecho hecho = hechoDTO.toDomain(fuente);
+    hecho.setFechaCarga(LocalDateTime.now());
+    hecho.setFechaModificacion(LocalDateTime.now());
+    return hecho;
+  }
+
+  // Método para procesar los archivos y asociarlos al Hecho
+  private void procesarArchivos(List<MultipartFile> archivos, Hecho hecho) throws IOException {
+    for (MultipartFile archivo : archivos) {
+      if (!archivo.isEmpty()) {
+        String nombreArchivo = guardarArchivoEnDisco(archivo);
+        Multimedia mm = new Multimedia();
+        mm.setPath(nombreArchivo);
+        mm.setTipoMultimedia(deducirTipo(Objects.requireNonNull(archivo.getContentType())));
+        mm.setHecho(hecho);
+        hecho.agregarMultimedia(mm);
+      }
+    }
+  }
+
+  // Método para guardar el archivo físicamente en disco
   private String guardarArchivoEnDisco(MultipartFile archivo) throws IOException {
     String baseDir = "Metamapa/M-FuenteDinamica-Service/src/main/resources/archivos/";
     File directorio = new File(baseDir);
@@ -125,7 +127,6 @@ public class ControllerFuenteDinamica {
     String nombreArchivo = System.currentTimeMillis() + "_" + archivo.getOriginalFilename();
     Path destino = Paths.get(baseDir + nombreArchivo);
     Files.copy(archivo.getInputStream(), destino, StandardCopyOption.REPLACE_EXISTING);
-    // Retorna el nombre relativo para guardar en BD
     return nombreArchivo;
   }
 

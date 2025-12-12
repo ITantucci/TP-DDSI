@@ -48,14 +48,14 @@ public class ServiceFuenteDeDatos {
     log.info("Total hechos guardados: {}", repositorioHechos.findAll().size());
   }
 
-  /** Lista todas las fuentes (dinámicas+estáticas+proxy). */
-  private List<FuenteInfoDTO> fetchFuentes(String base) {
+  /* Lista todas las fuentes (dinámicas+estáticas+proxy). */
+/*  private List<FuenteInfoDTO> fetchFuentes(String base) {
     String url = String.format(PATH_LISTAR_FUENTES, base);
     ResponseEntity<List<FuenteInfoDTO>> resp = restTemplate.exchange(
             url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {}
     );
     return Optional.ofNullable(resp.getBody()).orElseGet(List::of);
-  }
+  }*/
 
   /** Devuelve SOLO los hechos nuevos respecto a tu repositorio (útil para sincronización). */
   public List<Hecho> getHechosNuevosDeFuente(String urlBase) {

@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class Normalizador {
   private final int decimalesCoordenadas;
   private static final JaroWinklerSimilarity SIMILARITY = new JaroWinklerSimilarity();
-  private double factor;
+  private final double factor;
 
   public Normalizador(@Value("${normalizador.decimales:4}") int decimalesCoordenadas) {
     this.decimalesCoordenadas = decimalesCoordenadas;
@@ -191,7 +191,7 @@ public class Normalizador {
     if (categoriaCruda == null || categoriaCruda.isBlank()) return "Desconocido";
     String clave = toComparable(categoriaCruda);
     if (categoriaCache.containsKey(clave)) return categoriaCache.get(clave);
-    String resultado = null;
+    String resultado;
     resultado = PATRONES.get(clave);
     if (resultado == null) {
       for (Map.Entry<String, String> entrada : PATRONES.entrySet()) {

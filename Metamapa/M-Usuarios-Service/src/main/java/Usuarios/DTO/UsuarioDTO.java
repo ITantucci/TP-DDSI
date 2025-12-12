@@ -1,7 +1,6 @@
 package Usuarios.DTO;
 
-import Usuarios.business.Usuarios.Rol;
-import Usuarios.business.Usuarios.Usuario;
+import Usuarios.business.Usuarios.*;
 import lombok.Getter;
 import java.util.*;
 

@@ -25,7 +25,6 @@ public class ControllerFuenteMetamapa {
   @GetMapping("/{idFuenteDeDatos}")
   public ResponseEntity<?> getFuenteDeDatos(@PathVariable Integer idFuenteDeDatos) {
     try{
-      FuenteMetamapa fuente = fuenteMetamapaService.obtenerFuente(idFuenteDeDatos);
       return ResponseEntity.ok(fuenteMetamapaService.obtenerFuente(idFuenteDeDatos));
     }
     catch (IllegalArgumentException e) {

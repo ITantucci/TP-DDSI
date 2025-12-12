@@ -1,7 +1,5 @@
 package FuenteDinamica.persistencia;
 import FuenteDinamica.business.FuentesDeDatos.FuenteDinamica;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -8,7 +8,6 @@ import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import lombok.Getter;
 import lombok.*;
-//import jakarta.persistence.*;
 
 @JsonTypeName("FUENTEESTATICA")
 //@Entity

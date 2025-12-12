@@ -1,8 +1,5 @@
 package FuenteEstatica.business.Hechos;
-import FuenteEstatica.business.FuentesDeDatos.FuenteEstatica;
 import java.time.LocalDateTime;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 //import jakarta.persistence.*;
 

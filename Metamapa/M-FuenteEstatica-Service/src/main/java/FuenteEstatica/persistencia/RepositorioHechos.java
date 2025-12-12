@@ -7,11 +7,11 @@ import org.springframework.stereotype.Repository;
 public class RepositorioHechos {
   private final ArrayList<Hecho> hechos = new ArrayList<>();
 
-  public void agregarHecho(Hecho h) {
+  public void save(Hecho h) {
     hechos.add(h);
   }
 
-  public Hecho findHecho(int id) {
+  public Hecho findById(int id) {
     return (hechos.stream().filter(h -> h.getId() == id).findFirst()).get();
   }
 
