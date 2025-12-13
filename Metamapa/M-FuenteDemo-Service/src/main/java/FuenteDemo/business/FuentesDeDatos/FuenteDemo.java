@@ -5,21 +5,21 @@ import com.fasterxml.jackson.annotation.*;
 import java.time.*;
 import java.util.*;
 import lombok.*;
-import jakarta.persistence.*;
 
 @JsonTypeName("FUENTEDEMO")
-@Getter @Entity
+@Getter
 public class FuenteDemo {
-  @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "fuentesContador")
-  @SequenceGenerator(name = "fuentesContador", sequenceName = "fuentesContador", initialValue = 5000000, allocationSize = 1)
+  //@Id
+  //@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "fuentesContador")
+  //@SequenceGenerator(name = "fuentesContador", sequenceName = "fuentesContador", initialValue = 5000000, allocationSize = 1)
   protected Integer id;
   public String nombre;
-  @OneToMany
+  //@OneToMany
   public ArrayList<Hecho> hechos;
   private LocalDateTime fechaUltimaConsulta;
-  @JsonIgnore @Transient
+  @JsonIgnore
   final private Conexion conexion;
+  static protected Integer contadorID = 3000000;
 
   public String endpointBase;
 
@@ -32,6 +32,8 @@ public class FuenteDemo {
       this.endpointBase = endpointBase;
       this.fechaUltimaConsulta = LocalDateTime.now(ZoneId.of("UTC")).minusHours(1);
       this.conexion = new Conexion();
+      this.id = contadorID;
+      contadorID += 1;
   }
 
   public void actualizarHechos() {

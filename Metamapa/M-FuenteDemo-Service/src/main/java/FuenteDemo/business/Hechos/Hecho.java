@@ -1,11 +1,9 @@
 package FuenteDemo.business.Hechos;
 import FuenteDemo.business.FuentesDeDatos.FuenteDemo;
 import java.time.LocalDateTime;
-
 import lombok.*;
-import jakarta.persistence.*;
-
-@Entity
+//import jakarta.persistence.*;
+//@Entity
 @Getter @Setter
 public class Hecho {
   private String titulo;
@@ -16,12 +14,12 @@ public class Hecho {
   private LocalDateTime fechaHecho;
   private LocalDateTime fechaModificacion;
   @Setter
-  @ManyToOne
+  //@ManyToOne
   private FuenteDemo fuente;
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+// @Id
+// @GeneratedValue(strategy = GenerationType.SEQUENCE)
   private Integer id;
+  static public Integer contadorID = 1;
 
 
   public Hecho() {}
@@ -40,7 +38,9 @@ public class Hecho {
     this.longitud = longitud;
     this.fechaHecho = fechaHecho;
     this.fechaModificacion = LocalDateTime.now();
-    this.fuente = fuente; //AGREGO ESTE CAMPO
+    this.fuente = fuente;
+    this.id = contadorID;
+    contadorID += 1;
   }
 
   public void editarHecho(String titulo, String descripcion, String categoria, Float latitud, Float longitud, LocalDateTime fechaHecho) {

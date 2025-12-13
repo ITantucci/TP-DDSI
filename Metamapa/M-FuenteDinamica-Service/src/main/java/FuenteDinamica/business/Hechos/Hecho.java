@@ -22,17 +22,11 @@ public class Hecho {
   private LocalDateTime fechaModificacion;
   private Integer idUsuario;
   private Boolean anonimo;
-  private Boolean eliminado = false;
   @ManyToOne
   @JoinColumn(name = "fuente_id")
   private FuenteDinamica fuente;
   @OneToMany(mappedBy = "hecho", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Multimedia> multimedia = new ArrayList<>();
-  @ElementCollection
-  @CollectionTable(name = "hecho_metadata", joinColumns = @JoinColumn(name = "hecho_id"))
-  @MapKeyColumn(name = "clave")
-  @Column(name = "valor")
-  private Map<String, String> metadata = new HashMap<>();
 
   public Hecho() {}
 
@@ -44,7 +38,7 @@ public class Hecho {
           Float longitud,
           LocalDateTime fechaHecho,
           Integer idUsuario,
-          FuenteDinamica fuente, // <--- aquí pasás la referencia, no el ID
+          FuenteDinamica fuente,
           Boolean anonimo,
           List<Multimedia> multimedia) {
     this.titulo = titulo;
@@ -56,9 +50,8 @@ public class Hecho {
     this.fechaCarga = LocalDateTime.now();
     this.fechaModificacion = LocalDateTime.now();
     this.idUsuario = idUsuario;
-    this.fuente = fuente; // <--- Hibernate maneja la FK
+    this.fuente = fuente;
     this.anonimo = anonimo;
-    this.eliminado = false;
     this.multimedia = multimedia;
   }
 

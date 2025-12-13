@@ -29,7 +29,7 @@ public class Hecho {
           Float latitud,
           Float longitud,
           LocalDateTime fechaHecho,
-          Integer fuenteId) {  // <--- aquí pasás la referencia, no el ID
+          Integer fuenteId) {
     this.titulo = titulo;
     this.descripcion = descripcion;
     this.categoria = categoria;

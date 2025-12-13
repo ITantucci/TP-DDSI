@@ -23,7 +23,7 @@ public class HechoDTO {
   private Integer idUsuario;
   private Integer fuenteId; // solo para subir hecho...
   private Boolean anonimo = false;
-  private Map<String, String> metadata;
+//  private Map<String, String> metadata;
 
   // Método para convertir a dominio
   public Hecho toDomain(FuenteDinamica fuente) {
@@ -37,10 +37,6 @@ public class HechoDTO {
     hecho.setIdUsuario(this.idUsuario);
     hecho.setFuente(fuente);
     hecho.setAnonimo(this.anonimo);
-    // Inicializar metadata si es null
-    if (this.metadata != null) {
-      hecho.setMetadata(new HashMap<>(this.metadata));
-    }
     return hecho;
   }
 
@@ -54,9 +50,9 @@ public class HechoDTO {
     dto.setFechaHecho( hecho.getFechaHecho().format(DateTimeFormatter.ISO_LOCAL_DATE));
     dto.setIdUsuario(hecho.getIdUsuario());
     dto.setAnonimo(hecho.getAnonimo());
-    if (hecho.getMetadata() != null) {
-      dto.setMetadata(new HashMap<>(hecho.getMetadata()));
-    }
+//    if (hecho.getMetadata() != null) {
+//      dto.setMetadata(new HashMap<>(hecho.getMetadata()));
+//    }
     return dto;
   }
 }

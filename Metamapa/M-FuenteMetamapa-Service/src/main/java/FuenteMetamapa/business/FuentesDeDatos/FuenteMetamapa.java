@@ -3,7 +3,6 @@ import FuenteMetamapa.DTO.SolicitudEliminacionDTO;
 import FuenteMetamapa.business.Hechos.Hecho;
 import FuenteMetamapa.business.Parsers.JSONHechoParser;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import jakarta.persistence.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.*;
@@ -14,19 +13,14 @@ import org.springframework.web.client.RestTemplate;
 
 @JsonTypeName("FUENTEMETAMAPA")
 @Getter @Setter
-@Entity
 public class FuenteMetamapa {
-  @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "fuentesContador")
-  @SequenceGenerator(name = "fuentesContador", sequenceName = "fuentesContador", initialValue = 4000000, allocationSize = 1)
   protected Integer id;
   public String endpointBase;
   public String nombre;
   public ArrayList<Hecho> hechos;
   private LocalDateTime fechaUltimaConsulta;
-  @Transient
   final private RestTemplate restTemplate;
-  //static private Integer contadorID = 4000000;
+  static private Integer contadorID = 4000000;
 
   public FuenteMetamapa() {
     this.restTemplate = new RestTemplate();
@@ -38,6 +32,8 @@ public class FuenteMetamapa {
     this.nombre = nombre;
     this.hechos = new ArrayList<>();
     this.restTemplate = new RestTemplate();
+    this.id = contadorID;
+    contadorID += 1;
   }
 
   public void actualizarHechos(Map<String, String> filtros) {

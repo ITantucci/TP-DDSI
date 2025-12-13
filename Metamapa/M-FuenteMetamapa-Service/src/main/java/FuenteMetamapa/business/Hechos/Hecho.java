@@ -1,11 +1,9 @@
 package FuenteMetamapa.business.Hechos;
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.*;
 import FuenteMetamapa.business.FuentesDeDatos.FuenteMetamapa;
 
 @Getter @Setter
-@Entity
 public class Hecho {
   private String titulo;
   private String descripcion;
@@ -15,11 +13,7 @@ public class Hecho {
   private LocalDateTime fechaHecho;
   private LocalDateTime fechaCarga;
   private LocalDateTime fechaModificacion;
-
-  @ManyToOne
   private FuenteMetamapa fuente;
-  @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE)
   private Integer id;
   static public Integer contadorID = 1;
 
@@ -41,6 +35,8 @@ public class Hecho {
     this.fechaCarga = LocalDateTime.now();
     this.fechaModificacion = LocalDateTime.now();
     this.fuente = fuenteId;
+    this.id = contadorID;
+    contadorID += 1;
   }
 
   /*public Boolean tieneEtiqueta(String key,String value) {

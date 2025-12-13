@@ -1,7 +1,6 @@
 package FuenteDinamica.business.FuentesDeDatos;
 import FuenteDinamica.business.Hechos.*;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import lombok.*;
@@ -15,7 +14,7 @@ public class FuenteDinamica {
   //static private Integer contadorID = 1000000;
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer fuenteId;  // Hibernate lo maneja, no necesitamos contador manual
+  private Integer fuenteId;
   private String nombre;
   @OneToMany(mappedBy = "fuente", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Hecho> hechos = new ArrayList<>();
