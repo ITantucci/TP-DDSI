@@ -13,3 +13,25 @@ async function registrarFuente(url) {
     });
     return resp.ok;
 }
+
+async function cargarCSV(idFuenteDeDatos, archivo) {
+    const formData = new FormData();
+    formData.append("file", archivo);
+    try {
+        const response = await fetch(
+            `http://localhost:8080/${idFuenteDeDatos}/csv`,
+            {
+                method: "POST",
+                body: formData
+            }
+        );
+        const texto = await response.text();
+        if (!response.ok) {
+            throw new Error(texto);
+        }
+        alert(texto);
+    } catch (error) {
+        console.error(error);
+        alert("Error al cargar CSV");
+    }
+}

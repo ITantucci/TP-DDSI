@@ -100,7 +100,7 @@ public class ControllerFuenteEstatica {
   }
 
   // Subir un csv al file server... (ACA NO SE PROCESARIA LOS HECHOS, SOLO SE SUBE)
-  @PostMapping(value = "/{idFuenteDeDatos}/cargarCSV", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = "application/json")
+  @PostMapping(value = "/{idFuenteDeDatos}/csv", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = "application/json")
   public ResponseEntity<?> cargarCSV(@PathVariable Integer idFuenteDeDatos, @RequestParam("file") MultipartFile file) {
     try { // En postman probar con form-data y file
       Path carpetaPendientes = Paths.get(rutaPending, String.valueOf(idFuenteDeDatos));

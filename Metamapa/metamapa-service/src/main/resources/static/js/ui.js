@@ -14,6 +14,11 @@ async function mostrar(seccion) {
     const fn = vistas[seccion];
     if (fn) await fn();
     sessionStorage.setItem("vistaActual", seccion);
+    verificarSesionYActualizarUI(); //Agrego esta funcion aca creo que va esta en vez de la otra
+//    if (window.actualizarVisibilidadPorRoles) {
+//        // Usamos los roles que ya tenga guardados auth.js en su variable global
+//        window.actualizarVisibilidadPorRoles();
+//    }
 }
 
 function renderTablaSolicitudes(titulo, solicitudes, columnas, onApprove, onReject) {
@@ -248,7 +253,7 @@ async function mostrarColeccionesView() {
       <div id="coleccionesView">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h4>Colecciones</h4>
-          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalColeccion">+ Nueva Colección</button>
+          <button class="btn btn-primary admin-only d-none" data-bs-toggle="modal" data-bs-target="#modalColeccion">+ Nueva Colección </button>
         </div>
         <div class="mb-3">
           <label for="modoNav" class="form-label">Modo de navegación:</label>
@@ -256,6 +261,16 @@ async function mostrarColeccionesView() {
             <option value="IRRESTRICTA">Irrestricta</option>
             <option value="CURADA">Curada</option>
           </select>
+        </div>
+        <div class="mb-3">
+          <label for="busquedaColeccion" class="form-label">Búsqueda (título o descripción)</label>
+          <div class="input-group">
+            <input id="busquedaColeccion" class="form-control form-control-sm"
+                   placeholder="Escribí y presioná Enter..."
+                   autocomplete="off" />
+            <button class="btn btn-outline-primary btn-sm" type="button" onclick="buscarColecciones()">Buscar</button>
+            <button class="btn btn-outline-secondary btn-sm" type="button" onclick="limpiarBusquedaColeccion()">Limpiar</button>
+          </div>
         </div>
         <div id="panelFiltrosColeccion" class="border p-3 rounded bg-light mb-3">
           <div class="d-flex justify-content-between align-items-center mb-2">
@@ -274,6 +289,7 @@ async function mostrarColeccionesView() {
       </div>
     `;
     await ensureMapaInit("mapaColeccion");
+    initBusquedaColecciones();
     await mostrarColecciones();
     // Habilitar / deshabilitar botón según haya filtros
     const contFiltros = document.getElementById("filtrosContainerColeccion");
@@ -789,8 +805,19 @@ let coleccionSeleccionada = null;
 async function mostrarColecciones() {
     const cont = document.getElementById("listaColecciones");
     cont.innerHTML = "<p class='text-muted'>Cargando colecciones...</p>";
+
     try {
-        const colecciones = await obtenerColecciones();
+        const q = document.getElementById("busquedaColeccion")?.value?.trim() || "";
+
+        const colecciones = await obtenerColecciones(q);
+
+        if (!colecciones.length) {
+            cont.innerHTML = q
+                ? `<p class="text-muted">No se encontraron colecciones para: <b>${q}</b></p>`
+                : `<p class="text-muted">No hay colecciones para mostrar.</p>`;
+            return;
+        }
+
         cont.innerHTML = colecciones.map(c => `
             <div class="card mb-2 p-2">
                 <div class="d-flex justify-content-between align-items-center">
@@ -801,11 +828,15 @@ async function mostrarColecciones() {
                     </div>
                     <div class="btn-group">
                         <button class="btn btn-sm btn-outline-primary" onclick="verHechosColeccion('${c.handle}')">Ver hechos</button>
-                        <button class="btn btn-sm btn-outline-primary" onclick="cambiarConsenso('${c.handle}')">Cambiar consenso</button>
+                        <button class="btn btn-sm admin-only btn-outline-primary" onclick="cambiarConsenso('${c.handle}')">Cambiar consenso</button>
                     </div>
                 </div>
             </div>
         `).join("");
+
+        /*if (window.actualizarVisibilidadPorRoles) {
+            window.actualizarVisibilidadPorRoles();
+        }*/
     } catch (e) {
         cont.innerHTML = `<div class="alert alert-danger">Error al cargar colecciones</div>`;
         console.error("Error al cargar colecciones:", e);
@@ -1021,4 +1052,27 @@ function mostrarModal(mensaje, titulo = "Atención", recargar = false) {
         modal.remove();
         if (recargar) location.reload();
     });
+}
+
+function initBusquedaColecciones() {
+    const input = document.getElementById("busquedaColeccion");
+    if (!input) return;
+
+    input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault(); // Evita el envío del formulario si existiera
+            buscarColecciones(); // Solo cuando se presiona Enter
+        }
+    });
+}
+
+function buscarColecciones() {
+    // Dispara la búsqueda al presionar el botón o Enter
+    mostrarColecciones();
+}
+
+function limpiarBusquedaColeccion() {
+    const input = document.getElementById("busquedaColeccion");
+    if (input) input.value = "";
+    mostrarColecciones();
 }

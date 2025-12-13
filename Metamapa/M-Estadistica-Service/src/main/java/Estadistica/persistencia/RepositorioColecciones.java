@@ -1,7 +1,7 @@
 package Estadistica.persistencia;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import Estadistica.business.Estadistica.Coleccion;
+import Estadistica.business.Colecciones.Coleccion;
 import java.util.*;
 
 public interface RepositorioColecciones extends JpaRepository<Coleccion, UUID>,RepositorioColeccionesCustom{

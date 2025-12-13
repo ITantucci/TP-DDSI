@@ -1,7 +1,7 @@
 package Estadistica.persistencia;
 
-import Estadistica.business.Estadistica.Coleccion;
-import Estadistica.business.Estadistica.Criterios.Criterio;
+import Estadistica.business.Colecciones.Coleccion;
+import Estadistica.business.Colecciones.Criterio;
 import java.util.*;
 
 public interface RepositorioColeccionesCustom {

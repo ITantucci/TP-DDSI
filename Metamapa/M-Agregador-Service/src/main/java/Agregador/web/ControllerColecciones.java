@@ -27,8 +27,10 @@ public class ControllerColecciones {
 
   // Obtener todas las colecciones (get /colecciones)
   @GetMapping({"", "/"})
-  public ResponseEntity<List<Coleccion>> getColecciones() {
-    return ResponseEntity.ok(serviceColecciones.getColecciones());
+  public ResponseEntity<List<Coleccion>> getColecciones(
+          @RequestParam(value = "query", required = false) String query
+  ) {
+    return ResponseEntity.ok(serviceColecciones.getColecciones(query));
   }
 
   // Obtener una colección por ID (get /colecciones/{id})

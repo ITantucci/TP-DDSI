@@ -1,5 +1,5 @@
-package Estadistica.business.Estadistica.Criterios;
-import Estadistica.business.Estadistica.Hecho;
+package Estadistica.business.Colecciones;
+import Estadistica.business.Hechos.Hecho;
 import jakarta.persistence.Entity;
 import jakarta.persistence.criteria.*;
 import lombok.*;

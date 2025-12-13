@@ -1,5 +1,6 @@
-package Estadistica.business.Estadistica.Criterios;
-import Estadistica.business.Estadistica.*;
+package Estadistica.business.Colecciones;
+import Estadistica.business.Hechos.Hecho;
+import Estadistica.business.Hechos.TipoMultimedia;
 import jakarta.persistence.Entity;
 import jakarta.persistence.criteria.*;
 import lombok.Getter;

@@ -1,6 +1,5 @@
 // === Visualización de estadísticas MetaMapa ===
 console.log("✅ stats js cargado correctamente");
-// --- Funciones auxiliares ---
 const getEstadisticas = async () => (await fetch(`${API_BASE}/estadisticas`)).json();
 
 const crearChart = (id, type, label, data, extraOptions = {}) => {

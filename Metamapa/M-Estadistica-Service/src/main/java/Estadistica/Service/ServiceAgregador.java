@@ -1,12 +1,14 @@
 package Estadistica.Service;
-import Estadistica.business.Estadistica.*;
+import Estadistica.business.Colecciones.Coleccion;
+import Estadistica.business.Hechos.Hecho;
 import Estadistica.persistencia.RepositorioHechos;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import Estadistica.business.Estadistica.Criterios.Criterio;
+import Estadistica.business.Colecciones.Criterio;
+import Estadistica.business.Hechos.Multimedia;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -16,14 +18,13 @@ import java.util.*;
 public class ServiceAgregador {
   private final RestTemplate restTemplate;
   private final RepositorioHechos repoHechos;
+
   public List<Hecho> getHechosAgregador(String urlBase) {
     String url = urlBase + "/api-agregador/hechos";
     ResponseEntity<List<Map<String, Object>>> resp = restTemplate.exchange(
             url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {}
     );
     List<Map<String, Object>> raw = Optional.ofNullable(resp.getBody()).orElseGet(List::of);
-    // imprimir raw para debug
-    //System.out.println("Hechos raw de la fuente " + urlBase + ": " + raw);
     return raw.stream().map(this::jsonToHecho).toList();
   }
 
@@ -82,24 +83,6 @@ public class ServiceAgregador {
     return (raw.stream().map(this::JsonToColeccion).toList());
   }
 
-  SolicitudEliminacion JsonToSolicitudesDeEliminacion(Map<String, Object> json) {
-    //como estado es un objeto en si tal vez no es tan facil, pero la logica es algo asi
-    boolean spam = Objects.equals(json.get("estado"), "SPAM");
-    Hecho hecho = repoHechos.findById(BigInteger.valueOf(bi(json.get("hechoAfectado"))))
-            .orElseThrow(() -> new NoSuchElementException("Hecho no encontrado con id " + json.get("hechoAfectado")));
-    return new SolicitudEliminacion((String) json.get("motivo"),
-            hecho,
-            spam);
-  }
-
-  public List<SolicitudEliminacion> getSolicitudesEliminacionAgregador(String urlBase) {
-    String url = urlBase + "/api-solicitudes/solicitudesEliminacion";
-    ResponseEntity<List<Map<String, Object>>> resp = restTemplate.exchange(
-            url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {}
-    );
-    List<Map<String, Object>> raw = Optional.ofNullable(resp.getBody()).orElseGet(List::of);
-    return (raw.stream().map(this::JsonToSolicitudesDeEliminacion).toList());
-  }
 
   private static String str(Object o)        { return o == null ? null : String.valueOf(o); }
   private static Integer i(Object o)         { try { return o == null ? null : Integer.valueOf(String.valueOf(o)); } catch(Exception e){ return null; } }

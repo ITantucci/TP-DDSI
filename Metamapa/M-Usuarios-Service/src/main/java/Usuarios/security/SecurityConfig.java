@@ -35,6 +35,8 @@ public class SecurityConfig {
                             "/usuarios/api-auth/**",  // Coincide con AuthController
                             "/usuarios",
                             "/login",
+                            "/logout",
+                            "/usuarios/logout",
                             "/login.html",
                             "/.well-known/**",
                             "/oauth2/**",
@@ -42,7 +44,7 @@ public class SecurityConfig {
                     ).permitAll()
 
                     // 2. Permitir creación de usuarios sin login (POST /usuarios)
-                    .requestMatchers(HttpMethod.POST, "/usuarios").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/**").permitAll()
 
                     // 3. Todo lo demás requiere autenticación
                     .anyRequest().authenticated())
@@ -101,10 +103,10 @@ public class SecurityConfig {
     CorsConfiguration configuration = new CorsConfiguration();
 
     // PERMITIR ACCESO DESDE EL CLIENTE LIVIANO (PUERTO 9000)
-    configuration.setAllowedOrigins(List.of("*"));
+    configuration.setAllowedOrigins(List.of("http://localhost:9000"));
 
     // Permitir credenciales (cookies, tokens)
-    configuration.setAllowCredentials(false);
+    configuration.setAllowCredentials(true);
 
     // Métodos permitidos para las peticiones
     configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));

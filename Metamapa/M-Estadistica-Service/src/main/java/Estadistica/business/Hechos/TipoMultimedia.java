@@ -1,4 +1,4 @@
-package Estadistica.business.Estadistica;
+package Estadistica.business.Hechos;
 
 public enum TipoMultimedia {
   FOTO,

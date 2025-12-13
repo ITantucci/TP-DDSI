@@ -41,8 +41,18 @@ async function crearColeccion(e) {
 }
 
 // Obtener todas las colecciones
-async function obtenerColecciones() {
+/*async function obtenerColecciones() {
     const resp = await fetch(`${window.METAMAPA.API_COLECCIONES}`);
+    return resp.ok ? resp.json() : [];
+}*/
+
+async function obtenerColecciones(query = "") {
+    const q = (query || "").trim();
+    const url = q
+        ? `${window.METAMAPA.API_COLECCIONES}?query=${encodeURIComponent(q)}`
+        : `${window.METAMAPA.API_COLECCIONES}`;
+
+    const resp = await fetch(url);
     return resp.ok ? resp.json() : [];
 }
 

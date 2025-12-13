@@ -1,6 +1,6 @@
 package Estadistica.persistencia;
 
-import Estadistica.business.Estadistica.SolicitudEliminacion;
+import Estadistica.business.Solicitudes.SolicitudEliminacion;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -13,7 +13,9 @@ public interface RepositorioSolicitudesEliminacion extends JpaRepository<Solicit
   @Query("SELECT s FROM SolicitudEliminacion s WHERE s.id <> :id")
   List<SolicitudEliminacion> findAllWhereIdNot(@Param("id") int estado);
 
-  Collection<Object> findBySpamTrue();
-  // Cuenta cuántas solicitudes tienen spam = true
-  long countBySpamTrue();
+  // Todas las solicitudes con estado SPAM
+  List<SolicitudEliminacion> findByEstado(String estado);
+
+  // Cantidad de solicitudes con estado SPAM
+  long countByEstado(String estado);
 }

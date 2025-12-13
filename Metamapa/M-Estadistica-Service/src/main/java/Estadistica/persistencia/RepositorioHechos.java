@@ -1,5 +1,5 @@
 package Estadistica.persistencia;
-import Estadistica.business.Estadistica.Hecho;
+import Estadistica.business.Hechos.Hecho;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,4 +13,5 @@ public interface RepositorioHechos extends JpaRepository<Hecho, BigInteger>, Rep
 
   List<Hecho> findByCategoriaIgnoreCase(String categoria);
   List<Hecho> findByCategoria(String categoria);
+  List<String> obtenerCategorias();
 }

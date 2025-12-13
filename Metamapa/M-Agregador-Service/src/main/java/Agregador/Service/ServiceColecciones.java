@@ -37,11 +37,35 @@ public class ServiceColecciones {
 
     return hechos;
   }
-  public List<Coleccion> getColecciones() {
+/*  public List<Coleccion> getColecciones() {
     return repositorioColecciones.findAll();
-  }
+  }*/
   public Optional<Coleccion> getColeccion(UUID id) {
     return repositorioColecciones.getColeccion(id);
+  }
+
+  public List<Coleccion> getColecciones(String query) {
+
+    List<Coleccion> todas = repositorioColecciones.findAll();
+
+    if (query == null) {
+      return todas;
+    }
+
+    String q = query.trim().toLowerCase();
+
+    if (q.isEmpty()) {
+      return todas;
+    }
+
+    return todas.stream()
+            .filter(c -> {
+              if (c.getTitulo() == null) return false;
+
+              String titulo = c.getTitulo().trim().toLowerCase();
+              return titulo.equals(q);
+            })
+            .toList(); // Java 21 OK
   }
 
   public ColeccionDTO crearColeccion(ColeccionDTO coleccionDTO) {

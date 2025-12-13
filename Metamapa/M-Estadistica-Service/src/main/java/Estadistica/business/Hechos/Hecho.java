@@ -1,6 +1,11 @@
-package Estadistica.business.Estadistica;
+package Estadistica.business.Hechos;
+
+import Estadistica.business.Hechos.Multimedia;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -46,8 +51,8 @@ public class Hecho {
     @Column(name = "fecha_modificacion", columnDefinition = "datetime2")
     private LocalDateTime fechaModificacion;
 
-    @Column(name = "perfil_id")
-    private Integer perfilId;
+//    @Column(name = "perfil_usuario_id")
+//    private Integer perfilId;
 
     @Column(name = "anonimo")
     private Boolean anonimo;
@@ -55,7 +60,9 @@ public class Hecho {
     @Column(name = "eliminado")
     private Boolean eliminado;
 
-    private ArrayList<Multimedia> multimedia;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "hecho_id")
+    private List<Multimedia> multimedia = new ArrayList<>();
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(
@@ -67,8 +74,6 @@ public class Hecho {
     @Column(name = "valor", length = 1000)
     private Map<String, String> metadata;
 
-    @Column(name = "id_fuente")
-    private Integer idFuente;
 
     public Hecho(
             BigInteger id,
@@ -95,11 +100,18 @@ public class Hecho {
         this.fechaHecho = fechaHecho;
         this.fechaCarga = fechaCarga;
         this.fechaModificacion = fechaModificacion;
-        this.perfilId = perfilId;
+//        this.perfilId = perfilId;
         this.anonimo = anonimo;
         this.eliminado = eliminado;
         this.multimedia = multimedia;
         this.metadata = metadata;
-        this.idFuente = idFuente;
+       // this.idFuente = idFuente;
     }
+
+    private static final BigInteger BASE = BigInteger.TEN.pow(12); // 10^12
+
+    public Integer getIdFuente() {
+        return this.id.divide(BASE).intValueExact();
+    }
+
 }

@@ -1,6 +1,10 @@
-package Estadistica.business.Estadistica;
+package Estadistica.business.Hechos;
+
+import Estadistica.business.Hechos.Hecho;
+import Estadistica.business.Hechos.TipoMultimedia;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Getter @Setter
