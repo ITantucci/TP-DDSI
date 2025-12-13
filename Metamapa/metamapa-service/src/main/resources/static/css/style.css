@@ -1,14 +1,50 @@
 body { font-family: Arial, sans-serif; margin: 0; background: #f9f9f9;  overflow-x: hidden; }
-header { background: #0d6efd; color: #fff; padding: .5rem 1rem; }
-nav button {
-    margin-right: .5rem; background: #fff; border: none; padding: .5rem 1rem;
-    border-radius: .25rem; cursor: pointer;
+
+
+.navbar-brand {
+    font-size: 2.5rem;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    font-weight: 700;
+    color: whitesmoke;
+    display: flex;
+    align-items: center;
+    margin-left: 3rem;
 }
-nav button:hover { background: #e0e0e0; }
+
+.navbar {
+    background-color: #0f2a44 !important;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+}
+
+/* ====== BOTONES ====== */
+button, .btn{
+    border-radius: 10px;
+    font-weight: 600;
+}
+.btn-primary {
+    background-color: #0f2a44;
+    border-color: #0f2a44;
+}
+
+/* Botones dentro del navbar (Colecciones / Iniciar sesión) */
+.navbar .btn,
+.navbar button{
+    border-radius: 10px;
+    padding: .55rem .95rem;
+    border: 3px solid rgba(255,255,255,.35);
+}
+/* Hover suave */
+.navbar .btn:hover,
+.navbar button:hover{
+    transform: translateY(-1px);
+    transition: .15s ease;
+}
+
 #contenido { padding: 1rem; }
 #map { height: 70vh; margin-top: 1rem; }
-footer { text-align: center; padding: 1rem; background: #eee; }
-.error { color: red; }
+
+
 .charts {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -21,6 +57,7 @@ canvas {
     border-radius: 8px;
     padding: 10px;
 }
+
 
 .mapa {
     width: 100%;
@@ -80,4 +117,67 @@ canvas {
     );                           /* Degradado animado */
     background-size: 400% 100%;  /* Para la animación */
     animation: skeleton-loading 1.2s linear infinite; /* Animación continua */
+}
+
+/* ====== BASE GLOBAL (TIPOGRAFÍA + FONDO) ====== */
+:root{
+    --bg: #f5f7fa;
+    --surface: #ffffff;
+    --text: #111827;
+    --muted: #6b7280;
+    --border: rgba(17,24,39,.12);
+    --shadow: 0 10px 30px rgba(0,0,0,.08);
+    --radius: 12px;
+    --primary: #0f2a44;   /* color del navbar */
+    --accent: #1D487A;    /* botones principales */
+}
+
+body{
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.45;
+    color: var(--text);
+    background: var(--bg);
+}
+
+
+/* ====== CONTENEDOR PRINCIPAL ====== */
+#contenido{
+    padding: 2.2rem 2.7rem; /* aire general */
+}
+
+/* Títulos grandes sin “Arial 12” */
+h1, h2{
+    font-weight: 750;
+    letter-spacing: -.02em;
+}
+h1{ font-size: 2rem; margin: .2rem 0 1rem; }
+h2{ font-size: 1.4rem; margin: 1.2rem 0 .8rem; }
+
+/* ====== BLOQUES “CARD”  */
+.card-ui{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 1rem;
+}
+
+/* ====== ALERTAS / ERRORES ====== */
+.error{
+    color: #b91c1c;
+    font-weight: 600;
+}
+
+/* Si tu error está dentro de un bloque rosado tipo alert de Bootstrap */
+.alert{
+    border-radius: var(--radius);
+    border: 1px solid rgba(185,28,28,.25);
+}
+
+/* ====== FOOTER ====== */
+footer{
+    background: transparent;
+    color: var(--muted);
+    padding: 2rem 1rem;
 }
