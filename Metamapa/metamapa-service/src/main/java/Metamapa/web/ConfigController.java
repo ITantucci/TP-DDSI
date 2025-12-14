@@ -17,6 +17,15 @@ public class ConfigController {
   @Value("${M.FuenteDinamica.Service.url}")
   private String fuenteDinamicaUrl;
 
+  @Value("${M.FuenteEstatica.Service.url}")
+  private String fuenteEstaticaUrl;
+
+  @Value("${M.FuenteDemo.Service.url}")
+  private String fuenteDemoUrl;
+
+  @Value("${M.FuenteMetamapa.Service.url}")
+  private String fuenteMetamapaUrl;
+
   @Value("${M.Agregador.Service.url}")
   private String agregadorUrl;
 
@@ -37,6 +46,9 @@ public class ConfigController {
     return """
             window.METAMAPA = {
                 API_FUENTE_DINAMICA: '%s/api-fuentesDeDatos',
+                API_FUENTE_ESTATICA: '%s/api-fuentesDeDatos',
+                API_FUENTE_DEMO: '%s/api-fuentesDeDatos',
+                API_FUENTE_METAMAPA: '%s/api-fuentesDeDatos',
                 API_AGREGADOR: '%s/api-agregador',
                 API_COLECCIONES: '%s/api-colecciones',
                 API_SOLICITUDES: '%s/api-solicitudes',
@@ -44,6 +56,6 @@ public class ConfigController {
                 API_USUARIOS: '%s/usuarios'
             };
             console.log("🌐 Configuración MetaMapa cargada:", window.METAMAPA);
-        """.formatted(fuenteDinamicaUrl, agregadorUrl, coleccionesUrl, solicitudesUrl, estadisticaUrl, usuariosUrl);
+        """.formatted(fuenteDinamicaUrl,fuenteEstaticaUrl, fuenteDemoUrl, fuenteMetamapaUrl, agregadorUrl, coleccionesUrl, solicitudesUrl, estadisticaUrl, usuariosUrl);
   }
 }

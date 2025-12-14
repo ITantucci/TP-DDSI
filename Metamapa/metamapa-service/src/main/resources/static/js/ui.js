@@ -304,6 +304,137 @@ async function mostrarColeccionesView() {
 
 async function mostrarFuentesView() {
     cont.innerHTML = "<p>Cargando fuentes...</p>";
+    const [
+        estaticas,
+        dinamicas,
+        demo,
+        metamapa
+    ] = await Promise.all([
+        obtenerFuentesEstaticas(),
+        obtenerFuentesDinamicas(),
+        obtenerFuentesDemo(),
+        obtenerFuentesMetamapa()
+    ]);
+    let html = "";
+    if (estaticas.disponible) {
+        html += `
+            <h3>Fuentes Estáticas (${estaticas.fuentes.length})</h3>
+            ${renderFuentesEstaticas(estaticas.fuentes)}
+            <button class="btn btn-success mt-2"
+                    onclick="crearFuenteEstaticaView()">
+                + Crear fuente estática
+            </button>
+        `;
+    }
+    if (dinamicas.disponible) {
+        html += `
+            <h3 class="mt-4">Fuentes Dinámicas (${dinamicas.fuentes.length})</h3>
+            ${renderFuentesDinamicas(dinamicas.fuentes)}
+            <button class="btn btn-success mt-2"
+                    onclick="crearFuenteDinamicaView()">
+                + Crear fuente dinámica
+            </button>
+        `;
+    }
+    if (demo.disponible) {
+        html += `
+            <h3 class="mt-4">Fuentes Demo (${demo.fuentes.length})</h3>
+            ${renderFuentesDemo(demo.fuentes)}
+        `;
+    }
+    if (metamapa.disponible) {
+        html += `
+            <h3 class="mt-4">Fuentes Metamapa (${metamapa.fuentes.length})</h3>
+            ${renderFuentesMetamapa(metamapa.fuentes)}
+        `;
+    }
+    cont.innerHTML = html || `<p class="text-muted">No hay servicios disponibles</p>`;
+}
+
+async function crearFuenteEstaticaView() {
+    const nombre = prompt("Ingrese el nombre de la fuente estática:");
+    if (!nombre) return;
+    const fuente = await crearFuenteEstatica(nombre);
+    if (!fuente) {
+        alert("No se pudo crear la fuente estática");
+        return;
+    }
+    mostrarModal("Fuente estática creada correctamente", "Éxito", true);
+}
+
+async function crearFuenteDinamicaView() {
+    const nombre = prompt("Ingrese el nombre de la fuente dinámica:");
+    if (!nombre) return;
+    const fuente = await crearFuenteDinamica(nombre);
+    if (!fuente) {
+        alert("No se pudo crear la fuente dinámica");
+        return;
+    }
+    mostrarModal("Fuente dinámica creada correctamente", "Éxito", true);
+}
+
+function renderFuentesEstaticas(fuentes) {
+    if (!fuentes.length) {
+        return `<p class="text-muted">No hay fuentes estáticas disponibles</p>`;
+    }
+    const items = fuentes.map(f => `
+        <li class="list-group-item d-flex justify-content-between align-items-start">
+            <div>
+                <strong>Nombre: ${f.nombre}</strong><br>
+                <span>ID: ${f.fuenteId}</span><br>
+            </div>
+            <button class="btn btn-sm btn-primary"
+                    onclick="cargarCSV(${f.fuenteId})">
+                Cargar CSV
+            </button>
+        </li>
+    `).join("");
+    return `<ul class="list-group">${items}</ul>`;
+}
+
+function renderFuentesDinamicas(fuentes) {
+    if (!fuentes.length) {
+        return `<p class="text-muted">No hay fuentes dinámicas disponibles</p>`;
+    }
+    const items = fuentes.map(f => `
+        <li class="list-group-item">
+            <strong>Nombre: ${f.nombre}</strong><br>
+            <span>ID: ${f.id}</span><br>
+        </li>
+    `).join("");
+    return `<ul class="list-group">${items}</ul>`;
+}
+
+function renderFuentesDemo(fuentes) {
+    if (!fuentes.length) {
+        return `<p class="text-muted">No hay fuentes demo disponibles</p>`;
+    }
+    return `<ul class="list-group">
+        ${fuentes.map(f => `
+            <li class="list-group-item">
+                <strong>Nombre: ${f.nombre}</strong><br>
+                <span>ID: ${f.id}</span><br>
+            </li>
+        `).join("")}
+    </ul>`;
+}
+
+function renderFuentesMetamapa(fuentes) {
+    if (!fuentes.length) {
+        return `<p class="text-muted">No hay fuentes Metamapa disponibles</p>`;
+    }
+    return `<ul class="list-group">
+        ${fuentes.map(f => `
+            <li class="list-group-item">
+                <strong>Nombre: ${f.nombre}</strong><br>
+                <span>ID: ${f.id}</span><br>
+            </li>
+        `).join("")}
+    </ul>`;
+}
+
+/*async function mostrarFuentesView() {
+    cont.innerHTML = "<p>Cargando fuentes...</p>";
     const fuentes = await obtenerFuentes();
     const lista = Object.entries(fuentes || {})
         .map(([url, tipo]) => `
@@ -324,7 +455,7 @@ async function mostrarFuentesView() {
         <h3>Fuentes registradas (${Object.keys(fuentes || {}).length})</h3>
         <ul class="list-group">${lista}</ul>
     `;
-}
+}*/
 
 // Mostrar detalle
 function mostrarDetalleHecho(h) {

@@ -4,6 +4,85 @@ async function obtenerFuentes() {
     return resp.ok ? resp.json() : [];
 }
 
+async function obtenerFuentesDinamicas() {
+    const resp = await fetchSeguro(`${window.METAMAPA.API_FUENTE_DINAMICA}/`);
+    if (!resp)
+        return { disponible: false, fuentes: [] };
+    if (!resp.ok)
+        return { disponible: true, fuentes: [] };
+    return {
+        disponible: true,
+        fuentes: await resp.json()
+    };
+}
+
+async function obtenerFuentesEstaticas() {
+    const resp = await fetchSeguro(`${window.METAMAPA.API_FUENTE_ESTATICA}/`);
+    if (!resp)
+        return { disponible: false, fuentes: [] };
+    if (!resp.ok)
+        return { disponible: true, fuentes: [] };
+    return {
+        disponible: true,
+        fuentes: await resp.json()
+    };
+}
+
+async function obtenerFuentesDemo() {
+    const resp = await fetchSeguro(`${window.METAMAPA.API_FUENTE_DEMO}/`);
+    if (!resp)
+        return { disponible: false, fuentes: [] };
+    if (!resp.ok)
+        return { disponible: true, fuentes: [] };
+    return {
+        disponible: true,
+        fuentes: await resp.json()
+    }
+}
+
+async function obtenerFuentesMetamapa() {
+    const resp = await fetchSeguro(`${window.METAMAPA.API_FUENTE_METAMAPA}/`);
+    if (!resp)
+        return { disponible: false, fuentes: [] };
+    if (!resp.ok)
+        return { disponible: true, fuentes: [] };
+    return {
+        disponible: true,
+        fuentes: await resp.json()
+    }
+}
+
+async function fetchSeguro(url) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 2000);
+    try {
+        return await fetch(url, { signal: controller.signal });
+    } catch {
+        console.warn("Servicio no disponible:", url);
+        return null;
+    } finally {
+        clearTimeout(timeout);
+    }
+}
+
+async function crearFuenteDinamica(nombre) {
+    const resp = await fetch(`${window.METAMAPA.API_FUENTE_DINAMICA}/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombre })
+    });
+    return resp.ok ? await resp.json() : null;
+}
+
+async function crearFuenteEstatica(nombre) {
+    const resp = await fetch(`${window.METAMAPA.API_FUENTE_ESTATICA}/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({nombre })
+    });
+    return resp.ok ? await resp.json() : null;
+}
+
 // Registrar una nueva fuente de datos en el agregador
 async function registrarFuente(url) {
     const resp = await fetch(`${window.METAMAPA.API_AGREGADOR}/fuenteDeDatos`, {
@@ -14,24 +93,33 @@ async function registrarFuente(url) {
     return resp.ok;
 }
 
-async function cargarCSV(idFuenteDeDatos, archivo) {
-    const formData = new FormData();
-    formData.append("file", archivo);
-    try {
-        const response = await fetch(
-            `http://localhost:8080/${idFuenteDeDatos}/csv`,
-            {
-                method: "POST",
-                body: formData
+async function cargarCSV(idFuenteDeDatos) {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".csv";
+    input.onchange = async () => {
+        const file = input.files[0];
+        if (!file) return;
+        const formData = new FormData();
+        formData.append("file", file);
+        try {
+            const resp = await fetch(
+                `${window.METAMAPA.API_FUENTE_ESTATICA}/${idFuenteDeDatos}/csv`,
+                {
+                    method: "POST",
+                    body: formData
+                }
+            );
+            if (!resp.ok) {
+                const error = await resp.text();
+                throw new Error(error);
             }
-        );
-        const texto = await response.text();
-        if (!response.ok) {
-            throw new Error(texto);
+            const mensaje = await resp.text();
+            mostrarModal(mensaje, "CSV cargado en fuente estática");
+        } catch (error) {
+            console.error("Error cargando CSV:", error);
+            alert("Error al cargar el CSV");
         }
-        alert(texto);
-    } catch (error) {
-        console.error(error);
-        alert("Error al cargar CSV");
-    }
+    };
+    input.click();
 }

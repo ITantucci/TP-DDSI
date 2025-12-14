@@ -2,6 +2,7 @@ package FuenteMetamapa.business.FuentesDeDatos;
 import FuenteMetamapa.DTO.SolicitudEliminacionDTO;
 import FuenteMetamapa.business.Hechos.Hecho;
 import FuenteMetamapa.business.Parsers.JSONHechoParser;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -19,6 +20,7 @@ public class FuenteMetamapa {
   public String nombre;
   public ArrayList<Hecho> hechos;
   private LocalDateTime fechaUltimaConsulta;
+  @JsonIgnore
   final private RestTemplate restTemplate;
   static private Integer contadorID = 4000000;
 
