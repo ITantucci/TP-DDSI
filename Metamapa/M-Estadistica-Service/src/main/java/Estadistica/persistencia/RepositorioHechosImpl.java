@@ -1,6 +1,6 @@
 package Estadistica.persistencia;
 
-import Estadistica.business.Colecciones.Criterio;
+import Estadistica.business.Colecciones.*;
 import Estadistica.business.Hechos.Hecho;
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.*;
@@ -18,37 +18,45 @@ public class RepositorioHechosImpl implements RepositorioHechosCustom {
     CriteriaQuery<Hecho> query = cb.createQuery(Hecho.class);
     Root<Hecho> root = query.from(Hecho.class);
     List<Predicate> predicates = new ArrayList<>();
+    // Filtrar solo no eliminados
+    predicates.add(cb.isFalse(root.get("eliminado")));
+    // Agrego los predicados SQL
     criterios.forEach(c -> predicates.add(c.toPredicate(root, cb)));
     query.select(root)
-        .where(cb.and(predicates.toArray(new Predicate[0])));
-
+            .where(cb.and(predicates.toArray(new Predicate[0])));
     List<Hecho> filtrados = em.createQuery(query).getResultList();
-    // aplicar criterios no SQL (como CriterioFuenteDeDatos) en memoria
+    // AGRUPAR CRITERIOS NO-SQL
+    List<CriterioFuenteDeDatos> criteriosFuente = new ArrayList<>();
+    List<Criterio> otrosNoSQL = new ArrayList<>();
+
     for (Criterio c : criterios) {
+      if (c instanceof CriterioFuenteDeDatos f)
+        criteriosFuente.add(f);
+      else
+        otrosNoSQL.add(c);
+    }
+
+    for (Criterio c : otrosNoSQL) {
       filtrados = filtrados.stream()
-              .filter(c::cumple)
+              .filter(c::cumple)        // AND
+              .toList();
+    }
+
+    if (!criteriosFuente.isEmpty()) {
+      filtrados = filtrados.stream()
+              .filter(h -> {
+                for (CriterioFuenteDeDatos cf : criteriosFuente) {
+                  if (cf.cumple(h)) {
+                    return true;
+                  }
+                }
+                return false;
+              })
               .toList();
     }
     return filtrados;
   }
 
-  @Override
-  public long contarHechosPorHora(String horaHH) {
-    int hora = Integer.parseInt(horaHH);
-
-    CriteriaBuilder cb = em.getCriteriaBuilder();
-    CriteriaQuery<Long> query = cb.createQuery(Long.class);
-    Root<Hecho> root = query.from(Hecho.class);
-
-    // EXTRAER LA HORA DEL LocalDateTime
-    Expression<Integer> horaExpr =
-            cb.function("hour", Integer.class, root.get("fecha"));
-
-    query.select(cb.count(root))
-            .where(cb.equal(horaExpr, hora));
-
-    return em.createQuery(query).getSingleResult();
-  }
 
 //  @Override
 //  public Optional<String> obtenerHoraConMasHechos(String categoria) {

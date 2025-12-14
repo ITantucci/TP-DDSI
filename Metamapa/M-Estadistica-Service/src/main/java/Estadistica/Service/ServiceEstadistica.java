@@ -1,6 +1,4 @@
 package Estadistica.Service;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,24 +7,23 @@ import org.springframework.web.client.RestTemplate;
 import Estadistica.persistencia.*;
 import Estadistica.business.Colecciones.Coleccion;
 import Estadistica.business.Estadistica.*;
+import Estadistica.business.Hechos.Hecho;
 
 @Service
 public class ServiceEstadistica {
     private final String baseUrl;
-    private final GeocodingService geocodingService;
     private final RepositorioHechos repositorioHechos;
     private final RepositorioSolicitudesEliminacion repositorioSolicitudesEliminacion;
     private final RepositorioColecciones repositorioColecciones;
     private final RepositorioEstadisticas repositorioEstadisticas;
 
     public ServiceEstadistica(RestTemplate restTemplate,
-                              @Value("${M.Agregador.Service.url}") String baseUrl, GeocodingService geocodingService,
+                              @Value("${M.Agregador.Service.url}") String baseUrl,
                               RepositorioHechos repositorioHechos,
                               RepositorioSolicitudesEliminacion repositorioSolicitudesEliminacion,
                               RepositorioColecciones repositorioColecciones,
                               RepositorioEstadisticas repositorioEstadisticas) {
         this.baseUrl = baseUrl;
-        this.geocodingService = geocodingService;
         this.repositorioHechos = repositorioHechos;
         this.repositorioSolicitudesEliminacion = repositorioSolicitudesEliminacion;
         this.repositorioColecciones = repositorioColecciones;
@@ -35,17 +32,13 @@ public class ServiceEstadistica {
 
     public void actualizar() {
         CantidadDeSpam spamStats = estadisticaSpam();
-
         CategoriaConMasHechos topCategoriaStats = estadisticaCategoriaMasReportada();
-
         repositorioEstadisticas.save(spamStats);
         repositorioEstadisticas.save(topCategoriaStats);
-
         List<String> categorias = repositorioHechos.obtenerCategorias();
         for (String categoria : categorias) {
         HoraConMasHechosPorCategoria horaStats = estadisticaHoraCategoria(categoria);
         ProvinciaConMasHechosPorCategoria provinciaCategoriaStats = estadisticaProvinciaCategoria(categoria);
-
         repositorioEstadisticas.save(horaStats);
         repositorioEstadisticas.save(provinciaCategoriaStats);
         }
@@ -56,10 +49,6 @@ public class ServiceEstadistica {
         }
     }
 
-/*    public void actualizarDashboards() {
-
-
-    }*/
 
     public String exportarCsv() {
         StringBuilder csv = new StringBuilder();
@@ -113,7 +102,7 @@ public class ServiceEstadistica {
 
     //¿Cuántas solicitudes de eliminación son spam?
     public CantidadDeSpam estadisticaSpam() {
-        long spam = repositorioSolicitudesEliminacion.countByEstado("spam");
+        long spam = repositorioSolicitudesEliminacion.countByEstado("SPAM");
         return new CantidadDeSpam(spam);
     }
 
@@ -123,9 +112,6 @@ public class ServiceEstadistica {
         return new HoraConMasHechosPorCategoria(hora,categoria);
     }
 
-    public String getHora(LocalDateTime fechayhora) {
-        return fechayhora.format(DateTimeFormatter.ofPattern("HH"));
-    }
 
     //¿En qué provincia se presenta la mayor cantidad de hechos de una cierta categoría?
     public ProvinciaConMasHechosPorCategoria estadisticaProvinciaCategoria(String categoria) {
@@ -135,19 +121,18 @@ public class ServiceEstadistica {
 
     //De una colección, ¿en qué provincia se agrupan la mayor cantidad de hechos reportados?
     public ProvinciaConMasHechosPorColeccion estadisticaColeccionProvincia(UUID idColeccion) {
+        System.out.println("criterios" + repositorioColecciones.getColeccion(idColeccion).get().getCriterios().toString());
+        System.out.println("hechos filtrados" + repositorioHechos.filtrarPorCriterios(repositorioColecciones.getColeccion(idColeccion).get().getCriterios()));
         Coleccion coleccion = repositorioColecciones.findById(idColeccion).orElse(null);
+        List<Hecho> hechos = repositorioHechos.filtrarPorCriterios(coleccion.getCriterios());
         String provincia = repositorioHechos.filtrarPorCriterios(coleccion.getCriterios())
                 .stream().filter(h -> (h.getProvincia() != null))
-                .collect(Collectors.groupingBy(h -> getProvincia(h.getLatitud(), h.getLongitud()), Collectors.counting()))
+                .collect(Collectors.groupingBy(Hecho::getProvincia, Collectors.counting()))
                 .entrySet().stream()
                 .max(Map.Entry.comparingByValue())
                 .map(Map.Entry::getKey)
                 .orElse("N/A");
         return new ProvinciaConMasHechosPorColeccion(provincia,coleccion);
-    }
-
-    public String getProvincia(Float latitud, Float longitud) {
-        return geocodingService.obtenerProvincia(latitud, longitud);
     }
 
     //¿Cuál es la categoría con mayor cantidad de hechos reportados?

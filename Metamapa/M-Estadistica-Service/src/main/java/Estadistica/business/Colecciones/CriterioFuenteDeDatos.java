@@ -21,6 +21,9 @@ public class CriterioFuenteDeDatos extends Criterio {
   public boolean cumple(Hecho hechoAValidar){
     //BigInteger idFuenteDeDatosAValidar = hechoAValidar.getId();
     //return this.getIdFuenteDeDatos().equals(idFuenteDeDatosAValidar);
+    System.out.println("fuente del hecho " + hechoAValidar.getIdFuente());
+    System.out.println("fuente a validar" + this.idFuenteDeDatos);
+    System.out.println("inclusion" + this.inclusion);
     return inclusion == Objects.equals(hechoAValidar.getIdFuente(), this.idFuenteDeDatos);
   }
 

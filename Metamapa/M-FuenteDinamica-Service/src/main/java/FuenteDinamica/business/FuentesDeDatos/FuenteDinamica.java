@@ -6,22 +6,27 @@ import java.util.*;
 import lombok.*;
 import jakarta.persistence.*;
 
+@NoArgsConstructor
 @JsonTypeName("FUENTEDINAMICA")
 @Entity
 @Table(name = "fuente_dinamica")
 @Getter @Setter
 public class FuenteDinamica {
-  //static private Integer contadorID = 1000000;
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "hecho_seq")
+  @SequenceGenerator(
+          name = "hecho_seq",
+          sequenceName = "hecho_id_seq",
+          initialValue = 10001,
+          allocationSize = 1
+  )
   private Integer fuenteId;
   private String nombre;
   @OneToMany(mappedBy = "fuente", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Hecho> hechos = new ArrayList<>();
 
-  public FuenteDinamica() {
-    this.nombre = "Fuente Dinamica";
-  }
+
+  public FuenteDinamica(String nombre) {this.nombre = nombre; }
 
   public void agregarHecho(
           String titulo,
@@ -48,7 +53,7 @@ public class FuenteDinamica {
     this.hechos.add(h);
     if (multimedia != null) {
       for (Multimedia m : multimedia) {
-        m.setHecho(h); // importante para persistir la relación
+        m.setHecho(h);
       }
     }
   }

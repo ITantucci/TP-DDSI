@@ -1,11 +1,6 @@
 package Estadistica.business.Hechos;
-
-import Estadistica.business.Hechos.Multimedia;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+import lombok.*;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -51,7 +46,6 @@ public class Hecho {
     @Column(name = "fecha_modificacion", columnDefinition = "datetime2")
     private LocalDateTime fechaModificacion;
 
-
     @Column(name = "anonimo")
     private Boolean anonimo;
 
@@ -75,11 +69,9 @@ public class Hecho {
     @Column(name = "provincia")
     private String provincia;
 
-
-    private static final BigInteger BASE = BigInteger.TEN.pow(12); // 10^12
+    private static final BigInteger BASE = BigInteger.TEN.pow(9);
 
     public Integer getIdFuente() {
         return this.id.divide(BASE).intValueExact();
     }
-
 }

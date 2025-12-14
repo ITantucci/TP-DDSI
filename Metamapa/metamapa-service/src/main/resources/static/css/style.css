@@ -81,3 +81,23 @@ canvas {
     background-size: 400% 100%;  /* Para la animación */
     animation: skeleton-loading 1.2s linear infinite; /* Animación continua */
 }
+
+/* ===== Loading / Spinner ===== */
+.loading {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}
+
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 3px solid rgba(0,0,0,.15);
+    border-top-color: rgba(0,0,0,.6);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+}

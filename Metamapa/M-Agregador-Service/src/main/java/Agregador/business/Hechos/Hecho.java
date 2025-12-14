@@ -46,7 +46,7 @@ public class Hecho {
   private Map<String, String> metadata;
   private String provincia;
   public Hecho() {}
-
+  //private GeocodingService geocodingService = new GeocodingService();
   public Hecho(
           String titulo,
           String descripcion,
@@ -56,6 +56,7 @@ public class Hecho {
           LocalDateTime fechaHecho,
           Usuario perfil,
           Integer fuenteId,
+          String provincia,
           Integer hechoId,
           Boolean anonimo,
           ArrayList<Multimedia> multimedia) {
@@ -64,7 +65,7 @@ public class Hecho {
     this.categoria = categoria;
     this.latitud = latitud;
     this.longitud = longitud;
-    this.provincia = new GeocodingService().obtenerProvincia(latitud, longitud);
+    this.provincia = provincia;
     this.fechaHecho = fechaHecho;
     this.fechaCarga = LocalDateTime.now();
     this.fechaModificacion = LocalDateTime.now();
@@ -79,7 +80,7 @@ public class Hecho {
     // prefijos 1000000/2000000/3000000 para tipo de fuente → ya quedan dentro de fuenteId
   }
 
-  private static final BigInteger BASE = BigInteger.TEN.pow(12); // 10^12
+  private static final BigInteger BASE = BigInteger.TEN.pow(9);
 
   public Integer getIdFuente() {
     return this.id.divide(BASE).intValueExact();

@@ -1,46 +1,61 @@
 package Agregador.Service;
 
+import jakarta.annotation.PostConstruct;
+import org.geotools.data.shapefile.ShapefileDataStore;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.index.strtree.STRtree;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate; // O WebClient/HttpClient
-import com.fasterxml.jackson.databind.*;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 @Service
 public class GeocodingService {
+    private final GeometryFactory gf = new GeometryFactory();
+    private final STRtree index = new STRtree();
 
-    private final RestTemplate restTemplate = new RestTemplate();
-    private final ObjectMapper mapper = new ObjectMapper();
-
-    // API pública de Nominatim (OpenStreetMap)
-    private static final String NOMINATIM_URL =
-            "https://nominatim.openstreetmap.org/reverse?format=json&lat={lat}&lon={lon}&zoom=10&addressdetails=1";
-
-    public String obtenerProvincia(double latitud, double longitud) {
-        try {
-
-            String resultJson = restTemplate.getForObject(
-                    NOMINATIM_URL,
-                    String.class,
-                    latitud,
-                    longitud
-            );
-
-            JsonNode root = mapper.readTree(resultJson);
-
-            JsonNode address = root.path("address");
-
-            if (address.has("state")) {
-                return address.get("state").asText();
-            }
-
-            if (address.has("state_district")) {
-                return address.get("state_district").asText();
-            }
-
-            return "Provincia Desconocida";
-
-        } catch (Exception e) {
-            System.err.println("Error en la geocodificación inversa: " + e.getMessage());
-            return "Error de GeoAPI";
+    @PostConstruct
+    public void init() throws Exception {
+        var shpUrl = getClass().getResource("/data/provinciaPolygon.shp");
+        System.out.println(shpUrl);
+        if (shpUrl == null) {
+            throw new IllegalStateException("No se encontró el archivo provinciaPolygon.shp en resources/data/");
         }
+        var store = new ShapefileDataStore(shpUrl);
+        store.setCharset(StandardCharsets.UTF_8);
+        var source = store.getFeatureSource();
+        try (var features = source.getFeatures().features()) {
+            while (features.hasNext()) {
+                var f = features.next();
+                Geometry geom = (Geometry) f.getDefaultGeometry();
+                String nombreProvincia = String.valueOf(f.getAttribute("nam"));
+                index.insert(geom.getEnvelopeInternal(), new Entry(nombreProvincia, geom));
+            }
+        }
+        index.build();
+        //var schema = source.getSchema();
+        //System.out.println("Campos del SHP:");
+        //schema.getAttributeDescriptors()
+        //        .forEach(d -> System.out.println(" - " + d.getLocalName()));
+    }
+
+    public String obtenerProvincia(double lat, double lon) {
+        Point p = gf.createPoint(new Coordinate(lon, lat)); // x=lon, y=lat
+        @SuppressWarnings("unchecked")
+        List<Entry> candidates = index.query(p.getEnvelopeInternal());
+        for (Entry e : candidates) {
+            if (e.geom.covers(p)) {
+                return e.nombre;
+            }
+        }
+        return "Provincia Desconocida";
+    }
+
+    private static class Entry {
+        final String nombre;
+        final Geometry geom;
+        Entry(String nombre, Geometry geom) { this.nombre = nombre; this.geom = geom; }
     }
 }

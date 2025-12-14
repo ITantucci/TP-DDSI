@@ -13,7 +13,6 @@ public class CantidadDeSpam extends Estadistica {
   }
 
   public CantidadDeSpam(long cantidadDeSpam) {
-
     super();
     this.cantidadSolicitudesSpam = cantidadDeSpam;
   }

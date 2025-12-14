@@ -10,11 +10,21 @@ const vistas = {
 };
 
 async function mostrar(seccion) {
-    cont.innerHTML = "";
+    cont.innerHTML = `
+    <div class="loading">
+      <span class="spinner"></span>
+      <span>Cargando ${seccion}...</span>
+    </div>
+  `;
     const fn = vistas[seccion];
-    if (fn) await fn();
-    sessionStorage.setItem("vistaActual", seccion);
-    verificarSesionYActualizarUI(); //Agrego esta funcion aca creo que va esta en vez de la otra
+    try {
+        if (fn) await fn();
+        sessionStorage.setItem("vistaActual", seccion);
+        verificarSesionYActualizarUI();
+    } catch (e) {
+        cont.innerHTML = `<div class="alert alert-danger">Error al cargar la vista: ${e?.message || e}</div>`;
+        console.error(e);
+    } //Agrego esta funcion aca creo que va esta en vez de la otra
 //    if (window.actualizarVisibilidadPorRoles) {
 //        // Usamos los roles que ya tenga guardados auth.js en su variable global
 //        window.actualizarVisibilidadPorRoles();
@@ -102,52 +112,118 @@ async function mostrarEstadisticasView() {
             </div>
         </div>
     `;
-    // 🔹 Llamados iniciales (estadísticas generales)
-    const categoriaMasReportada = await obtenerCategoriaMasReportada();
-    document.getElementById("categoriaMasReportada").textContent = categoriaMasReportada || "No hay datos";
-    document.getElementById("cantidadSpam").textContent = await obtenerCantidadSolicitudesSpam();
+    // Referencias
+    const pCategoria = document.getElementById("categoriaMasReportada");
+    const pSpam = document.getElementById("cantidadSpam");
+
+    // ✅ Loading inicial (estadísticas generales)
+    setLoadingUI({ container: pCategoria, message: "Cargando categoría más reportada..." });
+    setLoadingUI({ container: pSpam, message: "Cargando cantidad de spam..." });
+
+    try {
+        const categoriaMasReportada = await obtenerCategoriaMasReportada();
+        setText(pCategoria, categoriaMasReportada || "No hay datos");
+    } catch (e) {
+        setText(pCategoria, "Error al cargar");
+    }
+
+    try {
+        const spam = await obtenerCantidadSolicitudesSpam();
+        setText(pSpam, String(spam));
+    } catch (e) {
+        setText(pSpam, "Error al cargar");
+    }
+
     // 🔹 Eventos dinámicos
-    document.getElementById("btnBuscarProvinciaColeccion").addEventListener("click", async () => {
+    document.getElementById("btnBuscarProvinciaColeccion").addEventListener("click", async (e) => {
+        const btn = e.currentTarget;
         const uuid = document.getElementById("coleccionInput").value.trim();
         if (!uuid) return alert("Ingrese un UUID de colección");
-        const provincia = await obtenerProvinciaMasReportadaColeccion(uuid);
-        document.getElementById("provinciaColeccion").textContent = provincia || "No hay datos disponibles";
+
+        const p = document.getElementById("provinciaColeccion");
+        setLoadingUI({ container: p, message: "Buscando...", button: btn });
+
+        try {
+            const provincia = await obtenerProvinciaMasReportadaColeccion(uuid);
+            setText(p, provincia || "No hay datos disponibles");
+        } catch (err) {
+            setText(p, "Error al buscar");
+        } finally {
+            setDoneUI(btn);
+        }
     });
-    document.getElementById("btnBuscarProvinciaCat").addEventListener("click", async () => {
+
+    document.getElementById("btnBuscarProvinciaCat").addEventListener("click", async (e) => {
+        const btn = e.currentTarget;
         const cat = document.getElementById("categoriaInput").value.trim();
         if (!cat) return alert("Ingrese una categoría");
-        const prov = await obtenerProvinciaMasReportadaPorCategoria(cat);
-        document.getElementById("provinciaCategoria").textContent = prov || "No hay datos disponibles";
+
+        const p = document.getElementById("provinciaCategoria");
+        setLoadingUI({ container: p, message: "Buscando...", button: btn });
+
+        try {
+            const prov = await obtenerProvinciaMasReportadaPorCategoria(cat);
+            setText(p, prov || "No hay datos disponibles");
+        } catch (err) {
+            setText(p, "Error al buscar");
+        } finally {
+            setDoneUI(btn);
+        }
     });
-    document.getElementById("btnBuscarHoraCat").addEventListener("click", async () => {
+
+    document.getElementById("btnBuscarHoraCat").addEventListener("click", async (e) => {
+        const btn = e.currentTarget;
         const cat = document.getElementById("categoriaHoraInput").value.trim();
         if (!cat) return alert("Ingrese una categoría");
-        const hora = await obtenerHoraMasReportadaPorCategoria(cat);
-        document.getElementById("horaCategoria").textContent = hora !== null ? `${hora}:00 hs` : "No hay datos disponibles";
+
+        const p = document.getElementById("horaCategoria");
+        setLoadingUI({ container: p, message: "Buscando...", button: btn });
+
+        try {
+            const hora = await obtenerHoraMasReportadaPorCategoria(cat);
+            setText(p, hora !== null ? `${hora}:00 hs` : "No hay datos disponibles");
+        } catch (err) {
+            setText(p, "Error al buscar");
+        } finally {
+            setDoneUI(btn);
+        }
     });
+
     // 🔹 Botón Exportar CSV
-    document.getElementById("btnExportarCSV").addEventListener("click", () => {
-        // Recolectar datos visibles
-        const datos = [
-            ["ESTADISTICA", "VALOR"],
-            ["Provincia con mas hechos por Coleccion", document.getElementById("provinciaColeccion").textContent.trim()],
-            ["Categoria mas reportada", document.getElementById("categoriaMasReportada").textContent.trim()],
-            ["Provincia con mas hechos de una categoria", document.getElementById("provinciaCategoria").textContent.trim()],
-            ["Hora del dia con mas hechos (por categoria)", document.getElementById("horaCategoria").textContent.trim()],
-            ["Solicitudes de eliminacion marcadas como spam", document.getElementById("cantidadSpam").textContent.trim()]
-        ];
-        // Convertir a CSV
-        const csv = datos.map(fila => fila.map(v => `"${v.replace(/"/g, '""')}"`).join(";")).join("\r\n");
-        // Crear blob y disparar descarga
-        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `estadisticas_${new Date().toISOString().split("T")[0]}.csv`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+    document.getElementById("btnExportarCSV").addEventListener("click", (e) => {
+        const btn = e.currentTarget;
+        btn.disabled = true;
+        btn.dataset.originalText ??= btn.textContent;
+        btn.textContent = "Generando…";
+
+        try {
+            const datos = [
+                ["ESTADISTICA", "VALOR"],
+                ["Provincia con mas hechos por Coleccion", document.getElementById("provinciaColeccion").textContent.trim()],
+                ["Categoria mas reportada", document.getElementById("categoriaMasReportada").textContent.trim()],
+                ["Provincia con mas hechos de una categoria", document.getElementById("provinciaCategoria").textContent.trim()],
+                ["Hora del dia con mas hechos (por categoria)", document.getElementById("horaCategoria").textContent.trim()],
+                ["Solicitudes de eliminacion marcadas como spam", document.getElementById("cantidadSpam").textContent.trim()]
+            ];
+
+            const csv = datos
+                .map(fila => fila.map(v => `"${String(v).replace(/"/g, '""')}"`).join(";"))
+                .join("\r\n");
+
+            const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `estadisticas_${new Date().toISOString().split("T")[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = btn.dataset.originalText || "⬇️ Exportar CSV";
+        }
     });
 }
 
@@ -340,12 +416,20 @@ async function mostrarFuentesView() {
         html += `
             <h3 class="mt-4">Fuentes Demo (${demo.fuentes.length})</h3>
             ${renderFuentesDemo(demo.fuentes)}
+            <button class="btn btn-success mt-2"
+                    onclick="crearFuenteDemoView()">
+                + Crear fuente demo
+            </button>
         `;
     }
     if (metamapa.disponible) {
         html += `
             <h3 class="mt-4">Fuentes Metamapa (${metamapa.fuentes.length})</h3>
             ${renderFuentesMetamapa(metamapa.fuentes)}
+            <button class="btn btn-success mt-2"
+                    onclick="crearFuenteMetamapaView()">
+                + Crear fuente metamapa
+            </button>
         `;
     }
     cont.innerHTML = html || `<p class="text-muted">No hay servicios disponibles</p>`;
@@ -371,6 +455,32 @@ async function crearFuenteDinamicaView() {
         return;
     }
     mostrarModal("Fuente dinámica creada correctamente", "Éxito", true);
+}
+
+async function crearFuenteDemoView() {
+    const nombre = prompt("Ingrese el nombre de la fuente demo:");
+    if (!nombre) return;
+    const url = prompt("Ingrese la URL de la fuente demo:");
+    if (!url) return;
+    const fuente = await crearFuenteDemo(nombre, url);
+    if (!fuente) {
+        alert("No se pudo crear la fuente demo");
+        return;
+    }
+    mostrarModal("Fuente demo creada correctamente", "Éxito", true);
+}
+
+async function crearFuenteMetamapaView() {
+    const nombre = prompt("Ingrese el nombre de la fuente Metamapa:");
+    if (!nombre) return;
+    const endpoint = prompt("Ingrese el endpoint de la fuente Metamapa:");
+    if (!endpoint) return;
+    const fuente = await crearFuenteMetamapa(nombre, endpoint);
+    if (!fuente) {
+        alert("No se pudo crear la fuente Metamapa");
+        return;
+    }
+    mostrarModal("Fuente Metamapa creada correctamente", "Éxito", true);
 }
 
 function renderFuentesEstaticas(fuentes) {
@@ -953,9 +1063,10 @@ async function mostrarColecciones() {
             <div class="card mb-2 p-2">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h6 class="fw-bold mb-1">${c.titulo}</h6>
-                        <p class="small mb-0">${c.descripcion}</p>
-                        <p class="small mb-0"><b>Consenso:</b> ${c.consenso}</p>
+                        <h6 class="fw-bold mb-1">Titulo: ${c.titulo}</h6>
+                        <p class="small mb-0">Descripcion: ${c.descripcion}</p>
+                        <p class="small mb-0"><b>Consenso: </b> ${c.consenso}</p>
+                        <p class="small mb-0"><b>ID: </b> ${c.handle}</p>
                     </div>
                     <div class="btn-group">
                         <button class="btn btn-sm btn-outline-primary" onclick="verHechosColeccion('${c.handle}')">Ver hechos</button>
@@ -1188,7 +1299,6 @@ function mostrarModal(mensaje, titulo = "Atención", recargar = false) {
 function initBusquedaColecciones() {
     const input = document.getElementById("busquedaColeccion");
     if (!input) return;
-
     input.addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
             e.preventDefault(); // Evita el envío del formulario si existiera
@@ -1206,4 +1316,47 @@ function limpiarBusquedaColeccion() {
     const input = document.getElementById("busquedaColeccion");
     if (input) input.value = "";
     mostrarColecciones();
+}
+
+function setLoadingUI({ container, message = "Cargando...", button } = {}) {
+    if (button) {
+        button.disabled = true;
+        button.dataset.originalText ??= button.textContent;
+        button.textContent = "Cargando…";
+    }
+
+    if (container) {
+        container.innerHTML = `
+      <span class="spinner" style="display:inline-block; vertical-align:middle;"></span>
+      <span style="margin-left:8px;">${message}</span>
+    `;
+    }
+}
+
+function setDoneUI(button) {
+    if (!button) return;
+    button.disabled = false;
+    button.textContent = button.dataset.originalText || "Buscar";
+}
+
+function setText(el, text) {
+    if (!el) return;
+    el.textContent = text;
+}
+
+async function fetchJsonWithTimeout(url, { timeoutMs = 12000, options = {} } = {}) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+        const res = await fetch(url, { ...options, signal: controller.signal });
+        if (res.status === 204) return null;
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return await res.json();
+    } catch (e) {
+        if (e.name === "AbortError") throw new Error("Tiempo de espera agotado");
+        throw e;
+    } finally {
+        clearTimeout(timer);
+    }
 }

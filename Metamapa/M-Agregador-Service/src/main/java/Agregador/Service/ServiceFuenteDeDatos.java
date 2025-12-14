@@ -19,6 +19,7 @@ public class ServiceFuenteDeDatos {
   private final Normalizador normalizador;
   private static final String PATH_LISTAR_FUENTES = "%s/fuentesDeDatos";
   private static final Logger log = LoggerFactory.getLogger(ServiceFuenteDeDatos.class);
+  private final GeocodingService geocodingService;
 
   // ================== API ==================
   /** Trae hechos de UNA fuente (sin filtros) y los mapea a tu dominio. */
@@ -30,6 +31,7 @@ public class ServiceFuenteDeDatos {
     List<Map<String, Object>> raw = Optional.ofNullable(resp.getBody()).orElseGet(List::of);
     // imprimir raw para debug
     System.out.println("Hechos raw de la fuente " + urlBase + ": " + raw);
+
     return raw.stream()
             .map(json -> {
               Object fuenteIdRaw = json.get("fuenteId");
@@ -83,11 +85,16 @@ public class ServiceFuenteDeDatos {
     Boolean eliminado   = bool(json.get("eliminado"));
     LocalDateTime fechaCarga = date(json.get("fechaCarga"));
     LocalDateTime fechaMod  = date(json.get("fechaModificacion"));
+    String provincia = (latitud != null && longitud != null)
+            ? geocodingService.obtenerProvincia( latitud.doubleValue(),  longitud.doubleValue())
+            : "Provincia Desconocida";
+
     // Construcción del dominio (perfil/multimedia opcionales -> null / vacío)
     Hecho h = new Hecho(
             titulo, descripcion, categoria, latitud, longitud, fechaHecho,
             null,                // perfil
             idFuente,            // fuenteId (clave para CriterioFuenteDeDatos)
+            provincia,
             hechoId == null ? 0 : hechoId,
             anonimo != null ? anonimo : Boolean.TRUE,
             new ArrayList<>()    // multimedia

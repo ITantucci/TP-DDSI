@@ -14,7 +14,7 @@ import lombok.*;
 //@Table(name = "fuente_estatica")
 @Getter @Setter
 public class FuenteEstatica {
-  static protected Integer contadorID = 2000000;
+  static protected Integer contadorID = 20001;
   //@Id
   //@GeneratedValue(strategy = GenerationType.IDENTITY)
   protected Integer fuenteId;
@@ -25,7 +25,7 @@ public class FuenteEstatica {
 
   public FuenteEstatica() {} // va a haber que usar dtos para no modificar la capa de negocio
   public FuenteEstatica(String nombre) {
-    if (contadorID > 2999998) {
+    if (contadorID > 29999) {
       throw new RuntimeException("No hay mas espacio para nuevas fuentes :(");
     } else {
       this.nombre = nombre;

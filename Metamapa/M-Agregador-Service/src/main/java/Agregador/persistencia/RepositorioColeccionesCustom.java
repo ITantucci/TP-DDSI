@@ -9,4 +9,5 @@ import java.util.UUID;
 public interface RepositorioColeccionesCustom {
   List<Criterio> getCriteriosColeccion(UUID id);
   Optional<Coleccion> getColeccion(UUID id);
+  //List<Coleccion> buscarTextoLibre(String query);
 }

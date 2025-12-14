@@ -65,8 +65,15 @@ public class ServiceColecciones {
               String titulo = c.getTitulo().trim().toLowerCase();
               return titulo.equals(q);
             })
-            .toList(); // Java 21 OK
+            .toList();
   }
+
+  /*public List<Coleccion> getColecciones(String query) {
+  if (query == null || query.trim().isEmpty()) {
+    return repositorioColecciones.findAll();
+  }
+  return repositorioColecciones.buscarTextoLibre(query);
+}*/
 
   public ColeccionDTO crearColeccion(ColeccionDTO coleccionDTO) {
     String nombre = coleccionDTO.getConsenso();

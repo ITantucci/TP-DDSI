@@ -54,7 +54,7 @@ async function obtenerFuentesMetamapa() {
 
 async function fetchSeguro(url) {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 2000);
+    const timeout = setTimeout(() => controller.abort(), 1000);
     try {
         return await fetch(url, { signal: controller.signal });
     } catch {
@@ -79,6 +79,24 @@ async function crearFuenteEstatica(nombre) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({nombre })
+    });
+    return resp.ok ? await resp.json() : null;
+}
+
+async function crearFuenteDemo(nombre, url) {
+    const resp = await fetch(`${window.METAMAPA.API_FUENTE_DEMO}/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombre, url })
+    });
+    return resp.ok ? await resp.json() : null;
+}
+
+async function crearFuenteMetamapa(nombre, endpoint) {
+    const resp = await fetch(`${window.METAMAPA.API_FUENTE_METAMAPA}/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombre, endpoint })
     });
     return resp.ok ? await resp.json() : null;
 }
