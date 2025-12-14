@@ -11,4 +11,5 @@ public interface RepositorioHechosCustom {
   long contarHechosPorHora(String horaHH);
   Optional<String> obtenerCategoriaConMasHechos();
   List<String> obtenerCategorias();
+  Optional<String> obtenerProvinciaConMasHechosPorCategoria(String categoria);
 }

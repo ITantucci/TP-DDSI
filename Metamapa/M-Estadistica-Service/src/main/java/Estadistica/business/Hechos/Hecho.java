@@ -51,8 +51,6 @@ public class Hecho {
     @Column(name = "fecha_modificacion", columnDefinition = "datetime2")
     private LocalDateTime fechaModificacion;
 
-//    @Column(name = "perfil_usuario_id")
-//    private Integer perfilId;
 
     @Column(name = "anonimo")
     private Boolean anonimo;
@@ -74,39 +72,9 @@ public class Hecho {
     @Column(name = "valor", length = 1000)
     private Map<String, String> metadata;
 
+    @Column(name = "provincia")
+    private String provincia;
 
-    public Hecho(
-            BigInteger id,
-            String titulo,
-            String descripcion,
-            String categoria,
-            Float latitud,
-            Float longitud,
-            LocalDateTime fechaHecho,
-            LocalDateTime fechaCarga,
-            LocalDateTime fechaModificacion,
-            Integer perfilId,
-            Boolean anonimo,
-            Boolean eliminado,
-            ArrayList<Multimedia> multimedia,
-            Map<String,String> metadata,
-            Integer idFuente) {
-        this.id = id;
-        this.titulo = titulo;
-        this.descripcion = descripcion;
-        this.categoria = categoria;
-        this.latitud = latitud;
-        this.longitud = longitud;
-        this.fechaHecho = fechaHecho;
-        this.fechaCarga = fechaCarga;
-        this.fechaModificacion = fechaModificacion;
-//        this.perfilId = perfilId;
-        this.anonimo = anonimo;
-        this.eliminado = eliminado;
-        this.multimedia = multimedia;
-        this.metadata = metadata;
-       // this.idFuente = idFuente;
-    }
 
     private static final BigInteger BASE = BigInteger.TEN.pow(12); // 10^12
 

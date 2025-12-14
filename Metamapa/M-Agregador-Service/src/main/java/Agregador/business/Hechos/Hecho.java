@@ -6,6 +6,9 @@ import java.util.*;
 import jakarta.persistence.*;
 import lombok.*;
 import Agregador.business.Consenso.*;
+import Agregador.Service.GeocodingService;
+import org.springframework.stereotype.Service;
+
 
 @Entity
 @Getter @Setter
@@ -41,7 +44,7 @@ public class Hecho {
   @MapKeyColumn(name = "clave")
   @Column(name = "valor")
   private Map<String, String> metadata;
-
+  private String provincia;
   public Hecho() {}
 
   public Hecho(
@@ -61,6 +64,7 @@ public class Hecho {
     this.categoria = categoria;
     this.latitud = latitud;
     this.longitud = longitud;
+    this.provincia = new GeocodingService().obtenerProvincia(latitud, longitud);
     this.fechaHecho = fechaHecho;
     this.fechaCarga = LocalDateTime.now();
     this.fechaModificacion = LocalDateTime.now();

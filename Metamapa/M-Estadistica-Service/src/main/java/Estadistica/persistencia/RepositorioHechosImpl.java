@@ -157,4 +157,41 @@ public Optional<String> obtenerHoraConMasHechos(String categoria) {
 
     return em.createQuery(query).getResultStream().map(t -> t.get("categoria", String.class)).toList();
   }
+
+  @Override
+  public Optional<String> obtenerProvinciaConMasHechosPorCategoria(String categoria) {
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery<Tuple> query = cb.createTupleQuery();
+    Root<Hecho> root = query.from(Hecho.class);
+
+    Expression<String> provinciaExpr = root.get("provincia");
+    Expression<Long> countExpr = cb.count(root);
+
+    List<Predicate> predicates = new ArrayList<>();
+
+    if (categoria != null && !categoria.isBlank()) {
+      predicates.add(cb.equal(root.get("categoria"), categoria));
+    }
+
+    query.multiselect(
+                    provinciaExpr.alias("provincia"),
+                    countExpr.alias("cantidad")
+            )
+            .where(predicates.toArray(new Predicate[0]))
+            .groupBy(provinciaExpr)
+            .orderBy(cb.desc(countExpr));
+
+    List<Tuple> resultados = em.createQuery(query)
+            .setMaxResults(1)
+            .getResultList();
+
+    if (resultados.isEmpty()) {
+      return Optional.empty();
+    }
+
+    return Optional.of(
+            resultados.get(0).get("provincia", String.class)
+    );
+  }
+
 }

@@ -17,21 +17,19 @@ public class ServiceEstadistica {
     private final RepositorioHechos repositorioHechos;
     private final RepositorioSolicitudesEliminacion repositorioSolicitudesEliminacion;
     private final RepositorioColecciones repositorioColecciones;
-    private final ServiceAgregador serviceAgregador;
     private final RepositorioEstadisticas repositorioEstadisticas;
 
     public ServiceEstadistica(RestTemplate restTemplate,
                               @Value("${M.Agregador.Service.url}") String baseUrl, GeocodingService geocodingService,
                               RepositorioHechos repositorioHechos,
                               RepositorioSolicitudesEliminacion repositorioSolicitudesEliminacion,
-                              RepositorioColecciones repositorioColecciones, ServiceAgregador serviceAgregador,
+                              RepositorioColecciones repositorioColecciones,
                               RepositorioEstadisticas repositorioEstadisticas) {
         this.baseUrl = baseUrl;
         this.geocodingService = geocodingService;
         this.repositorioHechos = repositorioHechos;
         this.repositorioSolicitudesEliminacion = repositorioSolicitudesEliminacion;
         this.repositorioColecciones = repositorioColecciones;
-        this.serviceAgregador = serviceAgregador;
         this.repositorioEstadisticas = repositorioEstadisticas;
     }
 
@@ -131,16 +129,7 @@ public class ServiceEstadistica {
 
     //¿En qué provincia se presenta la mayor cantidad de hechos de una cierta categoría?
     public ProvinciaConMasHechosPorCategoria estadisticaProvinciaCategoria(String categoria) {
-        Map<String, String> estadisticaProvinciaCategoria = new HashMap<>();
-        String provincia = repositorioHechos.findByCategoriaIgnoreCase(categoria)
-                .stream().filter(h -> getProvincia(h.getLatitud(), h.getLongitud()) != null)
-                .collect(Collectors.groupingBy(h -> getProvincia(h.getLatitud(), h.getLongitud()), Collectors.counting()))
-                .entrySet().stream()
-                .max(Map.Entry.comparingByValue())
-                .map(Map.Entry::getKey)
-                .orElse("N/A");
-        estadisticaProvinciaCategoria.put("categoria", categoria);
-        estadisticaProvinciaCategoria.put("provincia", provincia);
+        String provincia = repositorioHechos.obtenerProvinciaConMasHechosPorCategoria(categoria).orElse("N/A");
         return new ProvinciaConMasHechosPorCategoria(provincia,categoria);
     }
 
@@ -148,7 +137,7 @@ public class ServiceEstadistica {
     public ProvinciaConMasHechosPorColeccion estadisticaColeccionProvincia(UUID idColeccion) {
         Coleccion coleccion = repositorioColecciones.findById(idColeccion).orElse(null);
         String provincia = repositorioHechos.filtrarPorCriterios(coleccion.getCriterios())
-                .stream().filter(h -> (getProvincia(h.getLatitud(), h.getLongitud()) != null))
+                .stream().filter(h -> (h.getProvincia() != null))
                 .collect(Collectors.groupingBy(h -> getProvincia(h.getLatitud(), h.getLongitud()), Collectors.counting()))
                 .entrySet().stream()
                 .max(Map.Entry.comparingByValue())
