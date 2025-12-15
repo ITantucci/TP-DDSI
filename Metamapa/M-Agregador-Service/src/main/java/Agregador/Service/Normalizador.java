@@ -18,11 +18,9 @@ import java.util.stream.Collectors;
 public class Normalizador {
   private final int decimalesCoordenadas;
   private static final JaroWinklerSimilarity SIMILARITY = new JaroWinklerSimilarity();
-  private final double factor;
 
   public Normalizador(@Value("${normalizador.decimales:4}") int decimalesCoordenadas) {
     this.decimalesCoordenadas = decimalesCoordenadas;
-    this.factor = Math.pow(10, decimalesCoordenadas);
   }
 
   private static final Map<String, String> PATRONES = Map.<String, String>ofEntries(
@@ -293,9 +291,4 @@ public class Normalizador {
   private boolean isNullOrBlank(String s) {
     return s == null || s.isBlank();
   }
-
- /* private Double redondear(Double valor) {
-    if (valor == null) return null;
-    return (Double) (Math.round(valor * factor) / factor);
-  }*/
 }

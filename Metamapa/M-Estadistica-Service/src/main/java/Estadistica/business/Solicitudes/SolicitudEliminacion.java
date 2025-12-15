@@ -3,9 +3,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import Estadistica.business.Hechos.Hecho;
 
+
 @Entity
-@Table(name = "solicitud")
-public class SolicitudEliminacion {
+public class SolicitudEliminacion extends Solicitud{
     @Getter
     public String motivo;
     @Getter @ManyToOne

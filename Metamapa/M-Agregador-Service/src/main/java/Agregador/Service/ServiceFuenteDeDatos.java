@@ -22,15 +22,12 @@ public class ServiceFuenteDeDatos {
   private final GeocodingService geocodingService;
 
   // ================== API ==================
-  /** Trae hechos de UNA fuente (sin filtros) y los mapea a tu dominio. */
   public List<Hecho> getHechosDeFuente(String urlBase) {
     String url = urlBase + "/api-fuentesDeDatos/hechos";
     ResponseEntity<List<Map<String, Object>>> resp = restTemplate.exchange(
             url, HttpMethod.GET, null, new ParameterizedTypeReference<>() {}
     );
     List<Map<String, Object>> raw = Optional.ofNullable(resp.getBody()).orElseGet(List::of);
-    // imprimir raw para debug
-    //System.out.println("Hechos raw de la fuente " + urlBase + ": " + raw);
 
     return raw.parallelStream()
             .map(json -> {

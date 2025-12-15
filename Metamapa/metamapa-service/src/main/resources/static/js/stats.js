@@ -75,7 +75,7 @@ async function obtenerCantidadSolicitudesSpam() {
         const response = await fetch(`${window.METAMAPA.API_ESTADISTICA}/spam`);
         if (!response.ok) throw new Error("Error al obtener solicitudes spam");
         const data = await response.json();
-        return parseInt(data.cantidad) || 0;
+        return parseInt(data.cantidadSolicitudesSpam) || 0;
     } catch (error) {
         console.error("Error al contar solicitudes spam:", error);
         return 0;

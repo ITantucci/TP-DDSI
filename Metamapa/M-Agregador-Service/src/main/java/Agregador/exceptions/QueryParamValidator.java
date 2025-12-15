@@ -21,7 +21,8 @@ public class QueryParamValidator {
     for (String param : paramMap.keySet()) {
       if (!validFields.contains(param)
               && !param.equals("modoNavegacion")
-              && !param.equals("query")) {
+              && !param.equals("query")
+              && !param.equals("spam")) {
         throw new IllegalArgumentException("Parámetro inválido: " + param);
       }
     }

@@ -40,12 +40,6 @@ async function crearColeccion(e) {
     }
 }
 
-// Obtener todas las colecciones
-/*async function obtenerColecciones() {
-    const resp = await fetch(`${window.METAMAPA.API_COLECCIONES}`);
-    return resp.ok ? resp.json() : [];
-}*/
-
 async function obtenerColecciones(query = "") {
     const q = (query || "").trim();
     const url = q
@@ -115,4 +109,39 @@ function armarCriterio(div) {
         ...(num("radio") && { radio: num("radio") }),
         ...(get("tipoMultimedia") && { tipoMultimedia: get("tipoMultimedia") })
     };
+}
+
+// Obtener 1 colección por ID (UUID)
+async function obtenerColeccion(id) {
+    const resp = await fetch(`${window.METAMAPA.API_COLECCIONES}/${id}`);
+
+    if (!resp.ok) {
+        const txt = await resp.text().catch(() => "");
+        throw new Error(`Error al obtener colección (HTTP ${resp.status}) ${txt}`);
+    }
+
+    const data = await resp.json();
+
+    // Como el controller devuelve Optional<Coleccion>, puede venir null si está vacío
+    if (!data) {
+        throw new Error("Colección no encontrada");
+    }
+
+    // Si por algún motivo viniera envuelto (raro), intentamos des-envolver
+    // (ej: { "present": true, "value": {...} } u otras formas)
+    if (data.value) return data.value;
+
+    return data; // Coleccion directa
+}
+
+async function agregarFuenteAColeccionPorNombre(coleccionId, nombreFuente) {
+    const resp = await fetch(`${window.METAMAPA.API_COLECCIONES}/colecciones/${id}/fuentes?nombre=${encodeURIComponent(nombreFuente)}`, {
+        method: "POST"
+    });
+
+    if (!resp.ok) {
+        const txt = await resp.text().catch(() => "");
+        throw new Error(txt || `HTTP ${resp.status}`);
+    }
+    return true;
 }

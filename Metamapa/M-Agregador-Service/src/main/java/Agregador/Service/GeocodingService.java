@@ -44,7 +44,7 @@ public class GeocodingService {
     }
 
     public String obtenerProvincia(double lat, double lon) {
-        String key = lat + "," + lon;
+        String key = String.format(Locale.ROOT, "%.4f,%.4f", lat, lon);
         return cache.computeIfAbsent(key, k -> resolverProvincia(lat, lon));
     }
 

@@ -79,4 +79,15 @@ public class ControllerColecciones {
     serviceColecciones.eliminarFuenteDeDatos(idColeccion, idFuente);
     return ResponseEntity.noContent().build();
   }
+  /*@PostMapping("/colecciones/{idColeccion}/fuentes")
+public ResponseEntity<String> agregarFuentePorNombre(
+    @PathVariable UUID idColeccion,
+    @RequestParam String nombre
+) {
+  if (nombre == null || nombre.trim().isEmpty()) {
+    return ResponseEntity.badRequest().body("Debe indicar el nombre de la fuente");
+  }
+  serviceColecciones.agregarFuenteDeDatosPorNombre(idColeccion, nombre.trim());
+  return ResponseEntity.ok("Fuente agregada a la colección");
+}*/
 }

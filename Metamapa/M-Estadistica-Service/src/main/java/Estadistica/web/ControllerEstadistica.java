@@ -157,6 +157,7 @@ public class ControllerEstadistica {
   }
 
 
+
   // Se deberá implementar la exportación de las estadísticas en formato CSV.
   @Operation(summary = "Exportación CSV genérica")
   @ApiResponse(responseCode = "200", description = "CSV", content = @Content(mediaType = "text/csv"))

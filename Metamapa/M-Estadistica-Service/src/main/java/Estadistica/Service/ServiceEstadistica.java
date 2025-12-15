@@ -1,6 +1,8 @@
 package Estadistica.Service;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import Estadistica.business.Solicitudes.EstadoSolicitud;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -102,7 +104,8 @@ public class ServiceEstadistica {
 
     //¿Cuántas solicitudes de eliminación son spam?
     public CantidadDeSpam estadisticaSpam() {
-        long spam = repositorioSolicitudesEliminacion.countByEstado("SPAM");
+        long spam = repositorioSolicitudesEliminacion.findAllWhereEstadoIs("SPAM").size();
+
         return new CantidadDeSpam(spam);
     }
 

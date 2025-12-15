@@ -326,56 +326,116 @@ function crearSkeletonTablaHechos(filas = 6) {
 
 async function mostrarColeccionesView() {
     cont.innerHTML = `
-      <div id="coleccionesView">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h4>Colecciones</h4>
-          <button class="btn btn-primary admin-only d-none" data-bs-toggle="modal" data-bs-target="#modalColeccion">+ Nueva Colección </button>
+    <div id="coleccionesView">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>Colecciones</h4>
+        <button class="btn btn-primary admin-only d-none" data-bs-toggle="modal" data-bs-target="#modalColeccion">+ Nueva Colección</button>
+      </div>
+
+      <div class="mb-3">
+        <label for="modoNav" class="form-label">Modo de navegación:</label>
+        <select id="modoNav" class="form-select form-select-sm">
+          <option value="IRRESTRICTA">Irrestricta</option>
+          <option value="CURADA">Curada</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="busquedaColeccion" class="form-label">Búsqueda (título o descripción)</label>
+        <div class="input-group">
+          <input id="busquedaColeccion" class="form-control form-control-sm"
+                 placeholder="Escribí y presioná Enter..."
+                 autocomplete="off" />
+          <button id="btnBuscarColeccion" class="btn btn-outline-primary btn-sm" type="button">Buscar</button>
+          <button id="btnLimpiarColeccion" class="btn btn-outline-secondary btn-sm" type="button">Limpiar</button>
         </div>
-        <div class="mb-3">
-          <label for="modoNav" class="form-label">Modo de navegación:</label>
-          <select id="modoNav" class="form-select form-select-sm">
-            <option value="IRRESTRICTA">Irrestricta</option>
-            <option value="CURADA">Curada</option>
-          </select>
-        </div>
-        <div class="mb-3">
-          <label for="busquedaColeccion" class="form-label">Búsqueda (título o descripción)</label>
-          <div class="input-group">
-            <input id="busquedaColeccion" class="form-control form-control-sm"
-                   placeholder="Escribí y presioná Enter..."
-                   autocomplete="off" />
-            <button class="btn btn-outline-primary btn-sm" type="button" onclick="buscarColecciones()">Buscar</button>
-            <button class="btn btn-outline-secondary btn-sm" type="button" onclick="limpiarBusquedaColeccion()">Limpiar</button>
-          </div>
-        </div>
-        <div id="panelFiltrosColeccion" class="border p-3 rounded bg-light mb-3">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <h6 class="mb-0">Filtros dinámicos</h6>
-            <button id="btnAgregarFiltroColeccion" class="btn btn-sm btn-outline-secondary" onclick="agregarFiltro('panelFiltrosColeccion')">
-              + Agregar filtro
-            </button>
-          </div>
-          <div id="filtrosContainerColeccion"></div>
-          <button id="btnAplicarFiltrosColeccion" class="btn btn-sm btn-success mt-2" onclick="aplicarFiltrosColeccion()" disabled>
-            Aplicar filtros
+      </div>
+
+      <div id="panelFiltrosColeccion" class="border p-3 rounded bg-light mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="mb-0">Filtros dinámicos</h6>
+          <button id="btnAgregarFiltroColeccion" class="btn btn-sm btn-outline-secondary" onclick="agregarFiltro('panelFiltrosColeccion')">
+            + Agregar filtro
           </button>
         </div>
-        <div id="listaColecciones" class="mb-3"></div>
-        <div id="mapaColeccion" class="mapa"></div>
+        <div id="filtrosContainerColeccion"></div>
+        <button id="btnAplicarFiltrosColeccion" class="btn btn-sm btn-success mt-2" disabled>
+          Aplicar filtros
+        </button>
       </div>
-    `;
+
+      <div id="listaColecciones" class="mb-3"></div>
+      <div id="mapaColeccion" class="mapa"></div>
+    </div>
+  `;
+
     await ensureMapaInit("mapaColeccion");
-    initBusquedaColecciones();
-    await mostrarColecciones();
+    initBusquedaColecciones(); // ok si solo agrega Enter, pero abajo lo mejoro
+
+    // ✅ loading inicial
+    const lista = document.getElementById("listaColecciones");
+    setLoadingUI({ container: lista, message: "Cargando colecciones..." });
+
+    await mostrarColecciones(); // tu función actual que escribe listaColecciones
+
     // Habilitar / deshabilitar botón según haya filtros
     const contFiltros = document.getElementById("filtrosContainerColeccion");
     const btnAplicar = document.getElementById("btnAplicarFiltrosColeccion");
-    // Observa los cambios en los hijos del contenedor
+
     const observer = new MutationObserver(() => {
-        const tieneFiltros = contFiltros.children.length > 0;
-        btnAplicar.disabled = !tieneFiltros;
+        btnAplicar.disabled = contFiltros.children.length === 0;
     });
     observer.observe(contFiltros, { childList: true });
+
+    // ✅ Eventos para búsqueda con feedback
+    const btnBuscar = document.getElementById("btnBuscarColeccion");
+    const btnLimpiar = document.getElementById("btnLimpiarColeccion");
+    const input = document.getElementById("busquedaColeccion");
+
+    async function buscarColeccionesConLoading() {
+        setLoadingUI({ container: lista, message: "Buscando colecciones..." });
+        setLoadingUI({ button: btnBuscar });
+        setLoadingUI({ button: btnLimpiar });
+
+        try {
+            await mostrarColecciones();
+        } finally {
+            setDoneUI(btnBuscar);
+            setDoneUI(btnLimpiar);
+            btnBuscar.textContent = "Buscar";
+            btnLimpiar.textContent = "Limpiar";
+        }
+    }
+
+    btnBuscar.addEventListener("click", buscarColeccionesConLoading);
+
+    btnLimpiar.addEventListener("click", async () => {
+        input.value = "";
+        await buscarColeccionesConLoading();
+    });
+
+    input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            buscarColeccionesConLoading();
+        }
+    });
+
+    // ✅ Aplicar filtros con feedback (botón)
+    btnAplicar.addEventListener("click", async (e) => {
+        const btn = e.currentTarget;
+        setLoadingUI({ button: btn }); // "Cargando…"
+        btn.textContent = "Aplicando filtros…";
+
+        try {
+            await aplicarFiltrosColeccion(); // tu función existente
+        } finally {
+            // volver estado según si hay filtros
+            const tieneFiltros = contFiltros.children.length > 0;
+            btn.textContent = "Aplicar filtros";
+            btn.disabled = !tieneFiltros;
+        }
+    });
 }
 
 async function mostrarFuentesView() {
@@ -1025,7 +1085,6 @@ async function mostrarColecciones() {
 
     try {
         const q = document.getElementById("busquedaColeccion")?.value?.trim() || "";
-
         const colecciones = await obtenerColecciones(q);
 
         if (!colecciones.length) {
@@ -1034,27 +1093,95 @@ async function mostrarColecciones() {
                 : `<p class="text-muted">No hay colecciones para mostrar.</p>`;
             return;
         }
-
         cont.innerHTML = colecciones.map(c => `
-            <div class="card mb-2 p-2">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="fw-bold mb-1">Titulo: ${c.titulo}</h6>
-                        <p class="small mb-0">Descripcion: ${c.descripcion}</p>
-                        <p class="small mb-0"><b>Consenso: </b> ${c.consenso}</p>
-                        <p class="small mb-0"><b>ID: </b> ${c.handle}</p>
-                    </div>
-                    <div class="btn-group">
-                        <button class="btn btn-sm btn-outline-primary" onclick="verHechosColeccion('${c.handle}')">Ver hechos</button>
-                        <button class="btn btn-sm admin-only btn-outline-primary" onclick="cambiarConsenso('${c.handle}')">Cambiar consenso</button>
-                    </div>
-                </div>
-            </div>
-        `).join("");
+      <div class="card mb-2 p-2">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="fw-bold mb-1">Titulo: ${c.titulo}</h6>
+            <p class="small mb-0">Descripcion: ${c.descripcion}</p>
+            <p class="small mb-0"><b>Consenso: </b> ${c.consenso}</p>
+            <p class="small mb-0"><b>ID: </b> ${c.handle}</p>
+            <p id="estadoColeccion_${c.handle}" class="small text-muted mb-0"></p>
+          </div>
 
-        /*if (window.actualizarVisibilidadPorRoles) {
-            window.actualizarVisibilidadPorRoles();
-        }*/
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <button class="btn btn-sm btn-outline-primary btnVerHechos"
+                    data-handle="${c.handle}">
+              Ver hechos
+            </button>
+          <!-- ✅ Agregar fuente (solo ID) -->
+            <div class="input-group input-group-sm" style="width: 220px;">
+              <input class="form-control inputFuenteNombre"
+                   data-handle="${c.handle}"
+                   placeholder="Nombre fuente"
+                   autocomplete="off">
+              <button class="btn btn-outline-success btnAgregarFuente"
+                      data-handle="${c.handle}">
+                Agregar
+              </button>
+            </div>
+
+            <button class="btn btn-sm admin-only btn-outline-primary"
+                    onclick="cambiarConsenso('${c.handle}')">
+              Cambiar consenso
+            </button>
+          </div>
+        </div>
+      </div>
+    `).join("");
+
+        cont.onclick = async (e) => {
+            // --- VER HECHOS ---
+            const btnVer = e.target.closest(".btnVerHechos");
+            if (btnVer) {
+                const handle = btnVer.dataset.handle;
+                const estado = document.getElementById(`estadoColeccion_${handle}`);
+
+                setLoadingUI({ button: btnVer });
+                setLoadingUI({ container: estado, message: "Buscando hechos..." });
+
+                try {
+                    await verHechosColeccion(handle);
+                    setText(estado, "");
+                } catch (err) {
+                    console.error(err);
+                    setText(estado, `❌ Error: ${err?.message || err}`);
+                } finally {
+                    btnVer.disabled = false;
+                    btnVer.textContent = "Ver hechos";
+                }
+                return;
+            }
+
+            // --- AGREGAR FUENTE ---
+            const btnFuente = e.target.closest(".btnAgregarFuente");
+            if (btnFuente) {
+                const handle = btnFuente.dataset.handle; // ✅ toma handle automático
+                const estado = document.getElementById(`estadoColeccion_${handle}`);
+
+                const input = cont.querySelector(`.inputFuenteId[data-handle="${handle}"]`);
+                const fuenteIdTxt = input?.value?.trim();
+
+                if (!fuenteIdTxt) return alert("Ingresá el ID de la fuente");
+                if (!/^\d+$/.test(fuenteIdTxt)) return alert("El ID de fuente debe ser numérico");
+
+                setLoadingUI({ button: btnFuente });
+                setLoadingUI({ container: estado, message: "Agregando fuente..." });
+
+                try {
+                    await agregarFuenteAColeccionPorNombre(handle, nombreFuente);
+                    setText(estado, "✅ Fuente agregada");
+                    if (input) input.value = "";
+                } catch (err) {
+                    console.error(err);
+                    setText(estado, `❌ Error: ${err?.message || err}`);
+                } finally {
+                    btnFuente.disabled = false;
+                    btnFuente.textContent = "Agregar";
+                }
+            }
+        };
+
     } catch (e) {
         cont.innerHTML = `<div class="alert alert-danger">Error al cargar colecciones</div>`;
         console.error("Error al cargar colecciones:", e);
@@ -1116,15 +1243,33 @@ async function verHechosColeccion(idColeccion) {
     coleccionSeleccionada = idColeccion;
     const modo = document.getElementById("modoNav").value;
     const params = new URLSearchParams({ modoNavegacion: modo });
+
+    // Obtener el estado del botón y el contenedor de estado (para mostrar el mensaje de búsqueda)
+    const btnVer = document.querySelector(`button[data-handle="${idColeccion}"]`);
+    const estado = document.getElementById(`estadoColeccion_${idColeccion}`);
+
+    // Mostrar estado de "buscando" y deshabilitar el botón
+    setLoadingUI({ button: btnVer });
+    setLoadingUI({ container: estado, message: "Buscando hechos..." });
+
     try {
+        // Obtener los hechos de la colección
         const hechos = await obtenerHechosColeccionFiltrados(idColeccion, params);
+
+        // Inicializar mapa (sin skeleton)
         inicializarMapa("mapaColeccion");
         mostrarHechosEnMapa(hechos);
+
     } catch (e) {
-        alert("Error al obtener hechos de la colección");
-        console.error(e);
+        console.error("Error al obtener hechos de la colección:", e);
+        setText(estado, `Error: ${e?.message || e}`);
+    } finally {
+        // Vuelve el botón a su estado normal
+        setDoneUI(btnVer);
+        setText(estado, ""); // Limpia el estado de "Buscando hechos..."
     }
 }
+
 
 // Aplicar filtros temporales sin guardar en BD
 async function aplicarFiltrosColeccion() {
@@ -1229,17 +1374,41 @@ function construirParametrosFiltros(contexto) {
 // Aplicar filtros a hechos
 async function aplicarFiltrosHechos() {
     const params = construirParametrosFiltros("panelFiltrosHechos");
-    console.log("📡 Aplicando filtros hechos:", params.toString());
+    const btn = document.getElementById("btnAplicarFiltrosHechos");
+    const tabla = document.getElementById("tablaHechos");
+
+    // Cambiar botón a "Cargando…"
+    setLoadingUI({ button: btn });
+
+    // Mostrar skeleton mientras carga
+    if (tabla) {
+        tabla.innerHTML = `
+          <div class="text-muted mb-2">
+            <span class="spinner" style="display:inline-block; vertical-align:middle;"></span>
+            <span style="margin-left:8px;">Aplicando filtros / buscando hechos…</span>
+          </div>
+          ${crearSkeletonTablaHechos(8)}
+        `;
+        await new Promise(r => requestAnimationFrame(r)); // fuerza repaint
+    }
+
     try {
         const hechos = await obtenerHechos(params);
-        inicializarMapa();
+        await ensureMapaInit("mapa");
         mostrarHechosEnMapa(hechos);
-        document.getElementById("tablaHechos").innerHTML = renderTablaHechos("Hechos filtrados", hechos);
+        tabla.innerHTML = renderTablaHechos("Hechos filtrados", hechos);
     } catch (e) {
-        alert("Error al aplicar filtros");
         console.error(e);
+        tabla.innerHTML = `<div class="alert alert-danger">Error al aplicar filtros: ${e?.message || JSON.stringify(e)}</div>`;
+    } finally {
+        // Restaurar botón
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = "Aplicar filtros";
+        }
     }
 }
+
 
 function mostrarModal(mensaje, titulo = "Atención", recargar = false) {
     const modal = document.createElement("div");
