@@ -141,3 +141,41 @@ async function cargarCSV(idFuenteDeDatos) {
     };
     input.click();
 }
+
+async function resolverIdFuentePorNombre(nombre) {
+    const n = (nombre || "").trim().toLowerCase();
+    if (!n) return null;
+
+    const [est, dyn, demo, meta] = await Promise.all([
+        obtenerFuentesEstaticas(),
+        obtenerFuentesDinamicas(),
+        obtenerFuentesDemo(),
+        obtenerFuentesMetamapa()
+    ]);
+
+    // Estáticas: fuenteId
+    if (est?.disponible) {
+        const f = est.fuentes.find(x => (x.nombre || "").trim().toLowerCase() === n);
+        if (f) return f.fuenteId;
+    }
+
+    // Dinámicas: id
+    if (dyn?.disponible) {
+        const f = dyn.fuentes.find(x => (x.nombre || "").trim().toLowerCase() === n);
+        if (f) return f.id;
+    }
+
+    // Demo: id
+    if (demo?.disponible) {
+        const f = demo.fuentes.find(x => (x.nombre || "").trim().toLowerCase() === n);
+        if (f) return f.id;
+    }
+
+    // Metamapa: id
+    if (meta?.disponible) {
+        const f = meta.fuentes.find(x => (x.nombre || "").trim().toLowerCase() === n);
+        if (f) return f.id;
+    }
+
+    return null;
+}

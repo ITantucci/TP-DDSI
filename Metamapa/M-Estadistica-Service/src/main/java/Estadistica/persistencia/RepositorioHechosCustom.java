@@ -1,7 +1,6 @@
 package Estadistica.persistencia;
 
 import Estadistica.business.Colecciones.Criterio;
-import Estadistica.business.Colecciones.*;
 import Estadistica.business.Hechos.Hecho;
 import java.util.List;
 import java.util.Optional;

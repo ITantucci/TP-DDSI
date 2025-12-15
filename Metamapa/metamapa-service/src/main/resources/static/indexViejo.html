@@ -2,82 +2,172 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>MetaMapa</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="css/style.css" rel="stylesheet">
 </head>
-<body class="bg-light">
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container-fluid">
-        <a class="navbar-brand fw-bold" href="#">MetaMapa</a>
-        <div>
-            <button class="btn btn-light me-2 login-required d-none" onclick="mostrar('hechos')">Hechos</button>
-            <button class="btn btn-light visualizador-level me-2" onclick="mostrar('colecciones')">Colecciones</button>
-            <button class="btn btn-light me-2 login-required admin-only d-none" onclick="mostrar('fuentes')">Fuentes</button>
-            <button class="btn btn-light me-2 login-required admin-only d-none" onclick="mostrar('solicitudes')">Solicitudes</button>
-            <button class="btn btn-light me-2 login-required d-none" onclick="mostrar('estadisticas')">Estadisticas</button>
-            <button class="btn btn-success me-2 login-required d-none" data-bs-toggle="modal" data-bs-target="#modalHecho">+ Hecho</button>
-            <button class="btn btn-warning me-2 login-required d-none" onclick="actualizarHechos()">Actualizar</button>
-            <button class="btn btn-danger login-required d-none" onclick="curarHechos()">Curar</button>
-            <button id="btnLogin" class="btn btn-outline-light me-2" onclick="iniciarSesionSSO()">Iniciar sesión</button>
 
-            <button id="btnLogout" class="btn btn-outline-light me-2 d-none" onclick="cerrarSesion()">Cerrar sesión</button>
+<body class="bg-light">
+
+<!-- ========== NAVBAR ========== -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm sticky-top">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold letter-tight" href="#">MetaMapa</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mmNavbar"
+                aria-controls="mmNavbar" aria-expanded="false" aria-label="Abrir menú">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mmNavbar">
+            <!-- Navegación principal -->
+            <div class="navbar-nav me-auto gap-2 py-2 py-lg-0">
+                <button class="btn btn-outline-light btn-sm login-required d-none" onclick="mostrar('hechos')">Hechos</button>
+                <button class="btn btn-light btn-sm visualizador-level" onclick="mostrar('colecciones')">Colecciones</button>
+                <button class="btn btn-outline-light btn-sm login-required d-none" onclick="mostrar('estadisticas')">Estadísticas</button>
+
+                <!-- Admin -->
+                <div class="dropdown login-required admin-only d-none">
+                    <button class="btn btn-outline-light btn-sm dropdown-toggle" data-bs-toggle="dropdown" type="button">
+                        Admin
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><button class="dropdown-item" type="button" onclick="mostrar('fuentes')">Fuentes</button></li>
+                        <li><button class="dropdown-item" type="button" onclick="mostrar('solicitudes')">Solicitudes</button></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Acciones + Login -->
+            <div class="d-flex flex-wrap align-items-center gap-2 py-2 py-lg-0">
+                <div class="dropdown login-required d-none">
+                    <button class="btn btn-success btn-sm dropdown-toggle" data-bs-toggle="dropdown" type="button">
+                        Acciones
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <button class="dropdown-item" type="button" data-bs-toggle="modal" data-bs-target="#modalHecho">
+                                + Hecho
+                            </button>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><button class="dropdown-item" type="button" onclick="actualizarHechos()">Actualizar</button></li>
+                        <li><button class="dropdown-item text-danger" type="button" onclick="curarHechos()">Curar</button></li>
+                    </ul>
+                </div>
+
+                <button id="btnLogin" class="btn btn-outline-light btn-sm" onclick="iniciarSesionSSO()">Iniciar sesión</button>
+                <button id="btnLogout" class="btn btn-outline-light btn-sm d-none" onclick="cerrarSesion()">Cerrar sesión</button>
+            </div>
         </div>
     </div>
 </nav>
 
-<div class="container-fluid mt-3" id="contenido">
+<!-- ========== CONTENIDO ========== -->
+<div class="container-xxl my-3" id="contenido">
+
+    <!-- ===== View Colecciones (tu default actual) ===== -->
     <div id="coleccionesView">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h4>Colecciones</h4>
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <div>
+                <h4 class="mb-0 fw-semibold">Colecciones</h4>
+                <div class="text-muted small">Navegá colecciones, aplicá filtros y explorá el mapa.</div>
+            </div>
+
             <!-- Solo visible para ADMINISTRADOR -->
-            <button class="btn btn-light me-2 login-required admin-only d-none"
+            <button class="btn btn-primary btn-sm login-required admin-only d-none"
                     data-bs-toggle="modal"
                     data-bs-target="#modalColeccion">
                 + Nueva Colección
             </button>
         </div>
-        <div class="mb-3">
-            <label for="modoNav" class="form-label">Modo de navegación:</label>
-            <select id="modoNav" class="form-select form-select-sm">
-                <option value="IRRESTRICTA">Irrestricta</option>
-                <option value="CURADA">Curada</option>
-            </select>
-        </div>
-        <div id="filtrosColeccion" class="border p-3 rounded mb-3 bg-light">
-            <h6>Filtros temporales</h6>
-            <div class="row g-2">
-                <div class="col-md-4">
-                    <input id="tituloNP" class="form-control form-control-sm" placeholder="Excluir título...">
+
+        <div class="row g-3">
+            <!-- Panel izquierdo -->
+            <div class="col-12 col-lg-4">
+                <div class="card mm-card">
+                    <div class="card-body">
+                        <label for="modoNav" class="form-label small text-muted mb-1">Modo de navegación</label>
+                        <select id="modoNav" class="form-select form-select-sm">
+                            <option value="IRRESTRICTA">Irrestricta</option>
+                            <option value="CURADA">Curada</option>
+                        </select>
+
+                        <hr class="my-3">
+
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="fw-semibold">Filtros</div>
+                            <button class="btn btn-link btn-sm text-decoration-none px-0" type="button"
+                                    data-bs-toggle="collapse" data-bs-target="#mmFiltros" aria-expanded="true">
+                                Mostrar/ocultar
+                            </button>
+                        </div>
+
+                        <div class="collapse show" id="mmFiltros">
+                            <div class="mb-2">
+                                <label class="form-label small text-muted mb-1" for="tituloNP">Excluir título</label>
+                                <input id="tituloNP" class="form-control form-control-sm" placeholder="Ej: repetido, prueba...">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label small text-muted mb-1" for="categoriaP">Incluir categoría</label>
+                                <input id="categoriaP" class="form-control form-control-sm" placeholder="Ej: incendio, vial...">
+                            </div>
+
+                            <div class="d-grid">
+                                <button class="btn btn-outline-success btn-sm" onclick="aplicarFiltrosColeccion()">
+                                    Aplicar filtros
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <input id="categoriaP" class="form-control form-control-sm" placeholder="Incluir categoría...">
+
+                <div class="card mm-card mt-3">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="fw-semibold">Listado</div>
+                            <span class="badge text-bg-light border">Colecciones</span>
+                        </div>
+
+                        <!-- Acá tu JS sigue pintando la lista -->
+                        <div id="listaColecciones" class="mm-lista mb-0"></div>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <button class="btn btn-sm btn-outline-success w-100" onclick="aplicarFiltrosColeccion()">Aplicar filtros</button>
+            </div>
+
+            <!-- Mapa -->
+            <div class="col-12 col-lg-8">
+                <div class="card mm-card mm-map-card">
+                    <div class="card-body p-0">
+                        <div id="mapaColeccion" class="mapa"></div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div id="listaColecciones" class="mb-3"></div>
-        <div id="mapaColeccion" class="mapa"></div>
     </div>
+
 </div>
 
 <!-- ========== MODAL CREAR HECHO ========== -->
 <div class="modal fade" id="modalHecho" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title">Nuevo Hecho</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
+
             <form id="formHecho" class="modal-body">
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Título</label>
                         <input name="titulo" class="form-control" required>
                     </div>
+
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Categoría</label>
                         <div class="input-group">
@@ -87,13 +177,15 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="mb-3">
                     <label class="form-label">Descripción</label>
                     <textarea name="descripcion" class="form-control" required></textarea>
                 </div>
-                <!-- Mapa selector de ubicación -->
-                <h6>Seleccioná la ubicación del hecho</h6>
+
+                <h6 class="mt-3">Seleccioná la ubicación del hecho</h6>
                 <div id="mapaSeleccion" class="mapa-seleccion mb-3"></div>
+
                 <div class="row mb-3">
                     <div class="col">
                         <label class="form-label">Latitud</label>
@@ -104,57 +196,63 @@
                         <input type="number" step="any" name="longitud" id="longitud" class="form-control">
                     </div>
                 </div>
+
                 <div class="row mb-3">
-                    <div class="col">
-                        <label class="form-label">ID Usuario</label>
-                        <input name="idUsuario" type="number" class="form-control" placeholder="123">
-                    </div>
                     <div class="col">
                         <label class="form-label">ID Fuente</label>
                         <input name="idFuente" type="number" class="form-control" placeholder="1" required>
                     </div>
                 </div>
+
                 <div class="form-check mb-3">
                     <input class="form-check-input" type="checkbox" name="anonimo" id="anonimo">
                     <label class="form-check-label" for="anonimo">Reportar como anónimo</label>
                 </div>
+
                 <hr>
                 <h6>Multimedia</h6>
                 <div id="multimediaContainer">
                     <div class="row mb-2">
-                        <input type="file" id="inputMultimedia" name="archivos" multiple>
+                        <input type="file" id="inputMultimedia" name="archivos" multiple class="form-control form-control-sm">
                     </div>
                 </div>
+
                 <div id="resultadoHecho" class="mt-3 text-center"></div>
-                <div class="modal-footer">
+
+                <div class="modal-footer px-0">
                     <button type="submit" class="btn btn-success" id="btnGuardar">
                         <span id="btnGuardarTexto">Guardar</span>
                         <span id="btnGuardarLoader" class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
                     </button>
                 </div>
             </form>
+
         </div>
     </div>
 </div>
 
 <!-- Modal: Crear o Editar Colección -->
 <div class="modal fade" id="modalColeccion" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title" id="modalColeccionTitle">Nueva Colección</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
+
             <form id="formColeccion" class="modal-body">
                 <input type="hidden" name="idColeccion" id="idColeccion">
+
                 <div class="mb-3">
                     <label class="form-label">Título</label>
                     <input name="titulo" class="form-control" required>
                 </div>
+
                 <div class="mb-3">
                     <label class="form-label">Descripción</label>
                     <textarea name="descripcion" class="form-control" required></textarea>
                 </div>
+
                 <div class="mb-3">
                     <label class="form-label">Tipo de consenso</label>
                     <select name="consenso" class="form-select">
@@ -163,12 +261,17 @@
                         <option value="multiplesMenciones">Múltiples menciones</option>
                     </select>
                 </div>
+
                 <hr>
                 <h6>Criterios de la colección</h6>
                 <div id="criteriosContainer"></div>
-                <button type="button" class="btn btn-outline-secondary btn-sm mt-2" onclick="agregarCriterio()">+ Agregar criterio</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm mt-2" onclick="agregarCriterio()">
+                    + Agregar criterio
+                </button>
+
                 <div id="resultadoColeccion" class="mt-3 text-center"></div>
-                <div class="modal-footer">
+
+                <div class="modal-footer px-0">
                     <button type="submit" class="btn btn-success">Guardar</button>
                 </div>
             </form>
@@ -178,7 +281,7 @@
 
 <!-- ========== MODAL DETALLE DE HECHO ========== -->
 <div class="modal fade" id="modalDetalle" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header bg-secondary text-white">
                 <h5 class="modal-title">Detalle del Hecho</h5>
@@ -191,12 +294,13 @@
 
 <!-- Modal: Seleccionar ubicación -->
 <div class="modal fade" id="modalUbicacion" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header bg-success text-white">
                 <h5 class="modal-title">Seleccionar área de ubicación</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
+
             <div class="modal-body">
                 <div id="mapaUbicacion"></div>
                 <div class="mt-3">
@@ -205,6 +309,7 @@
                     <span id="radioLabel">5 km</span>
                 </div>
             </div>
+
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-success" onclick="confirmarUbicacion()">Confirmar</button>
@@ -221,9 +326,11 @@
                 <h5 class="modal-title">Agregar nueva categoría</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
+
             <div class="modal-body">
                 <input type="text" id="nuevaCategoriaInput" class="form-control" placeholder="Escribí una nueva categoría...">
             </div>
+
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-success" onclick="guardarNuevaCategoria()">Guardar</button>
@@ -232,8 +339,10 @@
     </div>
 </div>
 
+<!-- ========== SCRIPTS ========== -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <script src="/config.js"></script>
 <script src="js/api/apiSolicitudes.js"></script>
 <script src="js/api/apiFuentes.js"></script>
@@ -244,5 +353,6 @@
 <script src="js/stats.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/auth.js"></script>
+
 </body>
 </html>

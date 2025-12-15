@@ -81,7 +81,7 @@ public class ControllerEstadistica {
   })
   @GetMapping("/coleccion/{uuid}/provincia-mas-reportada")
   public ResponseEntity<ProvinciaConMasHechosPorColeccion> estadisticaColeccionProvincia(@PathVariable UUID uuid) {
-    ProvinciaConMasHechosPorColeccion provincia = estadisticaService.estadisticaColeccionProvincia(uuid);
+    ProvinciaConMasHechosPorColeccion provincia = estadisticaService.obtenerUltimaEstadisticaColeccionProvincia(uuid);
     return (provincia == null) ? ResponseEntity.noContent().build() : ResponseEntity.ok(provincia);
   }
 
@@ -105,7 +105,7 @@ public class ControllerEstadistica {
   })
   @GetMapping("/categoria")
   public ResponseEntity<CategoriaConMasHechos> obtenerCategoriaMasReportada() {
-    CategoriaConMasHechos categoria = estadisticaService.estadisticaCategoriaMasReportada();
+    CategoriaConMasHechos categoria = estadisticaService.obtenerUltimaEstadisticaCategoriaMasReportada();
     return (categoria == null) ? ResponseEntity.noContent().build() : ResponseEntity.ok(categoria);
   }
 
@@ -121,7 +121,7 @@ public class ControllerEstadistica {
   })
   @GetMapping("/hechos/provincia-mas-reportada")
   public ResponseEntity<ProvinciaConMasHechosPorCategoria> provinciaMasReportada(@RequestParam String categoria) {
-    ProvinciaConMasHechosPorCategoria provincia = estadisticaService.estadisticaProvinciaCategoria(categoria);
+    ProvinciaConMasHechosPorCategoria provincia = estadisticaService.obtenerUltimaEstadisticaProvinciaCategoria(categoria);
     return (provincia == null) ? ResponseEntity.noContent().build() : ResponseEntity.ok(provincia);
   }
 
@@ -136,7 +136,7 @@ public class ControllerEstadistica {
   })
   @GetMapping("/hechos/hora")
   public ResponseEntity<HoraConMasHechosPorCategoria> horaMasReportada(@RequestParam String categoria) {
-    HoraConMasHechosPorCategoria hora = estadisticaService.estadisticaHoraCategoria(categoria);
+    HoraConMasHechosPorCategoria hora = estadisticaService.obtenerUltimaEstadisticaHoraCategoria(categoria);
     return (hora == null) ? ResponseEntity.noContent().build() : ResponseEntity.ok(hora);
   }
 
@@ -152,7 +152,7 @@ public class ControllerEstadistica {
   })
   @GetMapping("/spam")
   public ResponseEntity<CantidadDeSpam> contarSolicitudesSpam() {
-    CantidadDeSpam cantidad = estadisticaService.estadisticaSpam();
+    CantidadDeSpam cantidad = estadisticaService.obtenerUltimaEstadisticaSpam();
     return (cantidad == null) ? ResponseEntity.noContent().build() : ResponseEntity.ok(cantidad);
   }
 

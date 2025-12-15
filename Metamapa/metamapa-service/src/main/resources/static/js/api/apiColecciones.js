@@ -134,14 +134,9 @@ async function obtenerColeccion(id) {
     return data; // Coleccion directa
 }
 
-async function agregarFuenteAColeccionPorNombre(coleccionId, nombreFuente) {
-    const resp = await fetch(`${window.METAMAPA.API_COLECCIONES}/colecciones/${id}/fuentes?nombre=${encodeURIComponent(nombreFuente)}`, {
-        method: "POST"
-    });
-
-    if (!resp.ok) {
-        const txt = await resp.text().catch(() => "");
-        throw new Error(txt || `HTTP ${resp.status}`);
-    }
+async function agregarFuenteAColeccion(id, idFuente) {
+    const url = `${window.METAMAPA.API_COLECCIONES}/colecciones/${id}/fuentes/${idFuente}`;
+    const resp = await fetch(url, { method: "POST" });
+    if (!resp.ok) throw new Error(await resp.text());
     return true;
 }

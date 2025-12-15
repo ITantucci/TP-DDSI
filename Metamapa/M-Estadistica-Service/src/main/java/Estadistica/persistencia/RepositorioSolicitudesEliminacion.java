@@ -1,6 +1,5 @@
 package Estadistica.persistencia;
 
-import Estadistica.business.Solicitudes.Solicitud;
 import Estadistica.business.Solicitudes.SolicitudEliminacion;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;

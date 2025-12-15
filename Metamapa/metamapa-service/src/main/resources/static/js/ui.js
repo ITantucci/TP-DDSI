@@ -653,7 +653,7 @@ function renderDetalleHechoView(h, contenedor) {
       <p><b>Fecha de modificación:</b> ${h.fechaModificacion || "-"}</p>
       <hr>
       <h6>Datos internos</h6>
-      <p><b>Perfil:</b> ${h.perfil || "<i>Sin perfil</i>"}</p>
+      <p><b>usuarioId:</b> ${h.usuarioId || "<i>Sin usuario</i>"}</p>
       <p><b>Consensos:</b> ${h.consensos?.length ? h.consensos.join(", ") : "<i>Ninguno</i>"}</p>
       <pre class="bg-light p-2 rounded"><b>Metadata:</b>\n${JSON.stringify(h.metadata || {}, null, 2)}</pre>
       <hr>
@@ -1109,16 +1109,10 @@ async function mostrarColecciones() {
                     data-handle="${c.handle}">
               Ver hechos
             </button>
-          <!-- ✅ Agregar fuente (solo ID) -->
+          
             <div class="input-group input-group-sm" style="width: 220px;">
-              <input class="form-control inputFuenteNombre"
-                   data-handle="${c.handle}"
-                   placeholder="Nombre fuente"
-                   autocomplete="off">
-              <button class="btn btn-outline-success btnAgregarFuente"
-                      data-handle="${c.handle}">
-                Agregar
-              </button>
+              <input class="form-control inputFuenteNombre" data-handle="${c.handle}" placeholder="Nombre fuente">
+            <button class="btn btn-outline-success btnAgregarFuente" data-handle="${c.handle}">Agregar</button>
             </div>
 
             <button class="btn btn-sm admin-only btn-outline-primary"
@@ -1156,29 +1150,34 @@ async function mostrarColecciones() {
             // --- AGREGAR FUENTE ---
             const btnFuente = e.target.closest(".btnAgregarFuente");
             if (btnFuente) {
-                const handle = btnFuente.dataset.handle; // ✅ toma handle automático
+                const handle = btnFuente.dataset.handle;
                 const estado = document.getElementById(`estadoColeccion_${handle}`);
 
-                const input = cont.querySelector(`.inputFuenteId[data-handle="${handle}"]`);
-                const fuenteIdTxt = input?.value?.trim();
+                const input = cont.querySelector(`.inputFuenteNombre[data-handle="${handle}"]`);
+                const nombreTxt = input?.value?.trim();
 
-                if (!fuenteIdTxt) return alert("Ingresá el ID de la fuente");
-                if (!/^\d+$/.test(fuenteIdTxt)) return alert("El ID de fuente debe ser numérico");
+                if (!nombreTxt) return alert("Ingresá el NOMBRE de la fuente");
 
                 setLoadingUI({ button: btnFuente });
-                setLoadingUI({ container: estado, message: "Agregando fuente..." });
+                setLoadingUI({ container: estado, message: "Buscando fuente..." });
 
                 try {
-                    await agregarFuenteAColeccionPorNombre(handle, nombreFuente);
+                    const idFuente = await resolverIdFuentePorNombre(nombreTxt);
+                    if (!idFuente) throw new Error("No se encontró una fuente con ese nombre");
+
+                    setLoadingUI({ container: estado, message: `Agregando fuente (id ${idFuente})...` });
+
+                    await agregarFuenteAColeccion(handle, idFuente);
+
                     setText(estado, "✅ Fuente agregada");
                     if (input) input.value = "";
                 } catch (err) {
                     console.error(err);
-                    setText(estado, `❌ Error: ${err?.message || err}`);
+                    setText(estado, `❌ ${err?.message || err}`);
                 } finally {
-                    btnFuente.disabled = false;
-                    btnFuente.textContent = "Agregar";
+                    setDoneUI(btnFuente);
                 }
+                return;
             }
         };
 

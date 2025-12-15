@@ -1,8 +1,6 @@
 package Estadistica.Service;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import Estadistica.business.Solicitudes.EstadoSolicitud;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -54,7 +52,7 @@ public class ServiceEstadistica {
 
     public String exportarCsv() {
         StringBuilder csv = new StringBuilder();
-        CategoriaConMasHechos topCategoriaStats = estadisticaCategoriaMasReportada();
+        CategoriaConMasHechos topCategoriaStats = obtenerUltimaEstadisticaCategoriaMasReportada();
         String categoriaBase = topCategoriaStats.getCategoria();
         // CONDICIÓN DE NO EXPORTAR: Si la categoría base es N/A, no hay datos válidos para filtrar.
         if ("N/A".equals(categoriaBase) || categoriaBase.isBlank()) {
@@ -62,10 +60,10 @@ public class ServiceEstadistica {
         }
         // UUID de ejemplo (Asumimos que el Administrador definiría esto, pero para la exportación genérica, usamos un placeholder)
         UUID coleccionEjemplo = UUID.fromString("00000000-0000-0000-0000-000000000001");
-        CantidadDeSpam spamStats = estadisticaSpam();
-        HoraConMasHechosPorCategoria horaStats = estadisticaHoraCategoria(categoriaBase);
-        ProvinciaConMasHechosPorCategoria provinciaCategoriaStats = estadisticaProvinciaCategoria(categoriaBase);
-        ProvinciaConMasHechosPorColeccion coleccionStats = estadisticaColeccionProvincia(coleccionEjemplo);
+        CantidadDeSpam spamStats = obtenerUltimaEstadisticaSpam();
+        HoraConMasHechosPorCategoria horaStats = obtenerUltimaEstadisticaHoraCategoria(categoriaBase);
+        ProvinciaConMasHechosPorCategoria provinciaCategoriaStats = obtenerUltimaEstadisticaProvinciaCategoria(categoriaBase);
+        ProvinciaConMasHechosPorColeccion coleccionStats = obtenerUltimaEstadisticaColeccionProvincia(coleccionEjemplo);
         // Formato Analítico Simple: Tipo_de_Estadistica,Clave,Valor
         csv.append("Tipo_de_Estadistica,Clave,Valor\n");
         // I. ¿Cuántas solicitudes de eliminación son spam?
@@ -142,5 +140,33 @@ public class ServiceEstadistica {
     public CategoriaConMasHechos estadisticaCategoriaMasReportada() {
         String categoria = repositorioHechos.obtenerCategoriaConMasHechos().orElse("N/A");
         return new CategoriaConMasHechos(categoria);
+    }
+
+    public CantidadDeSpam obtenerUltimaEstadisticaSpam() {
+        return repositorioEstadisticas.obtenerMasNueva(CantidadDeSpam.class, new HashMap<String, Object>()).orElse(new CantidadDeSpam(0));
+    }
+    public CategoriaConMasHechos obtenerUltimaEstadisticaCategoriaMasReportada() {
+        return repositorioEstadisticas.obtenerMasNueva(CategoriaConMasHechos.class, new HashMap<String, Object>()).orElse(new CategoriaConMasHechos("N/A"));
+    }
+    public HoraConMasHechosPorCategoria obtenerUltimaEstadisticaHoraCategoria(String categoria) {
+        Map map = new HashMap<String, Object>();
+        map.put("categoria", categoria);
+        return (HoraConMasHechosPorCategoria) repositorioEstadisticas.obtenerMasNueva(HoraConMasHechosPorCategoria.class, map)
+                .orElse(new HoraConMasHechosPorCategoria("N/A", categoria));
+    }
+
+    public ProvinciaConMasHechosPorCategoria obtenerUltimaEstadisticaProvinciaCategoria(String categoria) {
+        Map map = new HashMap<String, Object>();
+        map.put("categoria", categoria);
+        return (ProvinciaConMasHechosPorCategoria) repositorioEstadisticas.obtenerMasNueva(ProvinciaConMasHechosPorCategoria.class, map)
+                .orElse(new ProvinciaConMasHechosPorCategoria("N/A", categoria));
+    }
+
+    public ProvinciaConMasHechosPorColeccion obtenerUltimaEstadisticaColeccionProvincia(UUID idColeccion) {
+        Coleccion coleccion = repositorioColecciones.findById(idColeccion).orElse(null);
+        Map map = new HashMap<String, Object>();
+        map.put("coleccion", coleccion);
+        return (ProvinciaConMasHechosPorColeccion) repositorioEstadisticas.obtenerMasNueva(ProvinciaConMasHechosPorColeccion.class,map)
+                .orElse(new ProvinciaConMasHechosPorColeccion("N/A", null));
     }
 }

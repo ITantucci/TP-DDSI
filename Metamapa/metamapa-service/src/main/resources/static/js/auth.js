@@ -78,27 +78,21 @@ function ocultarTodoYMostrarLogin() {
     }
 }
 
+let usuarioActual = null;
+
 async function verificarSesionYActualizarUI() {
     try {
-        const resp = await fetch(
-            `${window.METAMAPA.API_USUARIOS}/api-auth/me`,
-            { credentials: 'include' }
-        );
-
+        const resp = await fetch(`${window.METAMAPA.API_USUARIOS}/api-auth/me`, { credentials: 'include' });
         if (resp.ok) {
-            const usuario = await resp.json();
-            const roles = usuario.roles || [];
-
-            console.log("Usuario autenticado:", usuario);
-            console.log("Roles del usuario:", roles);
-
-            actualizarVisibilidadPorRoles(roles, usuario.nombre);
+            usuarioActual = await resp.json();
+            const roles = usuarioActual.roles || [];
+            actualizarVisibilidadPorRoles(roles, usuarioActual.nombre);
         } else {
-            console.warn("No autenticado, status:", resp.status);
+            usuarioActual = null;
             ocultarTodoYMostrarLogin();
         }
     } catch (e) {
-        console.error("Error verificando sesión:", e);
+        usuarioActual = null;
         ocultarTodoYMostrarLogin();
     }
 }

@@ -57,45 +57,6 @@ public class RepositorioHechosImpl implements RepositorioHechosCustom {
     return filtrados;
   }
 
-
-//  @Override
-//  public Optional<String> obtenerHoraConMasHechos(String categoria) {
-//
-//    CriteriaBuilder cb = em.getCriteriaBuilder();
-//    CriteriaQuery<Tuple> query = cb.createTupleQuery();
-//    Root<Hecho> root = query.from(Hecho.class);
-//
-//    // Extraer la hora del DateTime
-//    Expression<Integer> horaExpr =
-//            cb.function("hour", Integer.class, root.get("fechaHecho"));
-//
-//    Expression<Long> countExpr = cb.count(root);
-//
-//    List<Predicate> predicates = new ArrayList<>();
-//
-//    // Filtro por categoría (opcional)
-//    if (categoria != null && !categoria.isBlank()) {
-//      predicates.add(cb.equal(root.get("categoria"), categoria));
-//    }
-//
-//    query.multiselect(
-//                    horaExpr.alias("hora"),
-//                    countExpr.alias("cantidad")
-//            )
-//            .where(predicates.toArray(new Predicate[0]))
-//            .groupBy(horaExpr)
-//            .orderBy(cb.desc(countExpr));
-//
-//    List<Tuple> resultados = em.createQuery(query)
-//            .setMaxResults(1)
-//            .getResultList();
-//
-//    if (resultados.isEmpty()) {
-//      return Optional.empty();
-//    }
-//
-//    return Optional.of(resultados.get(0).get("hora", Integer.class).toString());
-//  }
 @Override
 public Optional<String> obtenerHoraConMasHechos(String categoria) {
   String sql = "SELECT TOP 1 DATEPART(HOUR, fecha_carga) AS hora, COUNT(*) AS cantidad " +
@@ -201,5 +162,4 @@ public Optional<String> obtenerHoraConMasHechos(String categoria) {
             resultados.get(0).get("provincia", String.class)
     );
   }
-
 }

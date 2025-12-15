@@ -25,7 +25,7 @@ async function crearHecho(e) {
             latitud: parseFloat(f.latitud.value),
             longitud: parseFloat(f.longitud.value),
             fechaHecho: f.fechaHecho?.value || new Date().toISOString().slice(0, 16),
-            idUsuario: parseInt(f.idUsuario.value), //TODO: obtener del login
+            idUsuario: usuarioActual?.id || null,
             fuenteId: parseInt(f.idFuente.value),
             anonimo: f.anonimo.checked
         };

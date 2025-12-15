@@ -76,7 +76,7 @@ public class ServiceFuenteDeDatos {
     Float latitud       = f(json.get("latitud"));
     Float longitud      = f(json.get("longitud"));
     LocalDateTime fechaHecho = date(json.get("fechaHecho"));
-    // id del hecho dentro de la fuente (aceptamos "id" o "hechoId")
+    Integer usuarioId   = i(json.containsKey("usuarioId")? json.get("usuarioId") : json.get("idUsuario"));
     Integer hechoId     = i(json.containsKey("id") ? json.get("id") : json.get("hechoId"));
     Boolean anonimo     = bool(json.get("anonimo"));
     Boolean eliminado   = bool(json.get("eliminado"));
@@ -89,12 +89,12 @@ public class ServiceFuenteDeDatos {
     // Construcción del dominio (perfil/multimedia opcionales -> null / vacío)
     Hecho h = new Hecho(
             titulo, descripcion, categoria, latitud, longitud, fechaHecho,
-            null,                // perfil
-            idFuente,            // fuenteId (clave para CriterioFuenteDeDatos)
+            usuarioId,
+            idFuente,
             provincia,
             hechoId == null ? 0 : hechoId,
             anonimo != null ? anonimo : Boolean.TRUE,
-            new ArrayList<>()    // multimedia
+            new ArrayList<>()
     );
     if (fechaCarga != null) h.setFechaCarga(fechaCarga);
     if (fechaMod != null)   h.setFechaModificacion(fechaMod);

@@ -1,14 +1,10 @@
 package Agregador.business.Hechos;
-import Agregador.business.Usuarios.Usuario;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.*;
 import jakarta.persistence.*;
 import lombok.*;
 import Agregador.business.Consenso.*;
-import Agregador.Service.GeocodingService;
-import org.springframework.stereotype.Service;
-
 
 @Entity
 @Getter @Setter
@@ -24,8 +20,7 @@ public class Hecho {
   private LocalDateTime fechaHecho;
   private LocalDateTime fechaCarga;
   private LocalDateTime fechaModificacion;
-  @ManyToOne
-  private Usuario perfil;
+  private Integer usuarioId;
   private Boolean anonimo;
   private Boolean eliminado;
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -54,7 +49,7 @@ public class Hecho {
           Float latitud,
           Float longitud,
           LocalDateTime fechaHecho,
-          Usuario perfil,
+          Integer usuarioId,
           Integer fuenteId,
           String provincia,
           Integer hechoId,
@@ -69,7 +64,7 @@ public class Hecho {
     this.fechaHecho = fechaHecho;
     this.fechaCarga = LocalDateTime.now();
     this.fechaModificacion = LocalDateTime.now();
-    this.perfil = perfil;
+    this.usuarioId = usuarioId;
     this.anonimo = anonimo;
     this.eliminado = false;
     this.multimedia = multimedia;

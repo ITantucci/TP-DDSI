@@ -19,7 +19,7 @@ public class HechoDTO {
   private LocalDateTime fechaHecho;
   private LocalDateTime fechaCarga;
   private LocalDateTime fechaModificacion;
-  private String perfil; // solo nombre del usuario o null
+  private Integer usuarioId;
   private Boolean anonimo;
   private Boolean eliminado;
   private Integer idFuente;
@@ -42,7 +42,7 @@ public class HechoDTO {
     this.idFuente = hecho.getIdFuente();
 
     // Evitamos exponer todo el usuario
-    this.perfil = hecho.getPerfil() != null ? hecho.getPerfil().getNombre() : null;
+    this.usuarioId = hecho.getUsuarioId() != null ? hecho.getUsuarioId() : null;
 
     // Multimedia simplificada
     this.multimedia = hecho.getMultimedia() != null
