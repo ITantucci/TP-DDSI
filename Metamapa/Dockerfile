@@ -3,17 +3,14 @@ FROM maven:3.9.11-eclipse-temurin-24 AS build
 WORKDIR /src
 COPY . .
 
-# Parent pom está en Metamapa/
-WORKDIR /src/Metamapa
+# Compilar solo estos 2 módulos (y sus dependencias si hacen falta)
+RUN mvn -f Metamapa/pom.xml -DskipTests -pl Metamapa-Service,M-Agregador-Service -am clean package
 
-# Compilar SOLO estos 2 módulos (y lo necesario con -am)
-RUN mvn -DskipTests -pl Metamapa-Service,M-Agregador-Service -am clean package
-
-# Copiar jars a /out/<modulo>.jar
+# Copiar jars a /out con nombres fijos
 RUN set -eux; \
   mkdir -p /out; \
   for d in Metamapa-Service M-Agregador-Service; do \
-    JAR="$(ls -1 "$d"/target/*.jar 2>/dev/null | grep -vE '(original|sources|javadoc)\.jar$' | head -n 1)"; \
+    JAR="$(ls -1 Metamapa/$d/target/*.jar 2>/dev/null | grep -vE '(original|sources|javadoc)\.jar$' | head -n 1)"; \
     cp "$JAR" "/out/$d.jar"; \
   done; \
   ls -la /out
@@ -23,7 +20,7 @@ FROM eclipse-temurin:24-jre
 WORKDIR /app
 COPY --from=build /out /app
 
-# Elegís cuál correr desde Render (default: Metamapa-Service)
+# Default (Render puede pisarlo)
 ENV APP=Metamapa-Service
 EXPOSE 10000
 
