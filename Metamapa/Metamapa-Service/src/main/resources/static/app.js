@@ -2,8 +2,8 @@
    Configuración (ajustá endpoints a tu entorno)
    ========================================================= */
 window.METAMAPA = window.METAMAPA || {
-    API_AGREGADOR: "http://localhost:9004/api-agregador",
-    API_COLECCIONES: "http://localhost:9004/api-colecciones",
+    API_AGREGADOR: "https://metamapa-q0vx.onrender.com/api-agregador",
+    API_COLECCIONES: "https://metamapa-q0vx.onrender.com/api-colecciones",
     API_FUENTE_DINAMICA: "http://localhost:9001/api-fuentesDeDatos",
     API_FUENTE_ESTATICA: "http://localhost:9002/api-fuentesDeDatos",
     API_FUENTE_DEMO: "http://localhost:9006/api-fuentesDeDatos",
