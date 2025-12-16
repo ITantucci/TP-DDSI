@@ -7,21 +7,6 @@ COPY . .
 # Compilamos SOLO el módulo que querés deployar
 ARG MODULE=M-Agregador-Service
 WORKDIR /app/Metamapa/${MODULE}
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 
 RUN mvn -DskipTests package
 
