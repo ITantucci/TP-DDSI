@@ -2,7 +2,7 @@ services:
   - type: web
     name: metamapa-service
     runtime: docker
-    rootDir: .
+    rootDir: TP-DDSI
     envVars:
       - key: APP
         value: Metamapa-service
@@ -10,7 +10,7 @@ services:
   - type: web
     name: agregador
     runtime: docker
-    rootDir: .
+    rootDir: TP-DDSI
     envVars:
       - key: APP
         value: M-Agregador-Service
@@ -20,7 +20,7 @@ services:
   - type: web
     name: usuarios
     runtime: docker
-    rootDir: .
+    rootDir: TP-DDSI
     envVars:
       - key: APP
         value: M-Usuarios-Service
@@ -30,7 +30,7 @@ services:
   - type: web
     name: fuente-dinamica
     runtime: docker
-    rootDir: .
+    rootDir: TP-DDSI
     envVars:
       - key: APP
         value: M-FuenteDinamica-Service
@@ -40,7 +40,7 @@ services:
   - type: web
     name: fuente-estatica
     runtime: docker
-    rootDir: .
+    rootDir: TP-DDSI
     envVars:
       - key: APP
         value: M-FuenteEstatica-Service
@@ -50,7 +50,7 @@ services:
   - type: web
     name: fuente-demo
     runtime: docker
-    rootDir: .
+    rootDir: TP-DDSI
     envVars:
       - key: APP
         value: M-FuenteDemo-Service
@@ -60,7 +60,7 @@ services:
   - type: web
     name: fuente-metamapa
     runtime: docker
-    rootDir: .
+    rootDir: TP-DDSI
     envVars:
       - key: APP
         value: M-FuenteMetamapa-Service
@@ -70,7 +70,7 @@ services:
   - type: web
     name: estadistica
     runtime: docker
-    rootDir: .
+    rootDir: TP-DDSI
     envVars:
       - key: APP
         value: M-Estadistica-Service
