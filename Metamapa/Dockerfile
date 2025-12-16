@@ -4,7 +4,7 @@ WORKDIR /app
 COPY . .
 
 # IMPORTANTE: el pom principal está en Metamapa/
-RUN mvn -f Metamapa/pom.xml -DskipTests package
+RUN mvn -DskipTests package
 
 # Copiamos jars a /out/<modulo>.jar
 RUN set -eux; \
