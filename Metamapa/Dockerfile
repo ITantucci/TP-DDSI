@@ -3,7 +3,8 @@ FROM maven:3.9.11-eclipse-temurin-24 AS build
 WORKDIR /app
 COPY . .
 
-# IMPORTANTE: el pom principal está en Metamapa/
+# El pom padre está en Metamapa/
+WORKDIR /app/Metamapa
 RUN mvn -DskipTests package
 
 # Copiamos jars a /out/<modulo>.jar
@@ -17,11 +18,12 @@ RUN set -eux; \
     M-FuenteEstatica-Service \
     M-FuenteMetamapa-Service \
     M-Usuarios-Service \
-    metamapa-service \
+    Metamapa-Service \
   ; do \
-    JAR="$(ls -1 "Metamapa/$d"/target/*.jar 2>/dev/null | grep -vE '(original|sources|javadoc)\.jar$' | head -n 1 || true)"; \
+    JAR="$(ls -1 "$d"/target/*.jar 2>/dev/null | grep -vE '(original|sources|javadoc)\.jar$' | head -n 1 || true)"; \
     [ -n "$JAR" ] && cp "$JAR" "/out/$d.jar" || true; \
   done
+
 
 # ---- run ----
 FROM eclipse-temurin:24-jre
