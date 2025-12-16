@@ -1,0 +1,78 @@
+services:
+  - type: web
+    name: metamapa-service
+    runtime: docker
+    rootDir: Metamapa
+    envVars:
+      - key: APP
+        value: metamapa-service
+
+  - type: web
+    name: agregador
+    runtime: docker
+    rootDir: Metamapa
+    envVars:
+      - key: APP
+        value: M-Agregador-Service
+      - key: PORT
+        value: 10000
+
+  - type: web
+    name: usuarios
+    runtime: docker
+    rootDir: Metamapa
+    envVars:
+      - key: APP
+        value: M-Usuarios-Service
+      - key: PORT
+        value: 10000
+
+  - type: web
+    name: fuente-dinamica
+    runtime: docker
+    rootDir: Metamapa
+    envVars:
+      - key: APP
+        value: M-FuenteDinamica-Service
+      - key: PORT
+        value: 10000
+
+  - type: web
+    name: fuente-estatica
+    runtime: docker
+    rootDir: Metamapa
+    envVars:
+      - key: APP
+        value: M-FuenteEstatica-Service
+      - key: PORT
+        value: 10000
+
+  - type: web
+    name: fuente-demo
+    runtime: docker
+    rootDir: Metamapa
+    envVars:
+      - key: APP
+        value: M-FuenteDemo-Service
+      - key: PORT
+        value: 10000
+
+  - type: web
+    name: fuente-metamapa
+    runtime: docker
+    rootDir: Metamapa
+    envVars:
+      - key: APP
+        value: M-FuenteMetamapa-Service
+      - key: PORT
+        value: 10000
+
+  - type: web
+    name: estadistica
+    runtime: docker
+    rootDir: Metamapa
+    envVars:
+      - key: APP
+        value: M-Estadistica-Service
+      - key: PORT
+        value: 10000
