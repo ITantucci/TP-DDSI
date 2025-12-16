@@ -30,6 +30,6 @@ FROM eclipse-temurin:24-jre
 WORKDIR /app
 COPY --from=build /out /app
 
-ENV APP=metamapa-service
+ENV APP=Metamapa-Service
 EXPOSE 10000
 CMD ["sh","-c","test -f /app/${APP}.jar || (echo \"Jar no encontrado: /app/${APP}.jar\" && ls -la /app && exit 1); java -Dserver.address=0.0.0.0 -Dserver.port=${PORT:-10000} -jar /app/${APP}.jar"]

@@ -5,7 +5,7 @@ services:
     rootDir: .
     envVars:
       - key: APP
-        value: metamapa-service
+        value: Metamapa-service
 
   - type: web
     name: agregador
