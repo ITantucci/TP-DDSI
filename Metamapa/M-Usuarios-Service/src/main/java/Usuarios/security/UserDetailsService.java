@@ -9,11 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-class UsuarioDetailsService implements UserDetailsService {
+class UsuarioDetailsService{
 
   private final RepositorioUsuarios usuarioRepo;
 
-  @Override
   @Transactional(readOnly = true)
   public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
     Usuario user = usuarioRepo.findByEmail(email)
