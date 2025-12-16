@@ -110,12 +110,6 @@
                         </goals>
                     </execution>
                 </executions>
-                <!-- opcional si no detecta el main -->
-                <!--
-                <configuration>
-                  <mainClass>tu.paquete.Application</mainClass>
-                </configuration>
-                -->
             </plugin>
         </plugins>
     </build>
