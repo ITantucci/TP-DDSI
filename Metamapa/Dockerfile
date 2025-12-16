@@ -1,25 +1,34 @@
 # ---- build ----
 FROM maven:3.9.11-eclipse-temurin-24 AS build
-
-WORKDIR /app
+WORKDIR /src
 COPY . .
 
-# Compilamos SOLO el módulo que querés deployar
-ARG MODULE=Metamapa-Service
-WORKDIR /app/Metamapa/${MODULE}
+# Build del reactor (parent pom dentro de Metamapa/)
+RUN mvn -f Metamapa/pom.xml -DskipTests clean package
 
-RUN mvn -DskipTests package
-
+# Copiamos jars a /out/<nombre_modulo>.jar (nombre = carpeta del módulo)
 RUN set -eux; \
   mkdir -p /out; \
-  JAR="$(ls -1 target/*.jar | grep -vE '(original|sources|javadoc)\.jar$' | head -n 1)"; \
-  cp "$JAR" /out/app.jar; \
+  find Metamapa -type f -path "*/target/*.jar" \
+    ! -name "*original*" ! -name "*sources*" ! -name "*javadoc*" \
+  | while read -r jar; do \
+      mod="$(echo "$jar" | cut -d/ -f2)"; \
+      cp "$jar" "/out/${mod}.jar"; \
+    done; \
   ls -la /out
 
 # ---- run ----
 FROM eclipse-temurin:24-jre
 WORKDIR /app
-COPY --from=build /out/app.jar /app/app.jar
+COPY --from=build /out/ /app/
 
+# Elegís qué jar correr con APP (por defecto uno)
+ENV APP=metamapa-service
 EXPOSE 10000
-CMD ["sh","-c","java -Dserver.address=0.0.0.0 -Dserver.port=${PORT:-10000} -jar /app/app.jar"]
+
+CMD ["sh","-c", "\
+  set -e; \
+  JAR=/app/${APP}.jar; \
+  test -f \"$JAR\" || (echo \"Jar no encontrado: $JAR\"; echo \"Disponibles:\"; ls -1 /app/*.jar; exit 1); \
+  exec java -Dserver.address=0.0.0.0 -Dserver.port=${PORT:-10000} -jar \"$JAR\" \
+"]
