@@ -43,4 +43,3 @@ ENV APP=metamapa-service
 EXPOSE 10000
 
 CMD ["sh","-c","test -f /app/${APP}.jar || (echo \"Jar no encontrado: /app/${APP}.jar\" && echo \"Contenido de /app:\" && ls -la /app && exit 1); java -Dserver.address=0.0.0.0 -Dserver.port=${PORT:-10000} -jar /app/${APP}.jar"]
-aaa
