@@ -1,5 +1,6 @@
 # ---- build ----
 FROM maven:3.9.11-eclipse-temurin-24 AS build
+
 WORKDIR /app
 COPY . .
 
@@ -7,7 +8,7 @@ COPY . .
 WORKDIR /app/Metamapa
 RUN mvn -DskipTests package
 
-# Copiamos jars a /out/<modulo>.jar
+# Copiamos jars a /out/<modulo-lower>.jar
 RUN set -eux; \
   mkdir -p /out; \
   for d in \
@@ -21,8 +22,15 @@ RUN set -eux; \
     Metamapa-Service \
   ; do \
     JAR="$(ls -1 "$d"/target/*.jar 2>/dev/null | grep -vE '(original|sources|javadoc)\.jar$' | head -n 1 || true)"; \
-    [ -n "$JAR" ] && cp "$JAR" "/out/$d.jar" || true; \
-  done
+    if [ -n "$JAR" ]; then \
+      OUT="/out/$(echo "$d" | tr '[:upper:]' '[:lower:]').jar"; \
+      cp "$JAR" "$OUT"; \
+      echo "copied $JAR -> $OUT"; \
+    else \
+      echo "no jar for $d"; \
+    fi; \
+  done; \
+  ls -la /out
 
 
 # ---- run ----
@@ -30,6 +38,8 @@ FROM eclipse-temurin:24-jre
 WORKDIR /app
 COPY --from=build /out /app
 
-ENV APP=Metamapa-Service
+# por defecto corre Metamapa-Service => metamapa-service.jar
+ENV APP=metamapa-service
 EXPOSE 10000
-CMD ["sh","-c","test -f /app/${APP}.jar || (echo \"Jar no encontrado: /app/${APP}.jar\" && ls -la /app && exit 1); java -Dserver.address=0.0.0.0 -Dserver.port=${PORT:-10000} -jar /app/${APP}.jar"]
+
+CMD ["sh","-c","test -f /app/${APP}.jar || (echo \"Jar no encontrado: /app/${APP}.jar\" && echo \"Contenido de /app:\" && ls -la /app && exit 1); java -Dserver.address=0.0.0.0 -Dserver.port=${PORT:-10000} -jar /app/${APP}.jar"]
