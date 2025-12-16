@@ -5,7 +5,7 @@ WORKDIR /app
 COPY . .
 
 # El pom padre está en Metamapa/
-WORKDIR /app/Metamapa
+WORKDIR /app/TP-DDSI/Metamapa
 RUN mvn -DskipTests package
 
 # Copiamos jars a /out/<modulo-lower>.jar
