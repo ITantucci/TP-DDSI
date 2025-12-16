@@ -5,7 +5,7 @@ WORKDIR /app
 COPY . .
 
 # Compilamos SOLO el módulo que querés deployar
-ARG MODULE=metamapa-service
+ARG MODULE=Metamapa-Service
 WORKDIR /app/Metamapa/${MODULE}
 
 RUN mvn -DskipTests package
