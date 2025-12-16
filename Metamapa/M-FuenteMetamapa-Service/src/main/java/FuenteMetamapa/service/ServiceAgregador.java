@@ -26,7 +26,7 @@ public class ServiceAgregador {
   @EventListener(WebServerInitializedEvent.class)
   public void onWebServerReady(WebServerInitializedEvent event) {
     int port = event.getWebServer().getPort();
-    String host = env.getProperty("server.address", "localhost");
+    String host = env.getProperty("registration.hostname", "localhost");
 
     String scheme = env.getProperty("server.ssl.enabled", "false").equals("true") ? "https" : "http";
     String baseUrl = scheme + "://" + host + ":" + port;
