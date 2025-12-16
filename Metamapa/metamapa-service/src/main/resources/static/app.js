@@ -11,7 +11,6 @@ window.METAMAPA = window.METAMAPA || {
     API_SOLICITUDES: "http://localhost:9004/api-solicitudes",
     API_USUARIOS: "http://localhost:9005/usuarios",
     API_ESTADISTICA: "http://localhost:9008/estadistica"
-
 };
 
 console.log("app.js cargado correctamente");
@@ -22,7 +21,6 @@ console.log("app.js cargado correctamente");
 const cont = document.getElementById("contenido");
 let usuarioActual = null;
 let coleccionSeleccionada = null;
-
 
 // Refresca la vista actual (usa tu router "mostrar")
 async function refrescarVistaActual() {
@@ -65,10 +63,7 @@ async function refrescarVistaActual() {
     };
 })();
 
-
-
 /* =========================================================
-
    Helpers UI
    ========================================================= */
 function setLoadingUI({ container, message = "Cargando...", button } = {}) {
@@ -145,7 +140,6 @@ async function fetchSeguro(url) {
    Mapas (Leaflet) - básico y estable
    ========================================================= */
 
-
 // ==============================
 // Colores por categoría (fallback a "Otro")
 // ==============================
@@ -195,8 +189,6 @@ const categoriaColores = {
 };
 
 const colorPorCategoria = (cat) => categoriaColores[cat] || categoriaColores["Otro"];
-
-
 
 const _maps = new Map(); // divId -> { map, markers, legend }
 
@@ -276,7 +268,6 @@ async function inicializarMapa(divId = "mapa") {
     console.log("Mapa inicializado:", divId);
     return map;
 }
-
 
 function limpiarMarcadores(divId = "mapa") {
     const ctx = _maps.get(divId);
@@ -548,7 +539,6 @@ function confirmarUbicacion() {
     bootstrap.Modal.getInstance(document.getElementById("modalUbicacion")).hide();
 }
 
-
 /* =========================================================
    Sanitización básica para HTML
    ========================================================= */
@@ -760,6 +750,19 @@ async function cargarSelectFuentesDinamicas() {
         select.innerHTML = `<option value="">Error al cargar fuentes</option>`;
     } finally {
         select.disabled = false;
+    }
+}
+
+/* =========================================================
+   API: Estadisticas
+   ========================================================= */
+async function actualizarEstadisticas() {
+    try {
+        const resp = await fetch(`${window.METAMAPA.API_ESTADISTICA}/actualizar`, { method: "POST" });
+        if (resp.ok) mostrarModal("Estadisticas actualizadas.", "Actualización");
+        else mostrarModal(await resp.text(), "Error");
+    } catch (e) {
+        mostrarModal(e.message || "Error de red", "Error");
     }
 }
 
@@ -1218,6 +1221,80 @@ async function mostrarColeccionesView() {
     });
 }
 
+let _cacheFuentesTodas = null;
+
+async function obtenerTodasLasFuentes() {
+    if (_cacheFuentesTodas) return _cacheFuentesTodas;
+
+    const [est, din, demo, meta] = await Promise.all([
+        obtenerFuentesEstaticas(),
+        obtenerFuentesDinamicas(),
+        obtenerFuentesDemo(),
+        obtenerFuentesMetamapa()
+    ]);
+
+    const out = [];
+
+    (din?.fuentes || []).forEach(f => out.push({
+        value: String(f.id),
+        label: `[Dinámica] ${f.nombre} (id: ${f.id})`
+    }));
+
+    (est?.fuentes || []).forEach(f => out.push({
+        value: String(f.fuenteId),
+        label: `[Estática] ${f.nombre} (id: ${f.fuenteId})`
+    }));
+
+    (demo?.fuentes || []).forEach(f => out.push({
+        value: String(f.id),
+        label: `[Demo] ${f.nombre} (id: ${f.id})`
+    }));
+
+    (meta?.fuentes || []).forEach(f => out.push({
+        value: String(f.id),
+        label: `[MetaMapa] ${f.nombre} (id: ${f.id})`
+    }));
+
+    // ordenar por label
+    out.sort((a, b) => a.label.localeCompare(b.label));
+
+    _cacheFuentesTodas = out;
+    return out;
+}
+
+async function poblarSelectsFuentesColecciones(rootEl) {
+    const selects = rootEl.querySelectorAll("select.fuenteSelect");
+    if (!selects.length) return;
+
+    // placeholder loading
+    selects.forEach(sel => {
+        sel.disabled = true;
+        sel.innerHTML = `<option value="">Cargando fuentes...</option>`;
+    });
+
+    try {
+        const fuentes = await obtenerTodasLasFuentes();
+
+        const optionsHtml = [
+            `<option value="">Seleccioná una fuente...</option>`,
+            ...fuentes.map(o => `<option value="${escapeHtml(o.value)}">${escapeHtml(o.label)}</option>`)
+        ].join("");
+
+        selects.forEach(sel => {
+            sel.innerHTML = optionsHtml;
+            sel.disabled = false;
+        });
+    } catch (e) {
+        console.error("Error cargando fuentes:", e);
+        selects.forEach(sel => {
+            sel.innerHTML = `<option value="">Error al cargar fuentes</option>`;
+            sel.disabled = true;
+        });
+    }
+}
+
+
+
 async function mostrarColecciones() {
     const contLista = document.getElementById("listaColecciones");
     contLista.innerHTML = "<p class='text-muted'>Cargando colecciones...</p>";
@@ -1249,6 +1326,15 @@ async function mostrarColecciones() {
               Ver hechos
             </button>
 
+            <div class="input-group input-group-sm" style="width: 320px;">
+              <select class="form-select fuenteSelect" data-handle="${escapeHtml(c.handle)}">
+                <option value="">Cargando fuentes...</option>
+              </select>
+              <button class="btn btn-outline-secondary btnAgregarFuente" data-handle="${escapeHtml(c.handle)}">
+                Agregar
+              </button>
+            </div>
+
             <button class="btn btn-sm admin-only btn-outline-primary"
                     onclick="cambiarConsenso('${escapeHtml(c.handle)}')">
               Cambiar consenso
@@ -1258,25 +1344,65 @@ async function mostrarColecciones() {
       </div>
     `).join("");
 
+        // cargar opciones del select para todas las cards
+        await poblarSelectsFuentesColecciones(contLista);
+
+        // IMPORTANTE: delegación de eventos bien hecha (sin return temprano)
         contLista.onclick = async (e) => {
             const btnVer = e.target.closest(".btnVerHechos");
-            if (!btnVer) return;
+            const btnFuente = e.target.closest(".btnAgregarFuente");
 
-            const handle = btnVer.dataset.handle;
-            const estado = document.getElementById(`estadoColeccion_${handle}`);
+            // VER HECHOS
+            if (btnVer) {
+                const handle = btnVer.dataset.handle;
+                const estado = document.getElementById(`estadoColeccion_${handle}`);
 
-            setLoadingUI({ button: btnVer });
-            setLoadingUI({ container: estado, message: "Buscando hechos..." });
+                setLoadingUI({ button: btnVer });
+                setLoadingUI({ container: estado, message: "Buscando hechos..." });
 
-            try {
-                await verHechosColeccion(handle);
-                setText(estado, "");
-            } catch (err) {
-                console.error(err);
-                setText(estado, `Error: ${err?.message || err}`);
-            } finally {
-                btnVer.disabled = false;
-                btnVer.textContent = "Ver hechos";
+                try {
+                    await verHechosColeccion(handle);
+                    setText(estado, "");
+                } catch (err) {
+                    console.error(err);
+                    setText(estado, `Error: ${err?.message || err}`);
+                } finally {
+                    btnVer.disabled = false;
+                    btnVer.textContent = "Ver hechos";
+                }
+                return;
+            }
+
+            // AGREGAR FUENTE
+            if (btnFuente) {
+                const handle = btnFuente.dataset.handle;
+                const estado = document.getElementById(`estadoColeccion_${handle}`);
+
+                // buscar el select dentro de la misma card
+                const card = btnFuente.closest(".card");
+                const sel = card?.querySelector(`select.fuenteSelect[data-handle="${handle}"]`);
+                const fuenteValue = (sel?.value || "").trim();
+
+                if (!fuenteValue) return alert("Seleccioná una fuente");
+
+                setLoadingUI({ button: btnFuente });
+                setLoadingUI({ container: estado, message: "Agregando fuente..." });
+
+                try {
+                    // si tu back espera número, lo convertimos si se puede
+                    const idFuente = Number.isFinite(Number(fuenteValue)) ? Number(fuenteValue) : fuenteValue;
+
+                    await agregarFuenteAColeccion(handle, idFuente);
+
+                    setText(estado, "✅Fuente agregada.");
+                    if (sel) sel.value = "";
+                } catch (err) {
+                    console.error(err);
+                    setText(estado, `Error: ${err?.message || err}`);
+                } finally {
+                    btnFuente.disabled = false;
+                    btnFuente.textContent = "Agregar";
+                }
             }
         };
 
@@ -1285,6 +1411,7 @@ async function mostrarColecciones() {
         console.error(e);
     }
 }
+
 
 async function verHechosColeccion(idColeccion) {
     coleccionSeleccionada = idColeccion;
@@ -1831,27 +1958,6 @@ async function mostrarEstadisticasView() {
         }
     });
 
-    async function actualizarEstadisticas() {
-        try {
-            const response = await fetch(`${window.METAMAPA.API_ESTADISTICA}/actualizar`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                // body: JSON.stringify({ ... }) // si necesitás mandar algo
-            });
-
-            if (response.status === 204) return; // No hay datos
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-            // Si el endpoint devuelve JSON y querés consumirlo igual:
-            // await response.json();
-        } catch (error) {
-            console.error("Error al actualizar estadisticas:", error);
-        }
-    }
-
-
     async function obtenerProvinciaMasReportadaColeccion(uuid) {
         try {
             const response = await fetch(`${window.METAMAPA.API_ESTADISTICA}/coleccion/${uuid}/provincia-mas-reportada`);
@@ -1925,20 +2031,50 @@ async function mostrarEstadisticasView() {
         btn.textContent = "Generando…";
 
         try {
+            const coleccionLabel = getSelectedText(selColeccion);
+            const categoriaProvLabel = getSelectedText(selCatProv);
+            const categoriaHoraLabel = getSelectedText(selCatHora);
+
             const datos = [
-                ["ESTADISTICA", "VALOR"],
-                ["Provincia con mas hechos por Coleccion", document.getElementById("provinciaColeccion").textContent.trim()],
-                ["Categoria mas reportada", document.getElementById("categoriaMasReportada").textContent.trim()],
-                ["Provincia con mas hechos de una categoria", document.getElementById("provinciaCategoria").textContent.trim()],
-                ["Hora del dia con mas hechos (por categoria)", document.getElementById("horaCategoria").textContent.trim()],
-                ["Solicitudes de eliminacion marcadas como spam", document.getElementById("cantidadSpam").textContent.trim()]
+                ["ESTADÍSTICA", "CONTEXTO", "VALOR"],
+
+                [
+                    "Provincia con más hechos por colección",
+                    coleccionLabel || "—",
+                    document.getElementById("provinciaColeccion").textContent.trim()
+                ],
+
+                [
+                    "Categoría más reportada",
+                    "General",
+                    document.getElementById("categoriaMasReportada").textContent.trim()
+                ],
+
+                [
+                    "Provincia con más hechos de una categoría",
+                    categoriaProvLabel || "—",
+                    document.getElementById("provinciaCategoria").textContent.trim()
+                ],
+
+                [
+                    "Hora del día con más hechos (por categoría)",
+                    categoriaHoraLabel || "—",
+                    document.getElementById("horaCategoria").textContent.trim()
+                ],
+
+                [
+                    "Solicitudes de eliminación marcadas como spam",
+                    "General",
+                    document.getElementById("cantidadSpam").textContent.trim()
+                ]
             ];
 
             const csv = datos
                 .map(fila => fila.map(v => `"${String(v).replace(/"/g, '""')}"`).join(";"))
                 .join("\r\n");
 
-            const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+            const bom = "\uFEFF";
+            const blob = new Blob([bom + csv], { type: "text/csv;charset=utf-8;" });
             const url = URL.createObjectURL(blob);
 
             const a = document.createElement("a");
@@ -1953,6 +2089,11 @@ async function mostrarEstadisticasView() {
             btn.textContent = btn.dataset.originalText || "Exportar CSV";
         }
     });
+}
+function getSelectedText(selectEl) {
+    if (!selectEl) return "";
+    const opt = selectEl.options[selectEl.selectedIndex];
+    return opt ? opt.text.trim() : "";
 }
 
 
@@ -2490,9 +2631,6 @@ function mostrarFormularioEdicion(h, contenedor) {
 /* =========================================================
    Sesión / roles (SSO real - componente usuarios)
    ========================================================= */
-
-// IMPORTANTE: ajustá este endpoint al puerto real de tu servicio de usuarios
-
 // Elementos fijos de la interfaz (navbar)
 const btnLogin = document.getElementById("btnLogin");
 const btnLogout = document.getElementById("btnLogout");
@@ -2594,9 +2732,7 @@ function cerrarSesion() {
         .catch(err => console.error("Error al hacer logout:", err))
         .finally(() => {
             ocultarTodoYMostrarLogin();
-            // si tu front vive en /index.html:
             window.location.href = "http://localhost:9000/index.html";
-            // si preferís que no sea hardcodeado:
             // window.location.href = `${window.location.origin}/index.html`;
         });
 }
@@ -3019,3 +3155,48 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
 });
+
+async function agregarFuenteAColeccion(id, idFuente) {
+    const url = `${window.METAMAPA.API_COLECCIONES}/colecciones/${id}/fuentes/${idFuente}`;
+    const resp = await fetch(url, { method: "POST" });
+    if (!resp.ok) throw new Error(await resp.text());
+    return true;
+}
+
+async function resolverIdFuentePorNombre(nombre) {
+    const n = (nombre || "").trim().toLowerCase();
+    if (!n) return null;
+
+    const [est, dyn, demo, meta] = await Promise.all([
+        obtenerFuentesEstaticas(),
+        obtenerFuentesDinamicas(),
+        obtenerFuentesDemo(),
+        obtenerFuentesMetamapa()
+    ]);
+
+    // Estáticas: fuenteId
+    if (est?.disponible) {
+        const f = est.fuentes.find(x => (x.nombre || "").trim().toLowerCase() === n);
+        if (f) return f.fuenteId;
+    }
+
+    // Dinámicas: id
+    if (dyn?.disponible) {
+        const f = dyn.fuentes.find(x => (x.nombre || "").trim().toLowerCase() === n);
+        if (f) return f.id;
+    }
+
+    // Demo: id
+    if (demo?.disponible) {
+        const f = demo.fuentes.find(x => (x.nombre || "").trim().toLowerCase() === n);
+        if (f) return f.id;
+    }
+
+    // Metamapa: id
+    if (meta?.disponible) {
+        const f = meta.fuentes.find(x => (x.nombre || "").trim().toLowerCase() === n);
+        if (f) return f.id;
+    }
+
+    return null;
+}

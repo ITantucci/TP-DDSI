@@ -145,8 +145,7 @@ public class ControllerEstadistica {
   @ApiResponse(responseCode = "200", description = "CSV", content = @Content(mediaType = "text/csv"))
   @GetMapping(value = "/export", produces = "text/csv")
   public ResponseEntity<byte[]> exportarDatos() {
-    String csv = estadisticaService.exportarCsv();
-    byte[] bytes = csv.getBytes(StandardCharsets.UTF_8);
+    byte[] csv = estadisticaService.exportarCsv();
     String filename = "metamapa_estadisticas.csv";
     return ResponseEntity.ok()
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")

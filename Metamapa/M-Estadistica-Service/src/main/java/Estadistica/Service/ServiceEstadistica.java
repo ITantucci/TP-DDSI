@@ -1,4 +1,6 @@
 package Estadistica.Service;
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -43,54 +45,73 @@ public class ServiceEstadistica {
         }
     }
 
-    public String exportarCsv() {
+    public byte[] exportarCsv() {
+
         StringBuilder csv = new StringBuilder();
+
         CategoriaConMasHechos topCategoriaStats = obtenerUltimaEstadisticaCategoriaMasReportada();
         String categoriaBase = topCategoriaStats.getCategoria();
-        // CONDICIÓN DE NO EXPORTAR: Si la categoría base es N/A, no hay datos válidos para filtrar.
+
+        // CONDICIÓN DE NO EXPORTAR
         if ("N/A".equals(categoriaBase) || categoriaBase.isBlank()) {
-            return ""; // Devolvemos String vacío para que el Controller retorne 204 No Content
+            return new byte[0];
         }
-        // UUID de ejemplo (Asumimos que el Administrador definiría esto, pero para la exportación genérica, usamos un placeholder)
+
         UUID coleccionEjemplo = UUID.fromString("00000000-0000-0000-0000-000000000001");
+
         CantidadDeSpam spamStats = obtenerUltimaEstadisticaSpam();
         HoraConMasHechosPorCategoria horaStats = obtenerUltimaEstadisticaHoraCategoria(categoriaBase);
-        ProvinciaConMasHechosPorCategoria provinciaCategoriaStats = obtenerUltimaEstadisticaProvinciaCategoria(categoriaBase);
-        ProvinciaConMasHechosPorColeccion coleccionStats = obtenerUltimaEstadisticaColeccionProvincia(coleccionEjemplo);
-        // Formato Analítico Simple: Tipo_de_Estadistica,Clave,Valor
+        ProvinciaConMasHechosPorCategoria provinciaCategoriaStats =
+                obtenerUltimaEstadisticaProvinciaCategoria(categoriaBase);
+        ProvinciaConMasHechosPorColeccion coleccionStats =
+                obtenerUltimaEstadisticaColeccionProvincia(coleccionEjemplo);
+
+        // Header
         csv.append("Tipo_de_Estadistica,Clave,Valor\n");
-        // I. ¿Cuántas solicitudes de eliminación son spam?
+
         csv.append("RESUMEN_SPAM,Solicitudes_Spam,")
-                .append(spamStats.getCantidadSolicitudesSpam())
-                .append("\n");
-        // II. ¿Cuál es la categoría con mayor cantidad de hechos reportados?
+                .append(spamStats.getCantidadSolicitudesSpam()).append("\n");
+
         csv.append("CATEGORIA_MAS_REPORTADA,Categoria_Ganadora,")
                 .append(topCategoriaStats.getCategoria()).append("\n");
-        // III. ¿A qué hora del día ocurren la mayor cantidad de hechos de una cierta categoría?
+
         csv.append("HORA_PICO_POR_CATEGORIA,Categoria_Base,")
                 .append(categoriaBase).append("\n");
+
         csv.append("HORA_PICO_POR_CATEGORIA,Hora_Mas_Frecuente,")
-                .append(horaStats.getHora() == null ? "N/A" : horaStats.getHora());
-        // IV. ¿En qué provincia se presenta la mayor cantidad de hechos de una cierta categoría?
+                .append(horaStats.getHora() == null ? "N/A" : horaStats.getHora())
+                .append("\n");
+
         csv.append("PROVINCIA_PICO_POR_CATEGORIA,Categoria_Base,")
-                .append(categoriaBase)
-                .append("\n");
+                .append(categoriaBase).append("\n");
+
         csv.append("PROVINCIA_PICO_POR_CATEGORIA,Provincia_Mas_Frecuente,")
-                .append(provinciaCategoriaStats.getProvincia() == null ? "N/A" : provinciaCategoriaStats.getProvincia())
+                .append(provinciaCategoriaStats.getProvincia() == null
+                        ? "N/A"
+                        : provinciaCategoriaStats.getProvincia())
                 .append("\n");
-        // V. De una colección, ¿en qué provincia se agrupan la mayor cantidad de hechos reportados?
+
         csv.append("PROVINCIA_PICO_POR_COLECCION,ID_Coleccion_Analizada,")
                 .append(coleccionEjemplo).append("\n");
+
         csv.append("PROVINCIA_PICO_POR_COLECCION,Provincia_Mas_Frecuente,")
                 .append(coleccionStats.getProvincia()).append("\n");
 
+        // Guardado de estadísticas
         repositorioEstadisticas.save(spamStats);
         repositorioEstadisticas.save(horaStats);
         repositorioEstadisticas.save(provinciaCategoriaStats);
         repositorioEstadisticas.save(coleccionStats);
         repositorioEstadisticas.save(topCategoriaStats);
 
-        return csv.toString();
+        // ===== UTF-8 + BOM =====
+        byte[] bom = new byte[] { (byte) 0xEF, (byte) 0xBB, (byte) 0xBF };
+
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        output.writeBytes(bom);
+        output.writeBytes(csv.toString().getBytes(StandardCharsets.UTF_8));
+
+        return output.toByteArray();
     }
 
     //¿Cuántas solicitudes de eliminación son spam?
