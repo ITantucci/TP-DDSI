@@ -1,4 +1,4 @@
-ARG MODULE=Metamapa-Service
+#ARG MODULE=Metamapa-Service
 
 # ---- build ----
 FROM maven:3.9.11-eclipse-temurin-24 AS build
