@@ -160,7 +160,7 @@ const categoriaColores = {
     // Sustancias / ambiente
     "Derrame / Fuga de sustancias": "#00ACC1",
     "Fuga o emanación de gas": "#00897B",
-    "Contaminacion": "#2E7D32",
+    "Contaminación": "#2E7D32",
     "Material volcanico": "#4E342E",
 
     // Clima
@@ -576,7 +576,7 @@ const CATEGORIAS = [
     "Inundación",
     "Emergencia sanitaria",
     "Intoxicacion masiva",
-    "Contaminacion",
+    "Contaminación",
     "Sequia",
     "Escasez de agua",
     "Material volcanico",
