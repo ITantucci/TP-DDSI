@@ -1381,46 +1381,65 @@ async function mostrarColecciones() {
             return;
         }
 
-        contLista.innerHTML = colecciones.map(c => `
-      <div class="card mb-2 p-2">
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <h6 class="fw-bold mb-1">Título: ${escapeHtml(c.titulo)}</h6>
-            <p class="small mb-0">Descripción: ${escapeHtml(c.descripcion)}</p>
-            <p class="small mb-0"><b>Consenso:</b> ${escapeHtml(c.consenso)}</p>
-            <p class="small mb-0"><b>ID:</b> ${escapeHtml(c.handle)}</p>
-            <p id="estadoColeccion_${escapeHtml(c.handle)}" class="small text-muted mb-0"></p>
-          </div>
+        contLista.innerHTML = colecciones.map(c => {
+            // Extraemos los IDs de las fuentes directamente de los criterios
+            const idsFuentes = [...new Set(
+                (c.criterios || [])
+                    .filter(crit => crit.idFuenteDeDatos)
+                    .map(crit => crit.idFuenteDeDatos)
+            )];
 
-          <div class="d-flex align-items-center gap-2 flex-wrap">
-            <button class="btn btn-sm btn-outline-primary btnVerHechos" data-handle="${escapeHtml(c.handle)}">
-              Ver hechos
-            </button>
+            // Renderizamos los badges solo con el ID disponible
+            const badgesFuentes = idsFuentes.map(id => {
+                return `<span class="badge bg-info text-dark border me-1 my-1">Fuente ${id}</span>`;
+            }).join("");
 
-            ${ esAdmin ? `
-            <div class="input-group input-group-sm" style="width: 320px;">
-              <select class="form-select fuenteSelect" data-handle="${escapeHtml(c.handle)}">
-                <option value="">Cargando fuentes...</option>
-              </select>
-              <button class="btn btn-outline-secondary btnAgregarFuente" data-handle="${escapeHtml(c.handle)}">
-                Agregar
-              </button>
-            </div>
-            ` : '' }
+            const htmlFuentes = badgesFuentes
+                ? `<div class="mt-2"><small class="text-muted me-1">Fuentes:</small>${badgesFuentes}</div>`
+                : `<div class="mt-2"><small class="text-muted fst-italic">Sin fuentes asignadas</small></div>`;
 
-            ${ esAdmin ? `
-            <button class="btn btn-sm admin-only btn-outline-primary"
-                    onclick="cambiarConsenso('${escapeHtml(c.handle)}')">
-              Cambiar consenso
-            </button>
-            ` : '' }
-            
-          </div>
-        </div>
-      </div>
-    `).join("");
+            return `
+              <div class="card mb-2 p-2">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="flex-grow-1">
+                    <h6 class="fw-bold mb-1">Título: ${escapeHtml(c.titulo)}</h6>
+                    <p class="small mb-0">Descripción: ${escapeHtml(c.descripcion)}</p>
+                    <p class="small mb-0"><b>Consenso:</b> ${escapeHtml(c.consenso)}</p>
+                    <p class="small mb-0"><b>ID:</b> ${escapeHtml(c.handle)}</p>
+                    
+                    ${htmlFuentes}
 
-        // 4. OPTIMIZACIÓN: Solo cargamos el select si el usuario es admin y el HTML existe
+                    <p id="estadoColeccion_${escapeHtml(c.handle)}" class="small text-muted mb-0 mt-1"></p>
+                  </div>
+
+                  <div class="d-flex align-items-center gap-2 flex-wrap ms-2" style="min-width: fit-content;">
+                    <button class="btn btn-sm btn-outline-primary btnVerHechos" data-handle="${escapeHtml(c.handle)}">
+                      Ver hechos
+                    </button>
+
+                    ${ esAdmin ? `
+                    <div class="input-group input-group-sm" style="width: 250px;">
+                      <select class="form-select fuenteSelect" data-handle="${escapeHtml(c.handle)}">
+                        <option value="">Cargando...</option>
+                      </select>
+                      <button class="btn btn-outline-secondary btnAgregarFuente" data-handle="${escapeHtml(c.handle)}">
+                        Agregar
+                      </button>
+                    </div>
+                    ` : '' }
+
+                    ${ esAdmin ? `
+                    <button class="btn btn-sm admin-only btn-outline-primary"
+                            onclick="cambiarConsenso('${escapeHtml(c.handle)}')">
+                      Cambiar consenso
+                    </button>
+                    ` : '' }
+                    
+                  </div>
+                </div>
+              </div>
+            `;
+        }).join("");
         if (esAdmin) {
             await poblarSelectsFuentesColecciones(contLista);
         }
@@ -1430,10 +1449,26 @@ async function mostrarColecciones() {
             const btnVer = e.target.closest(".btnVerHechos");
             const btnFuente = e.target.closest(".btnAgregarFuente");
 
-            // VER HECHOS
+            // --- BOTÓN VER HECHOS ---
             if (btnVer) {
                 const handle = btnVer.dataset.handle;
                 const estado = document.getElementById(`estadoColeccion_${handle}`);
+
+                // -- MANEJO DEL PANEL DE FILTROS --
+                const panel = document.getElementById("panelFiltrosColeccion");
+                const filtrosDiv = document.getElementById("filtrosContainerColeccion");
+                const btnApp = document.getElementById("btnAplicarFiltrosColeccion");
+
+                if (panel) {
+                    // 1. Resetear el contenido de filtros (inputs)
+                    if (filtrosDiv) filtrosDiv.innerHTML = "";
+                    // 2. Deshabilitar botón "Aplicar"
+                    if (btnApp) btnApp.disabled = true;
+                    // 3. Mostrar panel y scrollear
+                    panel.classList.remove("d-none");
+                    panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                // ---------------------------------
 
                 setLoadingUI({ button: btnVer });
                 setLoadingUI({ container: estado, message: "Buscando hechos..." });
@@ -1451,12 +1486,11 @@ async function mostrarColecciones() {
                 return;
             }
 
-            // AGREGAR FUENTE
+            // --- BOTÓN AGREGAR FUENTE (Solo Admin) ---
             if (btnFuente) {
                 const handle = btnFuente.dataset.handle;
                 const estado = document.getElementById(`estadoColeccion_${handle}`);
 
-                // buscar el select dentro de la misma card
                 const card = btnFuente.closest(".card");
                 const sel = card?.querySelector(`select.fuenteSelect[data-handle="${handle}"]`);
                 const fuenteValue = (sel?.value || "").trim();
@@ -2170,8 +2204,6 @@ function getSelectedText(selectEl) {
     const opt = selectEl.options[selectEl.selectedIndex];
     return opt ? opt.text.trim() : "";
 }
-
-
 
 /* =========================================================
    Filtros dinámicos (hechos / colecciones)
