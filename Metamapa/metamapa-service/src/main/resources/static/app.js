@@ -626,12 +626,10 @@ function categoriasDisponibles() {
 }
 
 function registrarCategoriasDesdeHechos(hechos) {
-    const s = new Set();
     (hechos || []).forEach(h => {
         const c = (h?.categoria || "").trim();
-        if (c) s.add(c);
+        if (c) _CATS_FROM_HECHOS.add(c);
     });
-    _CATS_FROM_HECHOS = s;
 }
 
 function cargarCategorias() {
@@ -656,18 +654,25 @@ function agregarNuevaCategoriaModal() {
 
 function guardarNuevaCategoria() {
     const input = document.getElementById("nuevaCategoriaInput");
-    const nueva = (input.value || "").trim();
+    const nueva = (input?.value || "").trim();
     if (!nueva) return mostrarModal("Debe escribir una categoría válida.");
 
-    // registrar + color automático
-    _CATS.add(nueva);
-    _saveCats();
-    colorPorCategoria(nueva);
+    // solo setea el valor en el input del formulario del hecho
+    const categoriaSelect = document.getElementById("categoriaSelect");
+    if (categoriaSelect) {
+        categoriaSelect.value = nueva;
 
-    cargarCategorias();
-    document.getElementById("categoriaSelect").value = nueva;
+        // opcional: marcar validación visual
+        categoriaSelect.classList.remove("is-invalid");
+        categoriaSelect.classList.add("is-valid");
+    }
+
+    // opcional: asignar color si querés que el badge/mapa ya lo tome
+    try { colorPorCategoria(nueva); } catch {}
+
     bootstrap.Modal.getInstance(document.getElementById("modalCategoria")).hide();
 }
+
 
 
 window.agregarNuevaCategoriaModal = agregarNuevaCategoriaModal;
@@ -866,8 +871,6 @@ async function crearHecho(e) {
         return;
     }
 
-// si no existe aún, la registramos y queda disponible + color asignado
-    colorPorCategoria(categoria);
 
 
     const btn = document.getElementById("btnGuardar");
@@ -914,7 +917,9 @@ async function crearHecho(e) {
         if (resp.ok) {
             const json = await resp.json();
             res.textContent = `Hecho creado (ID: ${json.id ?? "sin id"})`;
-
+            colorPorCategoria(categoria);
+            registrarCategoriasDesdeHechos([{ categoria }]);
+            cargarCategorias();
             const modal = bootstrap.Modal.getInstance(document.getElementById("modalHecho"));
             modal.hide();
             limpiarFormularioHecho();
@@ -2389,18 +2394,18 @@ async function poblarSelectFuentes(selectEl, selectedValue = "") {
 }
 // Cache simple para no pedir hechos/fuentes 20 veces
 
-let _catsCargadas = false;
 let _fuentesCache = null;
 
+let _catsCargadas = false;
 let _catsPromise = null;
 
-function ensureCategoriasDesdeHechos() {
-    if (_catsCargadas) return Promise.resolve();
+async function ensureCategoriasDesdeHechos() {
+    if (_catsCargadas) return;
     if (_catsPromise) return _catsPromise;
 
     _catsPromise = (async () => {
-        const hechos = await obtenerHechos();           // una sola vez
-        registrarCategoriasDesdeHechos(hechos);
+        const hechos = await obtenerHechos();
+        registrarCategoriasDesdeHechos(hechos); // que sume al Set, no lo reemplace
         _catsCargadas = true;
     })().finally(() => {
         _catsPromise = null;
@@ -2408,6 +2413,7 @@ function ensureCategoriasDesdeHechos() {
 
     return _catsPromise;
 }
+
 
 async function ensureFuentes() {
     if (_fuentesCache) return _fuentesCache;
@@ -3058,10 +3064,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (formHecho) formHecho.addEventListener("submit", crearHecho);
     if (formColeccion) formColeccion.addEventListener("submit", crearColeccion);
-
+    const categoriasReady = ensureCategoriasDesdeHechos().catch(() => {});
     if (modalHecho) {
         modalHecho.addEventListener("shown.bs.modal", async () => {
-            await ensureCategoriasDesdeHechos();
+            await categoriasReady;   // en vez de llamar ensureCategoriasDesdeHechos() otra vez
             cargarCategorias();
             await cargarSelectFuentesDinamicas();
             setTimeout(inicializarMapaSeleccion, 200);
