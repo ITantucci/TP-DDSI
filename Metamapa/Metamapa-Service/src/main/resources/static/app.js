@@ -1,16 +1,19 @@
 /* =========================================================
    Configuración (ajustá endpoints a tu entorno)
    ========================================================= */
+const HOST = window.location.hostname;   // ec2-18-206-12-169.compute-1.amazonaws.com
+const PROTO = window.location.protocol;  // http:
+
 window.METAMAPA = window.METAMAPA || {
-    API_AGREGADOR: "https://metamapaagregador.onrender.com/api-agregador",
-    API_COLECCIONES: "https://metamapaagregador.onrender.com/api-colecciones",
-    API_FUENTE_DINAMICA: "http://localhost:9001/api-fuentesDeDatos",
-    API_FUENTE_ESTATICA: "http://localhost:9002/api-fuentesDeDatos",
-    API_FUENTE_DEMO: "http://localhost:9006/api-fuentesDeDatos",
-    API_FUENTE_METAMAPA: "http://localhost:9007/api-fuentesDeDatos",
-    API_SOLICITUDES: "https://metamapaagregador.onrender.com/api-solicitudes",
-    API_USUARIOS: "http://localhost:9005/usuarios",
-    API_ESTADISTICA: "http://localhost:9008/estadistica"
+    API_AGREGADOR: `${PROTO}//${HOST}:9004/api-agregador`,
+    API_COLECCIONES: `${PROTO}//${HOST}:9004/api-colecciones`,
+    API_FUENTE_DINAMICA: `${PROTO}//${HOST}:9001/api-fuentesDeDatos`,
+    API_FUENTE_ESTATICA: `${PROTO}//${HOST}:9002/api-fuentesDeDatos`,
+    API_FUENTE_DEMO: `${PROTO}//${HOST}:9006/api-fuentesDeDatos`,
+    API_FUENTE_METAMAPA: `${PROTO}//${HOST}:9007/api-fuentesDeDatos`,
+    API_SOLICITUDES: `${PROTO}//${HOST}:9004/api-solicitudes`,
+    API_USUARIOS: `${PROTO}//${HOST}:9005/usuarios`,
+    API_ESTADISTICA: `${PROTO}//${HOST}:9008/estadistica`
 };
 
 console.log("app.js cargado correctamente");
@@ -31,38 +34,49 @@ async function refrescarVistaActual() {
 // Intercepta fetch: si es una modificación (POST/PUT/PATCH/DELETE) y salió OK, refresca la vista actual
 (function instalarAutoRefreshEnFetch() {
     const _fetch = window.fetch.bind(window);
-
-    // Evita refrescos múltiples cuando un flujo hace varios fetch seguidos
     let refreshPendiente = null;
 
     window.fetch = async (...args) => {
+        // 1. Extraer URL y Opciones correctamente (soporta objeto Request o String)
+        let url, init;
+
+        if (args[0] instanceof Request) {
+            url = args[0].url;
+            init = args[0]; // El objeto Request ya contiene el método y headers
+        } else {
+            url = String(args[0] || "");
+            init = args[1] || {};
+        }
+
+        // 2. Ejecutar el fetch original con todos los argumentos intactos
         const resp = await _fetch(...args);
 
+        // 3. Lógica de refresco (dentro de try-catch para no romper la app)
         try {
-            const url = String(args?.[0] ?? "");
-            const init = args?.[1] || {};
             const method = String(init.method || "GET").toUpperCase();
-
             const esMutacion = ["POST", "PUT", "PATCH", "DELETE"].includes(method);
 
-            // Opcional: evitá refrescar por ciertos endpoints (login/logout, etc.)
-            const ignorar = url.includes("/api-auth/") || url.includes("/login") || url.includes("/logout");
+            // Ignorar rutas de autenticación y errores para evitar bucles
+            const esAuth = url.includes("/api-auth/") || url.includes("/login") || url.includes("/logout");
+            const esError = url.includes("/error");
 
-            if (esMutacion && !ignorar && resp.ok) {
-                // refresco "debounced": si llegan 3 mutaciones seguidas, refresca 1 vez
+            if (esMutacion && !esAuth && !esError && resp.ok) {
+                // Debounce de 1 segundo
                 clearTimeout(refreshPendiente);
                 refreshPendiente = setTimeout(() => {
-                    refrescarVistaActual();
+                    if (typeof refrescarVistaActual === "function") {
+                        console.log("🔄 Auto-refresh activado tras mutación en:", url);
+                        refrescarVistaActual();
+                    }
                 }, 1000);
             }
         } catch (e) {
-            console.error("Auto-refresh fetch error:", e);
+            console.error("⚠️ Error en el interceptor de Auto-refresh:", e);
         }
 
         return resp;
     };
 })();
-
 /* =========================================================
    Helpers UI
    ========================================================= */
@@ -2709,7 +2723,12 @@ function ocultarTodoYMostrarLogin() {
 async function verificarSesionYActualizarUI() {
     try {
         const resp = await fetch(`${window.METAMAPA.API_USUARIOS}/api-auth/me`, {
-            credentials: "include"
+            method: 'GET',
+            // 🚨 ESTO ES OBLIGATORIO PARA QUE EL NAVEGADOR MANDE LA COOKIE
+            credentials: 'include',
+            headers: {
+                'Accept': 'application/json'
+            }
         });
 
         if (resp.ok) {
@@ -2727,7 +2746,7 @@ async function verificarSesionYActualizarUI() {
 }
 
 function iniciarSesionSSO() {
-    window.location.href = `${window.METAMAPA.API_USUARIOS}/login`;
+    window.location.href = `${window.METAMAPA.API_USUARIOS}/login.html`;
 }
 
 function cerrarSesion() {
@@ -2738,7 +2757,7 @@ function cerrarSesion() {
         .catch(err => console.error("Error al hacer logout:", err))
         .finally(() => {
             ocultarTodoYMostrarLogin();
-            window.location.href = "http://localhost:9000/index.html";
+            window.location.href = "http://ec2-18-206-12-169.compute-1.amazonaws.com:9000/index.html";
             // window.location.href = `${window.location.origin}/index.html`;
         });
 }

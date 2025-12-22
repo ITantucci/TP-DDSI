@@ -9,19 +9,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-class UsuarioDetailsService{
+class UsuarioDetailsService implements UserDetailsService {
 
   private final RepositorioUsuarios usuarioRepo;
 
+  @Override
   @Transactional(readOnly = true)
   public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
     Usuario user = usuarioRepo.findByEmail(email)
-        .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
-
+            .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
     return User.builder()
-        .username(user.getEmail())
-        .password(user.getContraseniaHasheada())
-        .roles(user.getRoles().stream().map(Enum::name).toArray(String[]::new))
-        .build();
+            .username(user.getEmail())
+            .password(user.getContraseniaHasheada())
+            .roles(user.getRoles().stream().map(Enum::name).toArray(String[]::new))
+            .build();
   }
 }
