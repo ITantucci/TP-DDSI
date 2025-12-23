@@ -4,7 +4,7 @@ import java.net.URI;
 
 public class DetectorDeSpam {
     private static final String API_KEY = "401e1369cc60";
-    private static final String BLOG_URL = "http://localhost:9004";
+    private static final String BLOG_URL = "http://ec2-18-206-12-169.compute-1.amazonaws.com:9004";
 
     static boolean esSpam(String texto) throws Exception {
         HttpClient client = HttpClient.newHttpClient();
@@ -14,9 +14,6 @@ public class DetectorDeSpam {
                 .POST(HttpRequest.BodyPublishers.ofString(
                         "blog=" + BLOG_URL +
                         "&comment_content=" + texto
-//                    +
-//                    "&comment_author=Spammer" +
-//                    "&comment_author_email=spammer@example.com"
                 ))
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());

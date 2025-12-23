@@ -11,7 +11,7 @@ public class RepositorioUsuariosImpl implements RepositorioUsuariosCustom{
   @PersistenceContext
   private EntityManager em;
 
-  @Transactional(readOnly = true) // 💡 Añade esto a la implementación del repositorio
+  @Transactional(readOnly = true)
   public Optional<Usuario> findByEmail (String email)
   {
     try {

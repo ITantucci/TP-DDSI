@@ -86,7 +86,7 @@ public class AuthorizationServerConfig {
   @Bean
   public AuthorizationServerSettings authorizationServerSettings() {
     return AuthorizationServerSettings.builder()
-            .issuer("http://ec2-18-206-12-169.compute-1.amazonaws.com:9005") // URL base del server (donde corre el Usuarios-Service)
+            .issuer("http://ec2-18-206-12-169.compute-1.amazonaws.com:9005")
             .build();
   }
 

@@ -11,7 +11,6 @@ public abstract class Solicitud {
   private Hecho hechoAfectado;
   @Enumerated(EnumType.STRING)
   private EstadoSolicitud estado;
-  //UUID id;
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
@@ -19,7 +18,6 @@ public abstract class Solicitud {
   public Solicitud(Hecho hechoAfectado, EstadoSolicitud estado) {
     this.hechoAfectado = hechoAfectado;
     this.estado = estado;
-    //this.id = UUID.randomUUID();
   }
 
   public Solicitud() {}

@@ -42,7 +42,7 @@ async function refrescarVistaActual() {
 
         if (args[0] instanceof Request) {
             url = args[0].url;
-            init = args[0]; // El objeto Request ya contiene el método y headers
+            init = args[0];
         } else {
             url = String(args[0] || "");
             init = args[1] || {};

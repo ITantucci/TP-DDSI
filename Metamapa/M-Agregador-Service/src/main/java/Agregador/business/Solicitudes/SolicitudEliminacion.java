@@ -15,10 +15,9 @@ public class SolicitudEliminacion extends Solicitud {
       esSpam = DetectorDeSpam.esSpam(motivo);
     } catch (Exception e) {
       // Si hay un error al verificar el spam, asumimos que no es spam
-      System.err.println("Error al verificar spam: " + e.getMessage());
       esSpam = false;
     }
-    if (esSpam) setEstado(EstadoSolicitud.SPAM); // EstadoSolicitud.RECHAZADA
+    if (esSpam) setEstado(EstadoSolicitud.SPAM);
     this.motivo = motivo;
   }
 
